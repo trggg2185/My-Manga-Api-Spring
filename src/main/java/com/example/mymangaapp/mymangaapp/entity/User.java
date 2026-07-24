@@ -3,8 +3,12 @@ package com.example.mymangaapp.mymangaapp.entity;
 import java.time.LocalDate;
 import java.util.Set;
 
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -12,8 +16,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.Size;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -28,36 +30,37 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Builder
+// Spring Data JPA gọi là Auditing giúp ghi lại: ngày tạo, ngày cập nhật, ai tạo, ai cập nhật
+@EntityListeners(AuditingEntityListener.class)
 @Entity
 public class User {
 
     /*
-        Lazy fetch là mặc định trong các annotation sau: OneToMany, ManyToMany
-        Lazy eager mặc định trong: ManyToOne, OneToOne
+        - Lazy fetch là mặc định trong các annotation sau: OneToMany, ManyToMany
+        - Lazy eager mặc định trong: ManyToOne, OneToOne
         => nên lazy fetch hết cho tao
+
+        - Entity không nên validate mà nên validate ở request
     */
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     String id;
 
+    // username không phân biệt chữ hoa thường
     @Column(name = "username", unique = true, columnDefinition = "VARCHAR(255) COLLATE utf8mb4_unicode_ci")
-    @Size(min = 3, message = "Tên người dùng không được dưới 3 ký tự!")
     String username;
 
-    @Size(min = 5, message = "Mật khẩu không được dưới 5 ký tự!")
-    String password;
-
-    @Email
     @Column(name = "email", unique = true)
     String email;
 
+    @CreatedDate // JPA tự động gán ngày khởi tạo khi insert vào db
+    @Column(name = "member_since", nullable = false, updatable = false)
     LocalDate memberSince;
+
+    String password;
     String facebook;
     String discord;
-
-    @Column(length = 300)
-    @Size(max = 300, message = "Thông tin bản thân không quá 300 ký tự!")
     String bio;
 
     // QH: Nhiều user có thể thuộc về 1 trans group
