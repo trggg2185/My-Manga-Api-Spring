@@ -38,6 +38,24 @@ public class GlobalExceptionHandler {
                 .body(apiResponse);
     }
 
+    // Handle exception của app mà mình tự định nghĩa
+    @ExceptionHandler(AppException.class)
+    private ResponseEntity<ApiResponse<?>> handlingAppException(AppException exception) {
+
+        log.error("Lỗi bắn ra ngoại lệ của ứng dụng!", exception);
+
+        ResponseCode responseCode = exception.getResponseCode();
+
+        ApiResponse<?> apiResponse = ApiResponse.builder()
+                .code(responseCode.getCode())
+                .message(responseCode.getMessage())
+                .build();
+
+        return ResponseEntity
+                .status(responseCode.getHttpStatusCode())
+                .body(apiResponse);
+    }
+
     // Handle những exception bắn ra do vi phạm validate ở request
     @ExceptionHandler(MethodArgumentNotValidException.class)
     private ResponseEntity<ApiResponse<?>> handlingValidationException(MethodArgumentNotValidException exception) {

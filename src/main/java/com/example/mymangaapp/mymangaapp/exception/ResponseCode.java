@@ -35,7 +35,13 @@ public enum ResponseCode {
 
     USERNAME_INVALID("3000", "Tên người dùng không được dưới {min} ký tự!", HttpStatus.BAD_REQUEST),
     PASSWORD_INVALID("3001", "Mật khẩu không được dưới {min} ký tự!", HttpStatus.BAD_REQUEST),
-    EMAIL_INVALID("3002", "Email không đúng định dạng!", HttpStatus.BAD_REQUEST);
+    EMAIL_INVALID("3002", "Email không đúng định dạng!", HttpStatus.BAD_REQUEST),
+
+    USER_NOT_EXISTS("4000", "Người dùng không tồn tại!", HttpStatus.NOT_FOUND),
+
+    USERNAME_ALREADY_EXISTS("5000", "Tên người dùng đã tồn tại!", HttpStatus.BAD_REQUEST),
+    EMAIL_ALREADY_EXISTS("5001", "Email đã tồn tại!", HttpStatus.BAD_REQUEST),
+    TRANSGROUP_NAME_ALREADY_EXISTS("5002", "Tên nhóm dịch đã tồn tại!", HttpStatus.BAD_REQUEST);
     
     String code;
     String message;

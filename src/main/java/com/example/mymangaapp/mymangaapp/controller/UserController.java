@@ -1,7 +1,9 @@
 package com.example.mymangaapp.mymangaapp.controller;
 import java.util.List;
 
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -10,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.mymangaapp.mymangaapp.dto.request.UserCreationRequest;
 import com.example.mymangaapp.mymangaapp.dto.response.ApiResponse;
 import com.example.mymangaapp.mymangaapp.dto.response.UserResponse;
+import com.example.mymangaapp.mymangaapp.exception.ResponseCode;
 import com.example.mymangaapp.mymangaapp.service.UserService;
 
 import jakarta.validation.Valid;
@@ -46,6 +49,18 @@ public class UserController {
                 .result(responses)
                 .build();
 
+    }
+
+    @DeleteMapping("/{id}")
+    public ApiResponse<String> deleteUserById(@PathVariable String id) {
+
+        userService.deleteUserById(id);
+
+        return ApiResponse.<String>builder()
+                .code(ResponseCode.SUCCESS.getCode())
+                .message(ResponseCode.SUCCESS.getMessage())
+                .result("User id: " + id)
+                .build();
     }
 
 }

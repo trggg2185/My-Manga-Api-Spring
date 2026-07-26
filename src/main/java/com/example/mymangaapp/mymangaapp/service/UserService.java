@@ -8,6 +8,9 @@ import org.springframework.stereotype.Service;
 import com.example.mymangaapp.mymangaapp.dto.request.UserCreationRequest;
 import com.example.mymangaapp.mymangaapp.dto.response.UserResponse;
 import com.example.mymangaapp.mymangaapp.entity.User;
+import com.example.mymangaapp.mymangaapp.exception.AppException;
+import com.example.mymangaapp.mymangaapp.exception.ResponseCode;
+import com.example.mymangaapp.mymangaapp.mapper.UserMapper;
 import com.example.mymangaapp.mymangaapp.repository.UserRepository;
 
 import lombok.AccessLevel;
@@ -18,40 +21,49 @@ import lombok.experimental.FieldDefaults;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class UserService {
-    
+
     UserRepository userRepository;
 
     PasswordEncoder passwordEncoder;
 
+    UserMapper userMapper;
+
     public UserResponse createUser(UserCreationRequest request) {
 
-        User user = new User();
+        // Mặc dù username có unique vẫn phải check đã tồn tại ở service
+        if (userRepository.existsByUsername(request.getUsername())) {
+            throw new AppException(ResponseCode.USERNAME_ALREADY_EXISTS);
+        }
 
-        user.setUsername(request.getUsername());
-        user.setPassword(passwordEncoder.encode(request.getPassword()));
-        user.setEmail(request.getEmail());
+        // Email cũng phải check tương tự username
+        if (userRepository.existsByEmail(request.getEmail())) {
+            throw new AppException(ResponseCode.EMAIL_ALREADY_EXISTS);
+        }
 
-        user = userRepository.save(user);
+        User user = userMapper.toUser(request);
 
-        return UserResponse.builder()
-                .id(user.getId())
-                .username(user.getUsername())
-                .email(user.getEmail())
-                .memberSince(user.getMemberSince())
-                .build();
+        // Mã hoá mật khẩu
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+
+        return userMapper.toUserResponse(userRepository.save(user));
     }
 
     public List<UserResponse> getAllUsers() {
         List<User> users = userRepository.findAll();
 
-        return users.stream().map(user -> 
-                UserResponse.builder()
-                        .id(user.getId())
-                        .username(user.getUsername())
-                        .email(user.getEmail())
-                        .memberSince(user.getMemberSince())
-                        .build())
+        return users.stream()
+                .map(user -> 
+                        userMapper.toUserResponse(user))
                                 .toList();
+    }
+
+    public void deleteUserById(String id) {
+
+        if (!userRepository.existsById(id)) {
+            throw new AppException(ResponseCode.USER_NOT_EXISTS);
+        }
+
+        userRepository.deleteById(id);
     }
 
 }
