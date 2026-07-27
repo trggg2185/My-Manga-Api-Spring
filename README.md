@@ -5,7 +5,7 @@ MỘT HỆ THỐNG SPRING BACKEND MANGA ĐƠN GIẢN
     - role(id, name, description)
     - permission(id, name, description)
     - manga(id, name(unique), authors_name, genres, status(completed, ongoing, onhold), description, view, published_date)
-    - trans_group(id, leader_id, name)
+    - trans_group(id, leader_id, name, founded_date)
     - chapter(id, manga_id, name, title, published_date)
     - page(id, chapter_id, page_number, image_url)
     - user_role(user_id, role_id)

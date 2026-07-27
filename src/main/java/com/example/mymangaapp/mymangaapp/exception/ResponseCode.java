@@ -2,6 +2,7 @@ package com.example.mymangaapp.mymangaapp.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
+import org.springframework.lang.NonNull;
 
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -36,8 +37,11 @@ public enum ResponseCode {
     USERNAME_INVALID("3000", "Tên người dùng không được dưới {min} ký tự!", HttpStatus.BAD_REQUEST),
     PASSWORD_INVALID("3001", "Mật khẩu không được dưới {min} ký tự!", HttpStatus.BAD_REQUEST),
     EMAIL_INVALID("3002", "Email không đúng định dạng!", HttpStatus.BAD_REQUEST),
+    BIO_INVALID("3003", "Thông tin cá nhân không quá {max} Ký tự!", HttpStatus.BAD_REQUEST),
+    USERNAME_REQUIRED("3004", "Tên người dùng không được để trống!", HttpStatus.BAD_REQUEST),
+    PASSWORD_REQUIRED("3005", "Mật khẩu không được để trống!", HttpStatus.BAD_REQUEST),
 
-    USER_NOT_EXISTS("4000", "Người dùng không tồn tại!", HttpStatus.NOT_FOUND),
+    USER_NOT_FOUND("4000", "Người dùng không tồn tại!", HttpStatus.NOT_FOUND),
 
     USERNAME_ALREADY_EXISTS("5000", "Tên người dùng đã tồn tại!", HttpStatus.BAD_REQUEST),
     EMAIL_ALREADY_EXISTS("5001", "Email đã tồn tại!", HttpStatus.BAD_REQUEST),
@@ -45,6 +49,8 @@ public enum ResponseCode {
     
     String code;
     String message;
+
+    @NonNull
     HttpStatusCode httpStatusCode;
 
 }

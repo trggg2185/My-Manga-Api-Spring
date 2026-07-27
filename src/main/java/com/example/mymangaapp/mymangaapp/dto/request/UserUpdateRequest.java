@@ -1,7 +1,6 @@
 package com.example.mymangaapp.mymangaapp.dto.request;
 
 import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -15,17 +14,18 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Builder
-public class UserCreationRequest {
-    
-    @NotBlank(message = "USERNAME_REQUIRED")
-    @Size(min = 3, message = "USERNAME_INVALID")
-    String username;
+public class UserUpdateRequest {
 
-    @NotBlank(message = "PASSWORD_REQUIRED")
-    @Size(min = 5, message = "PASSWORD_INVALID")
-    String password;
+    // Update info user không nên cho update password trong này
+    // Nên để đổi password thành 1 endpoint riêng
 
     @Email(message = "EMAIL_INVALID")
     String email;
+
+    String facebook;
+    String discord;
+
+    @Size(max = 300, message = "BIO_INVALID")
+    String bio;
 
 }

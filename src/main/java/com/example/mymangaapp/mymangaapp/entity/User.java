@@ -30,25 +30,26 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Builder
-// Spring Data JPA gọi là Auditing giúp ghi lại: ngày tạo, ngày cập nhật, ai tạo, ai cập nhật
+// Spring Data JPA gọi là Auditing giúp ghi lại: ngày tạo, ngày cập nhật, ai
+// tạo, ai cập nhật
 @EntityListeners(AuditingEntityListener.class)
 @Entity
 public class User {
 
     /*
-        - Lazy fetch là mặc định trong các annotation sau: OneToMany, ManyToMany
-        - Lazy eager mặc định trong: ManyToOne, OneToOne
-        => nên lazy fetch hết cho tao
-
-        - Entity không nên validate mà nên validate ở request
-    */
+     * - Lazy fetch là mặc định trong các annotation sau: OneToMany, ManyToMany
+     * - Lazy eager mặc định trong: ManyToOne, OneToOne
+     * => nên lazy fetch hết cho tao
+     * 
+     * - Entity không nên validate mà nên validate ở request
+     */
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     String id;
 
     // username không phân biệt chữ hoa thường
-    @Column(name = "username", unique = true, columnDefinition = "VARCHAR(255) COLLATE utf8mb4_unicode_ci")
+    @Column(name = "username", nullable = false, unique = true, columnDefinition = "VARCHAR(50) COLLATE utf8mb4_unicode_ci")
     String username;
 
     @Column(name = "email", unique = true)
@@ -58,9 +59,13 @@ public class User {
     @Column(name = "member_since", nullable = false, updatable = false)
     LocalDate memberSince;
 
+    @Column(name = "password", nullable = false)
     String password;
+
     String facebook;
     String discord;
+
+    @Column(name = "bio", nullable = true, length = 300)
     String bio;
 
     // QH: Nhiều user có thể thuộc về 1 trans group

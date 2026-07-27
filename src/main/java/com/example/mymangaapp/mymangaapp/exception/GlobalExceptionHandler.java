@@ -19,6 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 public class GlobalExceptionHandler {
 
     private static final String MIN_ATTRIBUTE = "min";
+    private static final String MAX_ATTRIBUTE = "max";
 
     // Hanlde exception tổng quát, ngoài case đã được dự đoán
     @ExceptionHandler(Exception.class)
@@ -104,16 +105,28 @@ public class GlobalExceptionHandler {
     // Hàm chuyển message của response code thành 1 message cụ thể bằng
     // cách lấy thông tin từ ràng buộc bị vi phạm khi validate
     private String mapAttribute(String message, Map<String, Object> attributes) {
-        
-        if (Objects.isNull(attributes.get(MIN_ATTRIBUTE))) {
+
+        if (message == null || attributes.isEmpty()) {
+            log.error("Lỗi message hoặc attributes null!");
             return message;
         }
-        
-        // Lấy giá trị của ràng buộc min ra (là số dưới dạng Object) chuyển thành chuỗi
-        String minValue = attributes.get(MIN_ATTRIBUTE).toString();
 
-        // Thay thế message từ {min} thành 1 con số lấy từ ràng buộc bị vi phạm
-        return message.replace("{" + MIN_ATTRIBUTE + "}", minValue);
+        String result = message;
+
+        if (!Objects.isNull(attributes.get(MIN_ATTRIBUTE))) {
+            String minValue = attributes.get(MIN_ATTRIBUTE).toString();
+
+            result = message.replace("{" + MIN_ATTRIBUTE + "}", minValue);
+        }
+
+        if (!Objects.isNull(attributes.get(MAX_ATTRIBUTE))) {
+            String maxValue = attributes.get(MAX_ATTRIBUTE).toString();
+
+            result = result.replace("{" + MAX_ATTRIBUTE + "}", maxValue);
+        }
+
+        return result;
+        
     }
 
 }

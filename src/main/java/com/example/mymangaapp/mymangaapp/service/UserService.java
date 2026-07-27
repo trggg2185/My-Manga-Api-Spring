@@ -2,10 +2,12 @@ package com.example.mymangaapp.mymangaapp.service;
 
 import java.util.List;
 
+import org.springframework.lang.NonNull;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.example.mymangaapp.mymangaapp.dto.request.UserCreationRequest;
+import com.example.mymangaapp.mymangaapp.dto.request.UserUpdateRequest;
 import com.example.mymangaapp.mymangaapp.dto.response.UserResponse;
 import com.example.mymangaapp.mymangaapp.entity.User;
 import com.example.mymangaapp.mymangaapp.exception.AppException;
@@ -26,8 +28,10 @@ public class UserService {
 
     PasswordEncoder passwordEncoder;
 
+    // Map từ đối tượng này sang đối tượng khác nhanh chóng
     UserMapper userMapper;
 
+    // Tạo user mới
     public UserResponse createUser(UserCreationRequest request) {
 
         // Mặc dù username có unique vẫn phải check đã tồn tại ở service
@@ -46,8 +50,10 @@ public class UserService {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
 
         return userMapper.toUserResponse(userRepository.save(user));
+
     }
 
+    // Lấy tất cả user
     public List<UserResponse> getAllUsers() {
         List<User> users = userRepository.findAll();
 
@@ -55,12 +61,50 @@ public class UserService {
                 .map(user -> 
                         userMapper.toUserResponse(user))
                                 .toList();
+
     }
 
-    public void deleteUserById(String id) {
+    // Lấy user bằng id
+    public UserResponse getUserById(@NonNull String id) {
+        User user = userRepository
+                .findById(id)
+                .orElseThrow(() -> 
+                        new AppException(ResponseCode.USER_NOT_FOUND));
+
+        return userMapper.toUserResponse(user);
+    }
+
+    // Cập nhật user bằng id
+    public UserResponse updateUserById(@NonNull String id, UserUpdateRequest request) {
+        
+        User user = userRepository
+                .findById(id)
+                .orElseThrow(() -> new AppException(ResponseCode.USER_NOT_FOUND));
+
+        String newEmail = request.getEmail();
+
+        // Request có chứa email khác null tức là email đã thay đổi
+        // Phải kiểm tra email thay đổi đó có tồn tại trong db chưa
+        // Nếu trong TH họ vẫn nhập email nhưng email mới và email cũ chả khác gì nhau thì thôi
+        if (newEmail != null && !newEmail.equalsIgnoreCase(user.getEmail()) && userRepository.existsByEmail(newEmail)) {
+            throw new AppException(ResponseCode.EMAIL_ALREADY_EXISTS);
+        }
+
+        // Mapstruct tự động map từ UserUpdateRequest -> User
+        userMapper.updateUserFromRequest(user, request);
+
+        if (user == null) {
+            throw new AppException(ResponseCode.UNCATEGORIZED_ERROR);
+        }
+
+        return userMapper.toUserResponse(userRepository.save(user));
+    }
+
+    // Xoá user bằng id
+    public void deleteUserById(@NonNull String id) {
 
         if (!userRepository.existsById(id)) {
-            throw new AppException(ResponseCode.USER_NOT_EXISTS);
+            throw new AppException(ResponseCode.USER_NOT_FOUND);
         }
 
         userRepository.deleteById(id);

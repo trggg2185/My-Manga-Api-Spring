@@ -20,5 +20,8 @@ public class UserResponse {
     String username;
     String email;
     LocalDate memberSince;
+    String facebook;
+    String discord;
+    String bio;
 
 }
