@@ -24,12 +24,12 @@ public interface UserMapper {
     */
     
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "bio", ignore = true)
-    @Mapping(target = "discord", ignore = true)
-    @Mapping(target = "facebook", ignore = true)
-    @Mapping(target = "memberSince", ignore = true)
     @Mapping(target = "roles", ignore = true)
     @Mapping(target = "transGroup", ignore = true)
+    @Mapping(target = "memberSince", ignore = true)
+    @Mapping(target = "facebook", ignore = true)
+    @Mapping(target = "discord", ignore = true)
+    @Mapping(target = "bio", ignore = true)
     @NonNull
     User toUser(UserCreationRequest request);
 
@@ -37,8 +37,8 @@ public interface UserMapper {
     @Mapping(target = "username", ignore = true) // Không sửa username
     @Mapping(target = "password", ignore = true) // Sửa password ở endpoint riêng, ko ở update
     @Mapping(target = "memberSince", ignore = true) // Không sửa memberSince
-    @Mapping(target = "roles", ignore = true) // tạm thời lờ đi roles
     @Mapping(target = "transGroup", ignore = true) // tạmthời lờ đi transGroup
+    @Mapping(target = "roles", ignore = true) // roles ta tự giải quyết bên user service
     // Dùng NullValuePropertyMappingStrategy.IGNORE để nếu request field = null thì BỎ QUA không ghi đè
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     void updateUserFromRequest(@MappingTarget User user, UserUpdateRequest request);

@@ -116,7 +116,7 @@ public class GlobalExceptionHandler {
         if (!Objects.isNull(attributes.get(MIN_ATTRIBUTE))) {
             String minValue = attributes.get(MIN_ATTRIBUTE).toString();
 
-            result = message.replace("{" + MIN_ATTRIBUTE + "}", minValue);
+            result = result.replace("{" + MIN_ATTRIBUTE + "}", minValue);
         }
 
         if (!Objects.isNull(attributes.get(MAX_ATTRIBUTE))) {

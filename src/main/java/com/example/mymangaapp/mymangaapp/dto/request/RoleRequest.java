@@ -1,7 +1,8 @@
-package com.example.mymangaapp.mymangaapp.dto.response;
+package com.example.mymangaapp.mymangaapp.dto.request;
 
-import java.time.LocalDate;
 import java.util.Set;
+
+import org.springframework.lang.NonNull;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -13,17 +14,16 @@ import lombok.experimental.FieldDefaults;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class UserResponse {
+@Builder
+public class RoleRequest {
+    
+    @NonNull
+    String name;
+    
+    String description;
 
-    String id;
-    String username;
-    String email;
-    LocalDate memberSince;
-    String facebook;
-    String discord;
-    String bio;
-    Set<RoleResponse> roles;
+    @NonNull
+    Set<String> permissions;
 
 }

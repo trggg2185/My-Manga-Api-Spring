@@ -1,6 +1,9 @@
 package com.example.mymangaapp.mymangaapp.service;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 
 import org.springframework.lang.NonNull;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -9,10 +12,12 @@ import org.springframework.stereotype.Service;
 import com.example.mymangaapp.mymangaapp.dto.request.UserCreationRequest;
 import com.example.mymangaapp.mymangaapp.dto.request.UserUpdateRequest;
 import com.example.mymangaapp.mymangaapp.dto.response.UserResponse;
+import com.example.mymangaapp.mymangaapp.entity.Role;
 import com.example.mymangaapp.mymangaapp.entity.User;
 import com.example.mymangaapp.mymangaapp.exception.AppException;
 import com.example.mymangaapp.mymangaapp.exception.ResponseCode;
 import com.example.mymangaapp.mymangaapp.mapper.UserMapper;
+import com.example.mymangaapp.mymangaapp.repository.RoleRepository;
 import com.example.mymangaapp.mymangaapp.repository.UserRepository;
 
 import lombok.AccessLevel;
@@ -25,6 +30,7 @@ import lombok.experimental.FieldDefaults;
 public class UserService {
 
     UserRepository userRepository;
+    RoleRepository roleRepository;
 
     PasswordEncoder passwordEncoder;
 
@@ -44,10 +50,18 @@ public class UserService {
             throw new AppException(ResponseCode.EMAIL_ALREADY_EXISTS);
         }
 
+        // Tìm role mặc định cho user mới là role USER
+        Role role = roleRepository
+                .findById("USER")
+                .orElseThrow(() ->
+                        new AppException(ResponseCode.ROLE_NOT_FOUND));
+
         User user = userMapper.toUser(request);
 
         // Mã hoá mật khẩu
         user.setPassword(passwordEncoder.encode(user.getPassword()));
+        // Set role mặc định cho user mới tạo
+        user.setRoles(Set.of(role));
 
         return userMapper.toUserResponse(userRepository.save(user));
 
@@ -60,7 +74,7 @@ public class UserService {
         return users.stream()
                 .map(user -> 
                         userMapper.toUserResponse(user))
-                                .toList();
+                .toList();
 
     }
 

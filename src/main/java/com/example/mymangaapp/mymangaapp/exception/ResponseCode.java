@@ -42,10 +42,16 @@ public enum ResponseCode {
     PASSWORD_REQUIRED("3005", "Mật khẩu không được để trống!", HttpStatus.BAD_REQUEST),
 
     USER_NOT_FOUND("4000", "Người dùng không tồn tại!", HttpStatus.NOT_FOUND),
+    ROLE_NOT_FOUND("4001", "Vai trò không tồn tại!", HttpStatus.NOT_FOUND),
+    PERMISSION_NOT_FOUND("4002", "Quyền không tồn tại!", HttpStatus.NOT_FOUND),
 
     USERNAME_ALREADY_EXISTS("5000", "Tên người dùng đã tồn tại!", HttpStatus.BAD_REQUEST),
     EMAIL_ALREADY_EXISTS("5001", "Email đã tồn tại!", HttpStatus.BAD_REQUEST),
-    TRANSGROUP_NAME_ALREADY_EXISTS("5002", "Tên nhóm dịch đã tồn tại!", HttpStatus.BAD_REQUEST);
+    TRANSGROUP_NAME_ALREADY_EXISTS("5002", "Tên nhóm dịch đã tồn tại!", HttpStatus.BAD_REQUEST),
+    ROLE_NAME_ALREADY_EXISTS("5003", "Tên vai trò đã tồn tại!", HttpStatus.BAD_REQUEST),
+    PERMISSION_NAME_ALREADY_EXISTS("5004", "Tên quyền đã tồn tại!", HttpStatus.BAD_REQUEST),
+    PERMISSION_INVALID("5005", "Các quyền không hợp lệ! (Các quyền không tồn tại hoặc mảng các quyền của request rỗng)", HttpStatus.BAD_REQUEST),
+    PERMISSION_REQUIRED("5006", "Mảng các quyền không được để trống!", HttpStatus.BAD_REQUEST);
     
     String code;
     String message;

@@ -2,6 +2,7 @@ package com.example.mymangaapp.mymangaapp.entity;
 
 import java.util.Set;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -26,10 +27,8 @@ import lombok.experimental.FieldDefaults;
 public class Permission {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    String id;
-
     String name;
+    
     String description;
 
     // QH: 1 permission có thể thuộc về nhiều role
