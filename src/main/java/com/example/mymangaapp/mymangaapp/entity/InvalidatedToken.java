@@ -1,11 +1,9 @@
 package com.example.mymangaapp.mymangaapp.entity;
 
-import java.util.Set;
+import java.time.Instant;
 
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
-import jakarta.persistence.ManyToMany;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -14,6 +12,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 
+// Bảng các token đã bị vô hiệu hoá (tức là access token vẫn còn hiệu lực nhưng đã bị logout)
 @Getter
 @Setter
 @NoArgsConstructor
@@ -21,14 +20,11 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Builder
 @Entity
-public class Permission {
-
-    @Id
-    String name;
+public class InvalidatedToken {
     
-    String description;
+    @Id
+    String id;
 
-    // QH: 1 permission có thể thuộc về nhiều role
-    @ManyToMany(mappedBy = "permissions", fetch = FetchType.LAZY)
-    Set<Role> roles;
+    Instant expirationTime;
+
 }

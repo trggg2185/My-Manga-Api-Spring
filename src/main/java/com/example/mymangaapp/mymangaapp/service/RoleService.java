@@ -2,10 +2,10 @@ package com.example.mymangaapp.mymangaapp.service;
 
 import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
 
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import com.example.mymangaapp.mymangaapp.dto.request.RoleRequest;
 import com.example.mymangaapp.mymangaapp.dto.response.RoleResponse;
@@ -39,7 +39,7 @@ public class RoleService {
             throw new AppException(ResponseCode.ROLE_NAME_ALREADY_EXISTS);
         }
 
-        if (Objects.isNull(request.getPermissions())) {
+        if (CollectionUtils.isEmpty(request.getPermissions())) {
             throw new AppException(ResponseCode.PERMISSION_REQUIRED);
         }
 
@@ -47,7 +47,7 @@ public class RoleService {
 
         log.info(permissions.toString());
         
-        if (permissions.isEmpty()) {
+        if (CollectionUtils.isEmpty(permissions)) {
             throw new AppException(ResponseCode.PERMISSION_INVALID);
         }
 

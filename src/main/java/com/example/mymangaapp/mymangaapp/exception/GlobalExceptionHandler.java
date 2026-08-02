@@ -6,15 +6,15 @@ import java.util.Objects;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import com.example.mymangaapp.mymangaapp.dto.response.ApiResponse;
 
 import jakarta.validation.ConstraintViolation;
 import lombok.extern.slf4j.Slf4j;
 
-@ControllerAdvice
+@RestControllerAdvice // chuyển sang rest controller advice vì dự án dùng rest controller
 @Slf4j
 public class GlobalExceptionHandler {
 
@@ -46,6 +46,24 @@ public class GlobalExceptionHandler {
         log.error("Lỗi bắn ra ngoại lệ của ứng dụng!", exception);
 
         ResponseCode responseCode = exception.getResponseCode();
+
+        ApiResponse<?> apiResponse = ApiResponse.builder()
+                .code(responseCode.getCode())
+                .message(responseCode.getMessage())
+                .build();
+
+        return ResponseEntity
+                .status(responseCode.getHttpStatusCode())
+                .body(apiResponse);
+    }
+
+    // Handle runtime exception
+    @ExceptionHandler(RuntimeException.class)
+    private ResponseEntity<ApiResponse<?>> handlingRuntimeException(RuntimeException exception) {
+
+        log.error("Lỗi bắn ra ngoại lệ runtime!", exception);
+
+        ResponseCode responseCode = ResponseCode.RUNTIME_EXCEPTION;
 
         ApiResponse<?> apiResponse = ApiResponse.builder()
                 .code(responseCode.getCode())
