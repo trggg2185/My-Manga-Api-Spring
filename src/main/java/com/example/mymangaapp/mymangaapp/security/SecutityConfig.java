@@ -25,7 +25,7 @@ public class SecutityConfig {
 
     JwtAuthenticationFilter jwtAuthenticationFilter;
 
-    private static final String[] PUBLIC_ENDPOINTS = {
+    static String[] PUBLIC_ENDPOINTS = {
             "/users",
             "/auth/login",
             "/auth/introspect",

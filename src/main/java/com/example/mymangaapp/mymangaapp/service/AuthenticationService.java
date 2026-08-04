@@ -2,6 +2,7 @@ package com.example.mymangaapp.mymangaapp.service;
 
 import java.util.Date;
 
+import org.jetbrains.annotations.NotNull;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -36,9 +37,12 @@ public class AuthenticationService {
     PasswordEncoder passwordEncoder;
 
     JwtUtils jwtUtils;
+
+    // Đôi với những hàm khác ngoài introspect sẽ coi việc xác thưc token trả về false
+    // là 1 lỗi ứng dụng nên khi false sẽ ném ra ngoại lệ luôn
     
     // Đăng nhập (tạo access token)
-    public AuthenticationResponse login(AuthenticationRequest request) {
+    public AuthenticationResponse login(@NotNull AuthenticationRequest request) {
 
         User user = userRepository
                 .findByUsername(request.getUsername())
@@ -51,15 +55,16 @@ public class AuthenticationService {
         String token = jwtUtils.generateAccessToken(user);
 
         return AuthenticationResponse.builder()
-                .authenticated(authenticated)
+                .authenticated(true)
                 .token(token)
                 .build();
 
     }
 
     // Check token hợp lệ
-    public IntrospectResponse introspect(IntrospectRequest request) {
+    public IntrospectResponse introspect(@NotNull IntrospectRequest request) {
 
+        // introspect sẽ trả về kết quả true hoặc false cho token
         boolean valid = jwtUtils.verifyToken(request.getToken());
 
         return IntrospectResponse.builder()
@@ -69,9 +74,14 @@ public class AuthenticationService {
     }
 
     // Đăng xuất (vô hiệu hoá token)
-    public void logout(LogoutRequest request) {
-            
+    public void logout(@NotNull LogoutRequest request) {
+
         String jwtId = jwtUtils.extractJwtId(request.getToken());
+
+        if (invalidatedTokenRepository.existsById(jwtId)) {
+            throw new AppException(ResponseCode.UNAUTHENTICATED);
+        }
+
         Date expirationTime = jwtUtils.extractExpirationTime(request.getToken());
 
         InvalidatedToken invalidatedToken = InvalidatedToken.builder()
@@ -84,9 +94,31 @@ public class AuthenticationService {
     }
 
     // Refresh token mới
-    public AuthenticationResponse refresh(RefreshRequest request) {
+    public AuthenticationResponse refresh(@NotNull RefreshRequest request) {
 
-        return null;
+        // Xác thực token cũ ổn không
+        if (!jwtUtils.verifyToken(request.getToken(), true)) {
+            throw new AppException(ResponseCode.UNAUTHENTICATED);
+        }
+
+        // Nếu ổn thì đưa token cũ vào table invalidated token
+        String jwtId = jwtUtils.extractJwtId(request.getToken());
+        Date expirationTime = jwtUtils.extractExpirationTime(request.getToken());
+
+        invalidatedTokenRepository.save(InvalidatedToken.builder()
+                .id(jwtId)
+                .expirationTime(expirationTime.toInstant())
+                .build());
+
+        String username = jwtUtils.extractUsername(request.getToken());
+
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new AppException(ResponseCode.USER_NOT_FOUND));
+
+        return AuthenticationResponse.builder()
+                .authenticated(true)
+                .token(jwtUtils.generateAccessToken(user))
+                .build();
     }
 
 }

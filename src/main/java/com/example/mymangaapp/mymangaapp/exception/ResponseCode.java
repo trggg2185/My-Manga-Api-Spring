@@ -57,7 +57,6 @@ public enum ResponseCode {
     String code;
     String message;
 
-    @NonNull
     HttpStatusCode httpStatusCode;
 
 }

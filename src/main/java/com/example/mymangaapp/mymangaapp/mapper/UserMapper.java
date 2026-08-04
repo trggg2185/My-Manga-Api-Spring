@@ -5,7 +5,6 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValuePropertyMappingStrategy;
-import org.springframework.lang.NonNull;
 
 import com.example.mymangaapp.mymangaapp.dto.request.UserCreationRequest;
 import com.example.mymangaapp.mymangaapp.dto.request.UserUpdateRequest;
@@ -30,7 +29,6 @@ public interface UserMapper {
     @Mapping(target = "facebook", ignore = true)
     @Mapping(target = "discord", ignore = true)
     @Mapping(target = "bio", ignore = true)
-    @NonNull
     User toUser(UserCreationRequest request);
 
     @Mapping(target = "id", ignore = true) // Không sửa id

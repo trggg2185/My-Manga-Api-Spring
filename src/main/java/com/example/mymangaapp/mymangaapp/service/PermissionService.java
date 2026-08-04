@@ -2,6 +2,7 @@ package com.example.mymangaapp.mymangaapp.service;
 
 import java.util.List;
 
+import org.jetbrains.annotations.NotNull;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
@@ -26,7 +27,7 @@ public class PermissionService {
 
     PermissionMapper permissionMapper;
 
-    public PermissionResponse createPermission(PermissionRequest request) {
+    public PermissionResponse createPermission(@NotNull PermissionRequest request) {
 
         if (permissionRepository.existsById(request.getName())) {
             throw new AppException(ResponseCode.PERMISSION_NAME_ALREADY_EXISTS);

@@ -3,6 +3,7 @@ package com.example.mymangaapp.mymangaapp.service;
 import java.util.HashSet;
 import java.util.List;
 
+import org.jetbrains.annotations.NotNull;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -33,7 +34,7 @@ public class RoleService {
 
     RoleMapper roleMapper;
 
-    public RoleResponse createRole(RoleRequest request) {
+    public RoleResponse createRole(@NotNull RoleRequest request) {
 
         if (roleRepository.existsById(request.getName())) {
             throw new AppException(ResponseCode.ROLE_NAME_ALREADY_EXISTS);

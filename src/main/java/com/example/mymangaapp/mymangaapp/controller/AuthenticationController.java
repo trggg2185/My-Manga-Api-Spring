@@ -1,5 +1,6 @@
 package com.example.mymangaapp.mymangaapp.controller;
 
+import com.example.mymangaapp.mymangaapp.dto.request.RefreshRequest;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -56,6 +57,16 @@ public class AuthenticationController {
         return ApiResponse.<Void>builder()
                 .code(ResponseCode.SUCCESS.getCode())
                 .message(ResponseCode.SUCCESS.getMessage())
+                .build();
+    }
+
+    @PostMapping("/refresh")
+    public ApiResponse<AuthenticationResponse> refresh(@RequestBody RefreshRequest request) {
+
+        AuthenticationResponse response = authenticationService.refresh(request);
+
+        return  ApiResponse.<AuthenticationResponse>builder()
+                .result(response)
                 .build();
     }
 

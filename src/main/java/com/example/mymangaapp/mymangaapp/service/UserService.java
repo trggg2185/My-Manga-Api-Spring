@@ -3,6 +3,7 @@ package com.example.mymangaapp.mymangaapp.service;
 import java.util.List;
 import java.util.Set;
 
+import org.jetbrains.annotations.NotNull;
 import org.springframework.lang.NonNull;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -36,7 +37,7 @@ public class UserService {
     UserMapper userMapper;
 
     // Tạo user mới
-    public UserResponse createUser(UserCreationRequest request) {
+    public UserResponse createUser(@NotNull UserCreationRequest request) {
 
         // Mặc dù username có unique vẫn phải check đã tồn tại ở service
         if (userRepository.existsByUsername(request.getUsername())) {
@@ -87,7 +88,7 @@ public class UserService {
     }
 
     // Cập nhật user bằng id
-    public UserResponse updateUserById(@NonNull String id, UserUpdateRequest request) {
+    public UserResponse updateUserById(@NonNull String id, @NotNull UserUpdateRequest request) {
         
         User user = userRepository
                 .findById(id)

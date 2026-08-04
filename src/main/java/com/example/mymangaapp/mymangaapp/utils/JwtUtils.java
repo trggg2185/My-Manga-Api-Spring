@@ -2,10 +2,13 @@ package com.example.mymangaapp.mymangaapp.utils;
 
 import java.text.ParseException;
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.StringJoiner;
 import java.util.UUID;
 
+import com.example.mymangaapp.mymangaapp.repository.InvalidatedTokenRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
@@ -31,6 +34,7 @@ import lombok.extern.slf4j.Slf4j;
 // Class tiện ích, cung cấp các hàm làm việc nhanh với jwt
 // VD: tạo accesstoken, verify token
 @FieldDefaults(level = AccessLevel.PRIVATE)
+@RequiredArgsConstructor
 @Component
 @Slf4j
 public class JwtUtils {
@@ -43,6 +47,8 @@ public class JwtUtils {
 
     @Value("${jwt.refreshable-duration-in-seconds}")
     long refreshableDurationInSeconds;
+
+    final InvalidatedTokenRepository invalidatedTokenRepository;
     
     // tạo access token
     public String generateAccessToken(User user) {
@@ -100,20 +106,44 @@ public class JwtUtils {
         return getClaimsSet(token).getExpirationTime();
     }
  
-    // xác thực token (đúng chữ ký, chưa hết hạn)
-    public boolean verifyToken(String token) {
+    // xác thực token (đúng chữ ký, chưa hết hạn), 2 TH: verify hoặc verify refresh
+    public boolean verifyToken(String token, boolean isRefresh) {
         try {
             JWSVerifier verifier = new MACVerifier(signerKey.getBytes());
         
             SignedJWT signedJWT = SignedJWT.parse(token);
 
-            Date expirationTime = signedJWT.getJWTClaimsSet().getExpirationTime();
+            log.info("Jwt id: {}", signedJWT.getJWTClaimsSet().getJWTID());
 
-            return signedJWT.verify(verifier) && expirationTime.after(new Date());
+            if (invalidatedTokenRepository.existsById(signedJWT.getJWTClaimsSet().getJWTID())) {
+                log.error("Token đã bị vô hiệu hoá!");
+                return false;
+            }
+
+            log.info("Jwt id: {}", signedJWT.getJWTClaimsSet().getJWTID());
+
+            // Nếu là hàm refresh token thì thời gian hết hạn bằng tg issua token đó + refreshable duration
+            // Nếu là hàm verify token bình thường thì cứ trả về expiration time
+            Date exprirationTime = (isRefresh)
+                    ? new Date(signedJWT
+                            .getJWTClaimsSet()
+                            .getIssueTime()
+                            .toInstant()
+                            .plus(refreshableDurationInSeconds, ChronoUnit.SECONDS)
+                            .toEpochMilli())
+                    : signedJWT.getJWTClaimsSet().getExpirationTime();
+
+            return signedJWT.verify(verifier) && exprirationTime.after(new Date());
+
         } catch (JOSEException | ParseException e) {
             log.error("Xác thực token thất bại! Hoặc token không hợp lệ");
             return false;
         }
+    }
+
+    // overload giữa nguyên method cho jwt authentication filter
+    public boolean verifyToken(String token) {
+        return verifyToken(token, false);
     }
 
     public String buildScope(User user) {
