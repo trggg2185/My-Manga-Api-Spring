@@ -49,7 +49,7 @@ public class Manga {
     @Column(name = "status", nullable = false, columnDefinition = "VARCHAR(20) DEFAULT 'ONGOING'")
     // Để Lombok ko bỏ qua giá trị khởi tạo = MangaStatus.ONGOING khi dựng object bằng Builder
     @Builder.Default
-    MangaStatus mangaStatus = MangaStatus.ONGOING;
+    MangaStatus status = MangaStatus.ONGOING;
 
     String description;
     Integer view;

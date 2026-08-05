@@ -1,22 +1,13 @@
 package com.example.mymangaapp.mymangaapp.entity;
 
 import java.time.LocalDate;
-import java.util.List;
+import java.util.Set;
 
+import com.example.mymangaapp.mymangaapp.enums.TransGroupStatus;
+import jakarta.persistence.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EntityListeners;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -49,15 +40,23 @@ public class TransGroup {
     // Bên có mappedBy sẽ KHÔNG tự sinh ra khóa ngoại.
     // Mặc định OneToMany đã có fetch lazy rồi nhưng thêm vào để cho rõ nghĩa
     @OneToMany(mappedBy = "transGroup", fetch = FetchType.LAZY)
-    List<User> members;
+    Set<User> members;
 
     // name của trans group cũng ko pb hoa thường
     @Column(name = "name", unique = true, columnDefinition = "VARCHAR(255) COLLATE utf8mb4_unicode_ci")
     String name;
 
+    @Column(name = "description", nullable = true, length = 300)
+    String description;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false, columnDefinition = "VARCHAR(20) DEFAULT 'PENDING'")
+    @Builder.Default
+    TransGroupStatus status = TransGroupStatus.PENDING;
+
     // QH: 1 trans group có thể dịch nhiều manga
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "transGroups")
-    List<Manga> mangas;
+    Set<Manga> mangas;
 
     @CreatedDate
     @Column(name = "founded_date", nullable = false, updatable = false)

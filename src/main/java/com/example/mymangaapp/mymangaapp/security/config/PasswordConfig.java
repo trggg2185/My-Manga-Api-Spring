@@ -1,4 +1,4 @@
-package com.example.mymangaapp.mymangaapp.configuration;
+package com.example.mymangaapp.mymangaapp.security.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

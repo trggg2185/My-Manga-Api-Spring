@@ -3,6 +3,7 @@ package com.example.mymangaapp.mymangaapp.service;
 import java.util.HashSet;
 import java.util.List;
 
+import com.example.mymangaapp.mymangaapp.utils.SecurityUtils;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
@@ -36,6 +37,11 @@ public class RoleService {
 
     public RoleResponse createRole(@NotNull RoleRequest request) {
 
+        // Phải có role admin
+        if (!SecurityUtils.hasRole("ADMIN")) {
+            throw new AppException(ResponseCode.UNAUTHORIZED);
+        }
+
         if (roleRepository.existsById(request.getName())) {
             throw new AppException(ResponseCode.ROLE_NAME_ALREADY_EXISTS);
         }
@@ -59,6 +65,12 @@ public class RoleService {
     }
 
     public List<RoleResponse> getAllRoles() {
+
+        // Phải có role admin
+        if (!SecurityUtils.hasRole("ADMIN")) {
+            throw new AppException(ResponseCode.UNAUTHORIZED);
+        }
+
         List<Role> roles = roleRepository.findAll();
 
         return roles.stream()
@@ -68,6 +80,11 @@ public class RoleService {
     }
 
     public void deleteRoleById(@NonNull String id) {
+
+        // Phải có role admin
+        if (!SecurityUtils.hasRole("ADMIN")) {
+            throw new AppException(ResponseCode.UNAUTHORIZED);
+        }
 
         if (!roleRepository.existsById(id)) {
             throw new AppException(ResponseCode.ROLE_NOT_FOUND);

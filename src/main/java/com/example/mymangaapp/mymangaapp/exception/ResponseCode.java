@@ -25,15 +25,15 @@ public enum ResponseCode {
             9000 - Internal
     */
 
-    UNCATEGORIZED_ERROR("9001", "Uncategorized error!", HttpStatus.INTERNAL_SERVER_ERROR),
-    ENUM_KEY_INVALID("9002", "Invalid enum key!", HttpStatus.INTERNAL_SERVER_ERROR),
-    RUNTIME_EXCEPTION("9003", "Runtime Exception appeared!", HttpStatus.INTERNAL_SERVER_ERROR),
+    UNCATEGORIZED_ERROR("9001", "Lỗi không xác định!", HttpStatus.INTERNAL_SERVER_ERROR),
+    ENUM_KEY_INVALID("9002", "Enum key không hợp lệ!", HttpStatus.INTERNAL_SERVER_ERROR),
+    RUNTIME_EXCEPTION("9003", "Lỗi ngoại lệ runtime!", HttpStatus.INTERNAL_SERVER_ERROR),
 
-    SUCCESS("0000", "Success!", HttpStatus.OK),
+    SUCCESS("0000", "Thành công!", HttpStatus.OK),
 
-    UNAUTHENTICATED("1001", "Unauthenticated!", HttpStatus.UNAUTHORIZED),
+    UNAUTHENTICATED("1001", "Chưa được xác thực!", HttpStatus.UNAUTHORIZED),
 
-    UNAUTHORIZED("2001", "Unauthorized!", HttpStatus.FORBIDDEN),
+    UNAUTHORIZED("2001", "Không có quyền!", HttpStatus.FORBIDDEN),
 
     USERNAME_INVALID("3001", "Tên người dùng không được dưới {min} ký tự!", HttpStatus.BAD_REQUEST),
     PASSWORD_INVALID("3002", "Mật khẩu không được dưới {min} ký tự!", HttpStatus.BAD_REQUEST),
@@ -41,10 +41,12 @@ public enum ResponseCode {
     BIO_INVALID("3004", "Thông tin cá nhân không quá {max} Ký tự!", HttpStatus.BAD_REQUEST),
     USERNAME_REQUIRED("3005", "Tên người dùng không được để trống!", HttpStatus.BAD_REQUEST),
     PASSWORD_REQUIRED("3006", "Mật khẩu không được để trống!", HttpStatus.BAD_REQUEST),
+    TRANSGROUP_DESCRIPTION_INVALID("3007", "Mô tả nhóm dịch không quá {max} ký tự!", HttpStatus.BAD_REQUEST),
 
     USER_NOT_FOUND("4001", "Người dùng không tồn tại!", HttpStatus.NOT_FOUND),
     ROLE_NOT_FOUND("4002", "Vai trò không tồn tại!", HttpStatus.NOT_FOUND),
     PERMISSION_NOT_FOUND("4003", "Quyền không tồn tại!", HttpStatus.NOT_FOUND),
+    TRANSGROUP_NOT_FOUND("4004", "Nhóm dịch không tồn tại!", HttpStatus.NOT_FOUND),
 
     USERNAME_ALREADY_EXISTS("5001", "Tên người dùng đã tồn tại!", HttpStatus.BAD_REQUEST),
     EMAIL_ALREADY_EXISTS("5002", "Email đã tồn tại!", HttpStatus.BAD_REQUEST),
@@ -52,11 +54,11 @@ public enum ResponseCode {
     ROLE_NAME_ALREADY_EXISTS("5004", "Tên vai trò đã tồn tại!", HttpStatus.BAD_REQUEST),
     PERMISSION_NAME_ALREADY_EXISTS("5005", "Tên quyền đã tồn tại!", HttpStatus.BAD_REQUEST),
     PERMISSION_INVALID("5006", "Các quyền không hợp lệ! (Các quyền không tồn tại hoặc mảng các quyền của request rỗng)", HttpStatus.BAD_REQUEST),
-    PERMISSION_REQUIRED("5007", "Mảng các quyền không được để trống!", HttpStatus.BAD_REQUEST);
-    
+    PERMISSION_REQUIRED("5007", "Mảng các quyền không được để trống!", HttpStatus.BAD_REQUEST),
+    TRANSGROUP_STATUS_INVALID("5008", "Nhóm dịch đã được chấp nhận, bị từ chối hoặc đã bị xoá!", HttpStatus.BAD_REQUEST);
+
     String code;
     String message;
-
     HttpStatusCode httpStatusCode;
 
 }

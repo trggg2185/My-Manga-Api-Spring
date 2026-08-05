@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.StringJoiner;
 import java.util.UUID;
 
+import com.example.mymangaapp.mymangaapp.entity.Role;
 import com.example.mymangaapp.mymangaapp.repository.InvalidatedTokenRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -113,14 +114,10 @@ public class JwtUtils {
         
             SignedJWT signedJWT = SignedJWT.parse(token);
 
-            log.info("Jwt id: {}", signedJWT.getJWTClaimsSet().getJWTID());
-
             if (invalidatedTokenRepository.existsById(signedJWT.getJWTClaimsSet().getJWTID())) {
                 log.error("Token đã bị vô hiệu hoá!");
                 return false;
             }
-
-            log.info("Jwt id: {}", signedJWT.getJWTClaimsSet().getJWTID());
 
             // Nếu là hàm refresh token thì thời gian hết hạn bằng tg issua token đó + refreshable duration
             // Nếu là hàm verify token bình thường thì cứ trả về expiration time
@@ -151,14 +148,22 @@ public class JwtUtils {
 
         if (!CollectionUtils.isEmpty(user.getRoles())) {
 
-            user.getRoles().forEach(role -> {
-                stringJoiner.add("ROLE_" + role.getName());
+            for (Role role : user.getRoles()) {
+                // Tuy user và role là nhiều - nhiều
+                // nhưng ta sẽ ko gán user có nhiều role
+                stringJoiner.add(role.getName());
+
+                // Nếu đã có role admin thì scope chỉ cần 1 role admin thôi, ko cần permission
+                // vì với admin thì all permissions đều pass hết
+                if (role.getName().equals("ADMIN")) {
+                    return stringJoiner.toString();
+                }
 
                 if (!CollectionUtils.isEmpty(role.getPermissions())) {
                     role.getPermissions().forEach(permission ->
-                        stringJoiner.add(permission.getName()));
+                            stringJoiner.add(permission.getName()));
                 }
-            });
+            }
 
         }
 

@@ -3,6 +3,7 @@ package com.example.mymangaapp.mymangaapp.service;
 import java.util.List;
 import java.util.Set;
 
+import com.example.mymangaapp.mymangaapp.utils.SecurityUtils;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.lang.NonNull;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -68,6 +69,12 @@ public class UserService {
 
     // Lấy tất cả user
     public List<UserResponse> getAllUsers() {
+
+        // Phải có role admin
+        if (!SecurityUtils.hasRole("ADMIN")) {
+            throw new AppException(ResponseCode.UNAUTHORIZED);
+        }
+
         List<User> users = userRepository.findAll();
 
         return users.stream()

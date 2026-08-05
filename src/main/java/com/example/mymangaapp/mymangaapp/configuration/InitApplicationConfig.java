@@ -57,6 +57,13 @@ public class InitApplicationConfig {
                             .description("create new post permission")
                             .build()));
 
+            Permission approveGroup = permissionRepository
+                    .findById("APPROVE_GROUP")
+                    .orElseGet(() -> permissionRepository.save(Permission.builder()
+                            .name("APPROVE_GROUP")
+                            .description("approve group creation permission")
+                            .build()));
+
             Permission deleteGroup = permissionRepository
                     .findById("DELETE_GROUP")
                     .orElseGet(() -> permissionRepository.save(Permission.builder()
@@ -91,7 +98,7 @@ public class InitApplicationConfig {
                     .orElseGet(() -> roleRepository.save(Role.builder()
                             .name("ADMIN")
                             .description("Role admin")
-                            .permissions(Set.of(deleteGroup))
+                            .permissions(Set.of(approveGroup, deleteGroup))
                             .build()));
 
             Role translatorRole = roleRepository

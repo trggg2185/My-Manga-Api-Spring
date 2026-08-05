@@ -2,6 +2,8 @@ package com.example.mymangaapp.mymangaapp.security.filter;
 
 import java.io.IOException;
 
+import com.example.mymangaapp.mymangaapp.exception.AppException;
+import com.example.mymangaapp.mymangaapp.exception.ResponseCode;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -13,7 +15,6 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 
-import com.example.mymangaapp.mymangaapp.repository.InvalidatedTokenRepository;
 import com.example.mymangaapp.mymangaapp.security.CustomUserDetailsService;
 import com.example.mymangaapp.mymangaapp.utils.JwtUtils;
 
@@ -37,8 +38,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     JwtUtils jwtUtils;
     CustomUserDetailsService customUserDetailsService;
 
-    InvalidatedTokenRepository invalidatedTokenRepository;
-
     // Dùng để đẩy Exception ở Filter về cho GlobalExceptionHandler
     // (@RestControllerAdvice) xử lý
     HandlerExceptionResolver resolver;
@@ -46,12 +45,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     public JwtAuthenticationFilter(
             JwtUtils jwtUtils,
             CustomUserDetailsService customUserDetailsService,
-            @Qualifier("handlerExceptionResolver") HandlerExceptionResolver resolver,
-            InvalidatedTokenRepository invalidatedTokenRepository) {
+            @Qualifier("handlerExceptionResolver") HandlerExceptionResolver resolver) {
         this.jwtUtils = jwtUtils;
         this.customUserDetailsService = customUserDetailsService;
         this.resolver = resolver;
-        this.invalidatedTokenRepository = invalidatedTokenRepository;
     }
 
     @Override
@@ -67,11 +64,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             // nên token sẽ null và chạy qua luôn filter này, đền tầng authorization filter
             // vì ko có gì trong context đáng nhẽ bị chặn nhưng nó là public endpoint 
             // nên cứ thể qua tầng authorization filter
-            if (
-                token != null &&
-                jwtUtils.verifyToken(token) && 
-                invalidatedTokenRepository.existsById(jwtUtils.extractJwtId(token))
-            ) {
+            if (token != null) {
+
+                // Nếu TH có token nhưng lại không hợp lệ thì bắn unauthenticated luôn
+                if (!jwtUtils.verifyToken(token)) {
+                    throw new AppException(ResponseCode.UNAUTHENTICATED);
+                }
 
                 // Lấy username từ token
                 String username = jwtUtils.extractUsername(token);
@@ -87,6 +85,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                             userDetails.getAuthorities() // Danh sách Role & Permission
                     );
 
+                    log.info(authenticationToken.getAuthorities().toString());
+
                     // Đính kèm thêm thông tin phụ (IP, SessionId...) từ Request
                     authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
@@ -100,8 +100,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
 
         } catch (Exception e) {
-            // Nếu có lỗi Token hết hạn, sai chữ ký... bắn lỗi cho @RestControllerAdvice
-            // hứng
+            // Nếu có lỗi Token hết hạn, sai chữ ký... bắn lỗi cho @RestControllerAdvice hứng
             resolver.resolveException(request, response, null, e);
         }
 
