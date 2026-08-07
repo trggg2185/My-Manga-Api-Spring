@@ -4,6 +4,7 @@ import java.util.Map;
 import java.util.Objects;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -64,6 +65,24 @@ public class GlobalExceptionHandler {
         log.error("Lỗi bắn ra ngoại lệ runtime!", exception);
 
         ResponseCode responseCode = ResponseCode.RUNTIME_EXCEPTION;
+
+        ApiResponse<?> apiResponse = ApiResponse.builder()
+                .code(responseCode.getCode())
+                .message(responseCode.getMessage())
+                .build();
+
+        return ResponseEntity
+                .status(responseCode.getHttpStatusCode())
+                .body(apiResponse);
+    }
+
+    // Handle exception xảy ra khi vi phạm phân quyền ở service
+    @ExceptionHandler(AuthorizationDeniedException.class)
+    private ResponseEntity<ApiResponse<?>> handlingAuthorizationDeniedException(AuthorizationDeniedException exception) {
+
+        log.error("Vi phạm phân quyền", exception);
+
+        ResponseCode responseCode = ResponseCode.UNAUTHORIZED;
 
         ApiResponse<?> apiResponse = ApiResponse.builder()
                 .code(responseCode.getCode())

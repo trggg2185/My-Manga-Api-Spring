@@ -18,26 +18,22 @@ import com.example.mymangaapp.mymangaapp.repository.UserRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
 
 @Configuration
 @Slf4j
 @RequiredArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class InitApplicationConfig {
     
-    PasswordEncoder passwordEncoder;
+    final PasswordEncoder passwordEncoder;
 
-    @NonFinal
     @Value("${app.init.admin.username}")
     String defaultAdminUsername;
 
-    @NonFinal
     @Value("${app.init.admin.password}")
     String defaultAdminPassword;
 
-    @NonFinal
     @Value("${app.init.admin.email}")
     String defaultAdminEmail;
 
@@ -85,29 +81,30 @@ public class InitApplicationConfig {
                             .description("update manga permission")
                             .build()));
 
-            Role userRole = roleRepository
-                    .findById("USER")
-                    .orElseGet(() -> roleRepository.save(Role.builder()
-                            .name("USER")
-                            .description("Role user")
-                            .permissions(Set.of(createPost))
-                            .build()));
-
+            // Role admin có full quyền
             Role adminRole = roleRepository
                     .findById("ADMIN")
                     .orElseGet(() -> roleRepository.save(Role.builder()
                             .name("ADMIN")
                             .description("Role admin")
-                            .permissions(Set.of(approveGroup, deleteGroup))
+                            .permissions(Set.of(createPost, approveGroup, deleteGroup, createManga, updateManga))
                             .build()));
 
-            Role translatorRole = roleRepository
-                    .findById("TRANSLATOR")
-                    .orElseGet(() -> roleRepository.save(Role.builder()
-                            .name("TRANSLATOR")
-                            .description("Role translator")
-                            .permissions(Set.of(createManga, updateManga))
-                            .build()));
+            if (!roleRepository.existsById("USER")) {
+                roleRepository.save(Role.builder()
+                        .name("USER")
+                        .description("Role user")
+                        .permissions(Set.of(createPost))
+                        .build());
+            }
+
+            if (!roleRepository.existsById("TRANSLATOR")) {
+                roleRepository.save(Role.builder()
+                        .name("TRANSLATOR")
+                        .description("Role translator")
+                        .permissions(Set.of(createManga, updateManga))
+                        .build());
+            }
 
             if (!userRepository.existsByUsername(defaultAdminUsername)) {
                 User admin = User.builder()

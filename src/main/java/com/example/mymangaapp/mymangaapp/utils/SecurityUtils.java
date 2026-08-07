@@ -2,9 +2,9 @@ package com.example.mymangaapp.mymangaapp.utils;
 
 import com.example.mymangaapp.mymangaapp.exception.AppException;
 import com.example.mymangaapp.mymangaapp.exception.ResponseCode;
+import com.example.mymangaapp.mymangaapp.security.CustomUserDetails;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 @Slf4j
@@ -22,34 +22,23 @@ public class SecurityUtils {
     }
 
     public static String getCurrentUsername() {
-        Authentication authentication = SecurityUtils.getAuthentication();
-
-        return authentication.getName();
+        return getAuthentication().getName();
     }
 
-    public static boolean hasRole(String roleName) {
-        Authentication authentication = SecurityUtils.getAuthentication();
+    public static String getCurrentUserId() {
+        CustomUserDetails customUserDetails = (CustomUserDetails) getAuthentication().getPrincipal();
 
-        String targetRole = roleName.startsWith("ROLE_") ? roleName : ("ROLE_" + roleName);
+        return customUserDetails.getId();
+    }
 
-        return authentication
+    // check nhanh user hiện tại là admin không
+    public static boolean isAdmin() {
+        return getAuthentication()
                 .getAuthorities()
                 .stream()
                 .anyMatch(grantedAuthority -> grantedAuthority
                         .getAuthority()
-                        .equals(targetRole));
+                        .equals("ROLE_ADMIN"));
     }
-
-    public static boolean hasPermission(String permission) {
-        // Chỉ cần có role admin là pass hết quyền
-        if (SecurityUtils.hasRole("ADMIN"))
-            return true;
-
-        return SecurityUtils
-                .getAuthentication()
-                .getAuthorities()
-                .contains(new SimpleGrantedAuthority(permission));
-    }
-
 
 }

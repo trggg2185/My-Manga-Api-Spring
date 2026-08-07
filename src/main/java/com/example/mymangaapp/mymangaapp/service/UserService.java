@@ -6,6 +6,7 @@ import java.util.Set;
 import com.example.mymangaapp.mymangaapp.utils.SecurityUtils;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.lang.NonNull;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -68,13 +69,8 @@ public class UserService {
     }
 
     // Lấy tất cả user
+    @PreAuthorize("hasRole('ADMIN')")
     public List<UserResponse> getAllUsers() {
-
-        // Phải có role admin
-        if (!SecurityUtils.hasRole("ADMIN")) {
-            throw new AppException(ResponseCode.UNAUTHORIZED);
-        }
-
         List<User> users = userRepository.findAll();
 
         return users.stream()
@@ -82,6 +78,16 @@ public class UserService {
                         userMapper.toUserResponse(user))
                 .toList();
 
+    }
+
+    public UserResponse getMyInfo() {
+        String username = SecurityUtils.getCurrentUsername();
+
+        User user = userRepository
+                .findByUsername(username)
+                .orElseThrow(() -> new AppException(ResponseCode.USER_NOT_FOUND));
+
+        return userMapper.toUserResponse(user);
     }
 
     // Lấy user bằng id
@@ -121,6 +127,7 @@ public class UserService {
     }
 
     // Xoá user bằng id
+    @PreAuthorize("@userSec.isSelfOrAdmin(#id)")
     public void deleteUserById(@NonNull String id) {
 
         if (!userRepository.existsById(id)) {

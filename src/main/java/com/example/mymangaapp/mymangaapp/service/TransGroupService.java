@@ -18,6 +18,7 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.lang.NonNull;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
@@ -35,12 +36,8 @@ public class TransGroupService {
     TransGroupMapper transGroupMapper;
 
     @Transactional // Giúp không đóng hibernate session khi save, để không bị LazyException
+    @PreAuthorize("hasRole('USER')") // tức là phải đăng nhập mới có quyền
     public TransGroupResponse requestCreateGroup(@NotNull TransGroupCreationRequest request) {
-
-        // Yêu cầu là user bình thường, là translator rồi thì không được tạo nhóm nữa
-        if (!SecurityUtils.hasRole("USER")) {
-            throw new AppException(ResponseCode.UNAUTHORIZED);
-        }
 
         String username = SecurityUtils.getCurrentUsername();
 
@@ -68,12 +65,8 @@ public class TransGroupService {
         return transGroupMapper.toTransGroupResponse(transGroup);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     public TransGroupResponse approveCreateGroup(@NonNull String id) {
-
-        // Chỉ có admin mới duyệt yc tạo nhóm dịch
-        if (!SecurityUtils.hasRole("ADMIN")) {
-            throw new AppException(ResponseCode.UNAUTHORIZED);
-        }
 
         TransGroup transGroup = transGroupRepository
                 .findById(id)
@@ -89,18 +82,14 @@ public class TransGroupService {
         return transGroupMapper.toTransGroupResponse(transGroupRepository.save(transGroup));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     public TransGroupResponse rejectCreateGroup(@NonNull String id) {
-
-        // Chỉ có admin mới duyệt yc tạo nhóm dịch
-        if (!SecurityUtils.hasRole("ADMIN")) {
-            throw new AppException(ResponseCode.UNAUTHORIZED);
-        }
 
         TransGroup transGroup = transGroupRepository
                 .findById(id)
                 .orElseThrow(() -> new AppException(ResponseCode.TRANSGROUP_NOT_FOUND));
 
-        // Duyệt nhóm tức là nhóm phải đang ở trạng thái chờ (PENDING) -> từ chối (REJECTED)
+        // Từ chối nhóm tức là nhóm phải đang ở trạng thái chờ (PENDING) -> từ chối (REJECTED)
         if (!transGroup.getStatus().equals(TransGroupStatus.PENDING)) {
             throw new AppException(ResponseCode.TRANSGROUP_STATUS_INVALID);
         }
@@ -110,7 +99,7 @@ public class TransGroupService {
         return transGroupMapper.toTransGroupResponse(transGroupRepository.save(transGroup));
     }
 
-    public List<TransGroupResponse> getAllTransGroups() {
+    public List<TransGroupResponse> getAllGroups() {
         List<TransGroup> transGroups = transGroupRepository.findAll();
 
         return transGroups
@@ -120,13 +109,53 @@ public class TransGroupService {
                 .toList();
     }
 
-    @Transactional // cho thêm vì có 1 câu query mình tự định nghĩa, để spring cho vào 1 transaction
-    public void softDeleteGroupById(@NonNull String id) {
+    @PreAuthorize("hasRole('ADMIN')")
+    public List<TransGroupResponse> getPendingGroups() {
 
-        // Cần quyền xoá nhóm dịch
-        if (!SecurityUtils.hasPermission("DELETE_GROUP")) {
-            throw new AppException(ResponseCode.UNAUTHORIZED);
-        }
+        List<TransGroup> pendingTransGroup = transGroupRepository.findAllByStatus(TransGroupStatus.PENDING);
+
+        return pendingTransGroup
+                .stream()
+                .map(transGroupMapper::toTransGroupResponse)
+                .toList();
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    public List<TransGroupResponse> getApprovedGroups() {
+
+        List<TransGroup> approvedTransGroups = transGroupRepository.findAllByStatus(TransGroupStatus.APPROVED);
+
+        return approvedTransGroups
+                .stream()
+                .map(transGroupMapper::toTransGroupResponse)
+                .toList();
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    public List<TransGroupResponse> getRejectdGroups() {
+        List<TransGroup> rejectedTransGroups = transGroupRepository.findAllByStatus(TransGroupStatus.REJECTED);
+
+        return rejectedTransGroups
+                .stream()
+                // <=> transGroup -> transGroupMapper.toTransGroupResponse(transGroup)
+                .map(transGroupMapper::toTransGroupResponse)
+                .toList();
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    public List<TransGroupResponse> getDeletedGroups() {
+        List<TransGroup> deletedTransGroups = transGroupRepository.findAllByStatus(TransGroupStatus.DELETED);
+
+        return deletedTransGroups
+                .stream()
+                // <=> transGroup -> transGroupMapper.toTransGroupResponse(transGroup)
+                .map(transGroupMapper::toTransGroupResponse)
+                .toList();
+    }
+
+    @Transactional // cho thêm vì có 1 câu query mình tự định nghĩa, để spring cho vào 1 transaction
+    @PreAuthorize("@groupSec.isGroupLeaderOrAdmin(#id)")
+    public void softDeleteGroupById(@NonNull String id) {
 
         TransGroup transGroup = transGroupRepository
                 .findById(id)

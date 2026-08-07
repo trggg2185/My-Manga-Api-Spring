@@ -2,7 +2,6 @@ package com.example.mymangaapp.mymangaapp.service;
 
 import java.util.List;
 
-import com.example.mymangaapp.mymangaapp.utils.SecurityUtils;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
@@ -30,11 +29,6 @@ public class PermissionService {
 
     public PermissionResponse createPermission(@NotNull PermissionRequest request) {
 
-        // Phải có role admin
-        if (!SecurityUtils.hasRole("ADMIN")) {
-            throw new AppException(ResponseCode.UNAUTHORIZED);
-        }
-
         if (permissionRepository.existsById(request.getName())) {
             throw new AppException(ResponseCode.PERMISSION_NAME_ALREADY_EXISTS);
         }
@@ -47,11 +41,6 @@ public class PermissionService {
 
     public List<PermissionResponse> getAllPermissions() {
 
-        // Phải có role admin
-        if (!SecurityUtils.hasRole("ADMIN")) {
-            throw new AppException(ResponseCode.UNAUTHORIZED);
-        }
-
         List<Permission> permissions = permissionRepository.findAll();
 
         return permissions
@@ -62,11 +51,6 @@ public class PermissionService {
     }
 
     public void deletePermissionById(@NonNull String id) {
-
-        // Phải có role admin
-        if (!SecurityUtils.hasRole("ADMIN")) {
-            throw new AppException(ResponseCode.UNAUTHORIZED);
-        }
 
         if (!permissionRepository.existsById(id)) {
             throw new AppException(ResponseCode.PERMISSION_NOT_FOUND);

@@ -4,9 +4,10 @@ import java.util.HashSet;
 import java.util.Set;
 
 import com.example.mymangaapp.mymangaapp.entity.Role;
+import com.example.mymangaapp.mymangaapp.repository.PermissionRepository;
+import com.example.mymangaapp.mymangaapp.repository.RoleRepository;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -30,27 +31,23 @@ import lombok.experimental.FieldDefaults;
 public class CustomUserDetailsService implements UserDetailsService {
 
     UserRepository userRepository;
+    RoleRepository roleRepository;
+    PermissionRepository permissionRepository;
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+    public CustomUserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         
         User user = userRepository
                 .findByUsername(username)
                 .orElseThrow(() -> new AppException(ResponseCode.USER_NOT_FOUND));
 
         // Ta sẽ nạp tất cả các roles và permissions mà user có vào đây
-        Set<GrantedAuthority> authorities = new HashSet<>(); 
+        Set<GrantedAuthority> authorities = new HashSet<>();
 
         if (!CollectionUtils.isEmpty(user.getRoles())) {
             for (Role role : user.getRoles()) {
                 // Nạp role nhưng phải có prefix ROLE_
                 authorities.add(new SimpleGrantedAuthority("ROLE_" + role.getName()));
-
-                // Nếu là role admin rồi thì cũng chỉ đẩy duy nhất role admin vào context
-                // thôi chứ không cần permission làm gì
-                if (role.getName().equals("ADMIN")) {
-                    break;
-                }
 
                 if (!CollectionUtils.isEmpty(role.getPermissions())) {
                     // Nạp permission, permission thì ko cần prefix
@@ -60,7 +57,8 @@ public class CustomUserDetailsService implements UserDetailsService {
             }
         }
 
-        return org.springframework.security.core.userdetails.User.builder()
+        return CustomUserDetails.builder()
+                .id(user.getId())
                 .username(user.getUsername())
                 .password(user.getPassword())
                 .authorities(authorities)

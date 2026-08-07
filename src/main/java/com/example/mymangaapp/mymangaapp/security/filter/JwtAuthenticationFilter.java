@@ -1,14 +1,13 @@
 package com.example.mymangaapp.mymangaapp.security.filter;
 
-import java.io.IOException;
-
 import com.example.mymangaapp.mymangaapp.exception.AppException;
 import com.example.mymangaapp.mymangaapp.exception.ResponseCode;
+import com.example.mymangaapp.mymangaapp.security.CustomUserDetails;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.lang.NonNull;
+
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -19,7 +18,6 @@ import com.example.mymangaapp.mymangaapp.security.CustomUserDetailsService;
 import com.example.mymangaapp.mymangaapp.utils.JwtUtils;
 
 import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.AccessLevel;
@@ -53,8 +51,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response,
-            @NonNull FilterChain filterChain)
-            throws ServletException, IOException {
+            @NonNull FilterChain filterChain) {
 
         try {
             String token = parseToken(request);
@@ -76,13 +73,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
                 if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                     // Lấy thông tin UserDetails (bao gồm cả Authorities/Permissions) từ db
-                    UserDetails userDetails = customUserDetailsService.loadUserByUsername(username);
+                    CustomUserDetails customUserDetails = customUserDetailsService.loadUserByUsername(username);
 
                     // Tạo đối tượng Authentication chuẩn của Spring Security
                     UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-                            userDetails,
+                            customUserDetails,
                             null, // Credentials để null vì đã xác thực qua Token
-                            userDetails.getAuthorities() // Danh sách Role & Permission
+                            customUserDetails.getAuthorities() // Danh sách Role & Permission
                     );
 
                     log.info(authenticationToken.getAuthorities().toString());
@@ -112,7 +109,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         // Lấy chuỗi sau 7 chữ cái đầu Bearer + space, chính là jwt token
         if (StringUtils.hasText(headerAuth) && headerAuth.startsWith("Bearer ")) {
-            return headerAuth.substring(7);
+            String token = headerAuth.substring(7).trim();
+
+            // Tránh TH trả về chuỗi rỗng
+            return StringUtils.hasText(token) ? token : null;
         }
 
         return null;

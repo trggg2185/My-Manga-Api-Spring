@@ -31,8 +31,44 @@ public class TransGroupController {
     }
 
     @GetMapping
-    public ApiResponse<List<TransGroupResponse>> getAllTransGroups() {
-        List<TransGroupResponse> responses = transGroupService.getAllTransGroups();
+    public ApiResponse<List<TransGroupResponse>> getAllGroups() {
+        List<TransGroupResponse> responses = transGroupService.getAllGroups();
+
+        return ApiResponse.<List<TransGroupResponse>>builder()
+                .result(responses)
+                .build();
+    }
+
+    @GetMapping("/pending")
+    public ApiResponse<List<TransGroupResponse>> getPendingGroups() {
+        List<TransGroupResponse> responses = transGroupService.getPendingGroups();
+
+        return ApiResponse.<List<TransGroupResponse>>builder()
+                .result(responses)
+                .build();
+    }
+
+    @GetMapping("/approved")
+    public ApiResponse<List<TransGroupResponse>> getApprovedGroups() {
+        List<TransGroupResponse> responses = transGroupService.getApprovedGroups();
+
+        return ApiResponse.<List<TransGroupResponse>>builder()
+                .result(responses)
+                .build();
+    }
+
+    @GetMapping("/rejected")
+    public ApiResponse<List<TransGroupResponse>> getRejectedGroups() {
+        List<TransGroupResponse> responses = transGroupService.getRejectdGroups();
+
+        return ApiResponse.<List<TransGroupResponse>>builder()
+                .result(responses)
+                .build();
+    }
+
+    @GetMapping("/deleted")
+    public ApiResponse<List<TransGroupResponse>> getDeletedGroups() {
+        List<TransGroupResponse> responses = transGroupService.getDeletedGroups();
 
         return ApiResponse.<List<TransGroupResponse>>builder()
                 .result(responses)
@@ -53,6 +89,15 @@ public class TransGroupController {
     @PatchMapping("/{id}/approve")
     public ApiResponse<TransGroupResponse> approveCreateGroup(@PathVariable @NonNull String id) {
         TransGroupResponse response = transGroupService.approveCreateGroup(id);
+
+        return ApiResponse.<TransGroupResponse>builder()
+                .result(response)
+                .build();
+    }
+
+    @PatchMapping("/{id}/reject")
+    public ApiResponse<TransGroupResponse> rejectCreateGroup(@PathVariable @NonNull String id) {
+        TransGroupResponse response = transGroupService.rejectCreateGroup(id);
 
         return ApiResponse.<TransGroupResponse>builder()
                 .result(response)

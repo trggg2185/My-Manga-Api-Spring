@@ -7,7 +7,6 @@ import java.util.Date;
 import java.util.StringJoiner;
 import java.util.UUID;
 
-import com.example.mymangaapp.mymangaapp.entity.Role;
 import com.example.mymangaapp.mymangaapp.repository.InvalidatedTokenRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -143,27 +142,13 @@ public class JwtUtils {
         return verifyToken(token, false);
     }
 
+    // scope chỉ cần chứa role của user là đủ
     public String buildScope(User user) {
         StringJoiner stringJoiner = new StringJoiner(" ");
 
         if (!CollectionUtils.isEmpty(user.getRoles())) {
 
-            for (Role role : user.getRoles()) {
-                // Tuy user và role là nhiều - nhiều
-                // nhưng ta sẽ ko gán user có nhiều role
-                stringJoiner.add(role.getName());
-
-                // Nếu đã có role admin thì scope chỉ cần 1 role admin thôi, ko cần permission
-                // vì với admin thì all permissions đều pass hết
-                if (role.getName().equals("ADMIN")) {
-                    return stringJoiner.toString();
-                }
-
-                if (!CollectionUtils.isEmpty(role.getPermissions())) {
-                    role.getPermissions().forEach(permission ->
-                            stringJoiner.add(permission.getName()));
-                }
-            }
+            user.getRoles().forEach(role -> stringJoiner.add(role.getName()));
 
         }
 

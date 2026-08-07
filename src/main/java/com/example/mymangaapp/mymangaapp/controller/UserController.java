@@ -60,6 +60,17 @@ public class UserController {
 
     }
 
+    @GetMapping("/my-info")
+    public ApiResponse<UserResponse> getMyInfo() {
+
+        UserResponse response = userService.getMyInfo();
+
+        return ApiResponse.<UserResponse>builder()
+                .result(response)
+                .build();
+
+    }
+
     @GetMapping("/{id}")
     public ApiResponse<UserResponse> getUserById(@PathVariable @NonNull String id) {
 

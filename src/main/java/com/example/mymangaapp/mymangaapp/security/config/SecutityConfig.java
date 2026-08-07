@@ -1,8 +1,11 @@
 package com.example.mymangaapp.mymangaapp.security.config;
 
+import com.example.mymangaapp.mymangaapp.security.JwtAuthenticationEntryPoint;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
+import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -26,6 +29,8 @@ public class SecutityConfig {
 
     JwtAuthenticationFilter jwtAuthenticationFilter;
 
+    JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+
     static String[] POST_PUBLIC_ENDPOINTS = {
             "/users",
             "/auth/login",
@@ -48,12 +53,22 @@ public class SecutityConfig {
                         .requestMatchers(HttpMethod.POST, POST_PUBLIC_ENDPOINTS).permitAll()
                         .requestMatchers(HttpMethod.GET, GET_PUBLIC_ENDPOINTS).permitAll()
                         .anyRequest().authenticated())
+                .exceptionHandling(exception -> exception
+                        .authenticationEntryPoint(jwtAuthenticationEntryPoint))
                 // Đăng ký jwtAuthenticationFilter chạy TRƯỚC
                 // UsernamePasswordAuthenticationFilter
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
 
+    }
+
+    @Bean
+    RoleHierarchy roleHierarchy() {
+        return RoleHierarchyImpl.withDefaultRolePrefix()
+                .role("ADMIN").implies("USER")
+                .role("ADMIN").implies("TRANSLATOR")
+                .build();
     }
 
 }
