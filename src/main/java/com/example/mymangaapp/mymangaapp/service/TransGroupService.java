@@ -99,56 +99,32 @@ public class TransGroupService {
         return transGroupMapper.toTransGroupResponse(transGroupRepository.save(transGroup));
     }
 
-    public List<TransGroupResponse> getAllGroups() {
-        List<TransGroup> transGroups = transGroupRepository.findAll();
+    // Lấy tất cả nhóm dịch đã được chấp thuận, public
+    public List<TransGroupResponse> getGroups() {
 
-        return transGroups
-                .stream()
-                // <=> transGroup -> transGroupMapper.toTransGroupResponse(transGroup)
-                .map(transGroupMapper::toTransGroupResponse)
-                .toList();
-    }
-
-    @PreAuthorize("hasRole('ADMIN')")
-    public List<TransGroupResponse> getPendingGroups() {
-
-        List<TransGroup> pendingTransGroup = transGroupRepository.findAllByStatus(TransGroupStatus.PENDING);
-
-        return pendingTransGroup
+        return transGroupRepository
+                .findAllByStatus(TransGroupStatus.APPROVED)
                 .stream()
                 .map(transGroupMapper::toTransGroupResponse)
                 .toList();
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
-    public List<TransGroupResponse> getApprovedGroups() {
+    // Đây cũng lấy nhóm nhưng chỉ dành cho admin
+    public List<TransGroupResponse> getGroups(TransGroupStatus status) {
 
-        List<TransGroup> approvedTransGroups = transGroupRepository.findAllByStatus(TransGroupStatus.APPROVED);
+        // Nếu cho query string status thì lấy nhóm dịch theo status
+        if (status != null) {
+            return transGroupRepository
+                    .findAllByStatus(status)
+                    .stream()
+                    .map(transGroupMapper::toTransGroupResponse)
+                    .toList();
+        }
 
-        return approvedTransGroups
+        // Nếu ko status thì mặc định lấy tất cả các nhóm
+        return transGroupRepository
+                .findAll()
                 .stream()
-                .map(transGroupMapper::toTransGroupResponse)
-                .toList();
-    }
-
-    @PreAuthorize("hasRole('ADMIN')")
-    public List<TransGroupResponse> getRejectdGroups() {
-        List<TransGroup> rejectedTransGroups = transGroupRepository.findAllByStatus(TransGroupStatus.REJECTED);
-
-        return rejectedTransGroups
-                .stream()
-                // <=> transGroup -> transGroupMapper.toTransGroupResponse(transGroup)
-                .map(transGroupMapper::toTransGroupResponse)
-                .toList();
-    }
-
-    @PreAuthorize("hasRole('ADMIN')")
-    public List<TransGroupResponse> getDeletedGroups() {
-        List<TransGroup> deletedTransGroups = transGroupRepository.findAllByStatus(TransGroupStatus.DELETED);
-
-        return deletedTransGroups
-                .stream()
-                // <=> transGroup -> transGroupMapper.toTransGroupResponse(transGroup)
                 .map(transGroupMapper::toTransGroupResponse)
                 .toList();
     }

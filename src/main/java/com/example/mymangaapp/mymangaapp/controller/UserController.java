@@ -60,7 +60,7 @@ public class UserController {
 
     }
 
-    @GetMapping("/my-info")
+    @GetMapping("/get-my-info")
     public ApiResponse<UserResponse> getMyInfo() {
 
         UserResponse response = userService.getMyInfo();

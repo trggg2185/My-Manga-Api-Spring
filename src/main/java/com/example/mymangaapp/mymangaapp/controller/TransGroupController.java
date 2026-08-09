@@ -3,6 +3,7 @@ package com.example.mymangaapp.mymangaapp.controller;
 import com.example.mymangaapp.mymangaapp.dto.request.TransGroupCreationRequest;
 import com.example.mymangaapp.mymangaapp.dto.response.ApiResponse;
 import com.example.mymangaapp.mymangaapp.dto.response.TransGroupResponse;
+import com.example.mymangaapp.mymangaapp.enums.TransGroupStatus;
 import com.example.mymangaapp.mymangaapp.exception.ResponseCode;
 import com.example.mymangaapp.mymangaapp.service.TransGroupService;
 import lombok.AccessLevel;
@@ -14,14 +15,13 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/transgroups")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class TransGroupController {
 
     TransGroupService transGroupService;
 
-    @PostMapping
+    @PostMapping("/transgroups")
     public ApiResponse<TransGroupResponse> requestCreateGroup(@RequestBody TransGroupCreationRequest request) {
         TransGroupResponse response = transGroupService.requestCreateGroup(request);
 
@@ -30,52 +30,28 @@ public class TransGroupController {
                 .build();
     }
 
-    @GetMapping
-    public ApiResponse<List<TransGroupResponse>> getAllGroups() {
-        List<TransGroupResponse> responses = transGroupService.getAllGroups();
+    // Endpoint này dành cho user thông thường có thể thấy tất cả nhóm dịch đang hoạt động
+    @GetMapping("/transgroups")
+    public ApiResponse<List<TransGroupResponse>> getGroups() {
+        List<TransGroupResponse> responses = transGroupService.getGroups();
 
         return ApiResponse.<List<TransGroupResponse>>builder()
                 .result(responses)
                 .build();
     }
 
-    @GetMapping("/pending")
-    public ApiResponse<List<TransGroupResponse>> getPendingGroups() {
-        List<TransGroupResponse> responses = transGroupService.getPendingGroups();
+    @GetMapping("/admin/transgroups")
+    public ApiResponse<List<TransGroupResponse>> getGroups(
+            @RequestParam(required = false) TransGroupStatus status
+    ) {
+        List<TransGroupResponse> responses = transGroupService.getGroups(status);
 
         return ApiResponse.<List<TransGroupResponse>>builder()
                 .result(responses)
                 .build();
     }
 
-    @GetMapping("/approved")
-    public ApiResponse<List<TransGroupResponse>> getApprovedGroups() {
-        List<TransGroupResponse> responses = transGroupService.getApprovedGroups();
-
-        return ApiResponse.<List<TransGroupResponse>>builder()
-                .result(responses)
-                .build();
-    }
-
-    @GetMapping("/rejected")
-    public ApiResponse<List<TransGroupResponse>> getRejectedGroups() {
-        List<TransGroupResponse> responses = transGroupService.getRejectdGroups();
-
-        return ApiResponse.<List<TransGroupResponse>>builder()
-                .result(responses)
-                .build();
-    }
-
-    @GetMapping("/deleted")
-    public ApiResponse<List<TransGroupResponse>> getDeletedGroups() {
-        List<TransGroupResponse> responses = transGroupService.getDeletedGroups();
-
-        return ApiResponse.<List<TransGroupResponse>>builder()
-                .result(responses)
-                .build();
-    }
-
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/transgroups/{id}")
     public ApiResponse<String> softDeleteGroupById(@PathVariable @NonNull String id) {
         transGroupService.softDeleteGroupById(id);
 
@@ -86,7 +62,7 @@ public class TransGroupController {
                 .build();
     }
 
-    @PatchMapping("/{id}/approve")
+    @PatchMapping("/transgroups/{id}/approve")
     public ApiResponse<TransGroupResponse> approveCreateGroup(@PathVariable @NonNull String id) {
         TransGroupResponse response = transGroupService.approveCreateGroup(id);
 
@@ -95,7 +71,7 @@ public class TransGroupController {
                 .build();
     }
 
-    @PatchMapping("/{id}/reject")
+    @PatchMapping("/transgroups/{id}/reject")
     public ApiResponse<TransGroupResponse> rejectCreateGroup(@PathVariable @NonNull String id) {
         TransGroupResponse response = transGroupService.rejectCreateGroup(id);
 
