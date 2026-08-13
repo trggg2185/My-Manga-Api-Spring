@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Set;
 
 import com.example.mymangaapp.mymangaapp.utils.SecurityUtils;
+import jakarta.transaction.Transactional;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.lang.NonNull;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -39,6 +40,7 @@ public class UserService {
     UserMapper userMapper;
 
     // Tạo user mới
+    @Transactional
     public UserResponse createUser(@NotNull UserCreationRequest request) {
 
         // Mặc dù username có unique vẫn phải check đã tồn tại ở service
@@ -69,7 +71,6 @@ public class UserService {
     }
 
     // Lấy tất cả user
-    @PreAuthorize("hasRole('ADMIN')")
     public List<UserResponse> getAllUsers() {
         List<User> users = userRepository.findAll();
 

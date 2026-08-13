@@ -25,7 +25,6 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.web.bind.annotation.PutMapping;
 
 @RestController
-@RequestMapping("/users")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class UserController {
@@ -37,7 +36,7 @@ public class UserController {
 
     UserService userService;
 
-    @PostMapping
+    @PostMapping("/users")
     // Nhớ có annotation @Valid để validate các fields trong request
     public ApiResponse<UserResponse> createUser(@Valid @RequestBody UserCreationRequest request) {
 
@@ -49,18 +48,7 @@ public class UserController {
 
     }
 
-    @GetMapping
-    public ApiResponse<List<UserResponse>> getAllUsers() {
-
-        List<UserResponse> responses = userService.getAllUsers();
-
-        return ApiResponse.<List<UserResponse>>builder()
-                .result(responses)
-                .build();
-
-    }
-
-    @GetMapping("/get-my-info")
+    @GetMapping("/users/me")
     public ApiResponse<UserResponse> getMyInfo() {
 
         UserResponse response = userService.getMyInfo();
@@ -71,7 +59,7 @@ public class UserController {
 
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/users/{id}")
     public ApiResponse<UserResponse> getUserById(@PathVariable @NonNull String id) {
 
         UserResponse response = userService.getUserById(id);
@@ -82,7 +70,7 @@ public class UserController {
 
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/users/{id}")
     public ApiResponse<UserResponse> updateUserById(@PathVariable @NonNull String id,
             @Valid @RequestBody UserUpdateRequest request) {
 
@@ -93,7 +81,7 @@ public class UserController {
                 .build();
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/users/{id}")
     public ApiResponse<String> deleteUserById(@PathVariable @NonNull String id) {
 
         userService.deleteUserById(id);
@@ -103,6 +91,17 @@ public class UserController {
                 .message(ResponseCode.SUCCESS.getMessage())
                 .result("User id: " + id)
                 .build();
+    }
+
+    @GetMapping("/admin/users")
+    public ApiResponse<List<UserResponse>> getAllUsers() {
+
+        List<UserResponse> responses = userService.getAllUsers();
+
+        return ApiResponse.<List<UserResponse>>builder()
+                .result(responses)
+                .build();
+
     }
 
 }

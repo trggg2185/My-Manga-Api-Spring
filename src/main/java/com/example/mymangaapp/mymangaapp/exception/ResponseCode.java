@@ -55,7 +55,8 @@ public enum ResponseCode {
     PERMISSION_NAME_ALREADY_EXISTS("5005", "Tên quyền đã tồn tại!", HttpStatus.BAD_REQUEST),
     PERMISSION_INVALID("5006", "Các quyền không hợp lệ! (Các quyền không tồn tại hoặc mảng các quyền của request rỗng)", HttpStatus.BAD_REQUEST),
     PERMISSION_REQUIRED("5007", "Mảng các quyền không được để trống!", HttpStatus.BAD_REQUEST),
-    TRANSGROUP_STATUS_INVALID("5008", "Nhóm dịch đã được chấp nhận, bị từ chối hoặc đã bị xoá!", HttpStatus.BAD_REQUEST);
+    TRANSGROUP_STATUS_INVALID("5008", "Nhóm dịch đã được chấp nhận, bị từ chối hoặc đã bị xoá!", HttpStatus.BAD_REQUEST),
+    USER_ALREADY_IN_GROUP("5009", "Người dùng đã trong nhóm dịch!", HttpStatus.BAD_REQUEST);
 
     String code;
     String message;

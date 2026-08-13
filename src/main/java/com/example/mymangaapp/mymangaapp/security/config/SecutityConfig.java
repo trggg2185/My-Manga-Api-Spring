@@ -43,6 +43,8 @@ public class SecutityConfig {
             "/transgroups"
     };
 
+    static String ADMIN = "ADMIN";
+
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
@@ -52,6 +54,7 @@ public class SecutityConfig {
                 .authorizeHttpRequests(request -> request
                         .requestMatchers(HttpMethod.POST, POST_PUBLIC_ENDPOINTS).permitAll()
                         .requestMatchers(HttpMethod.GET, GET_PUBLIC_ENDPOINTS).permitAll()
+                        .requestMatchers("/admin/**").hasRole(ADMIN)
                         .anyRequest().authenticated())
                 .exceptionHandling(exception -> exception
                         .authenticationEntryPoint(jwtAuthenticationEntryPoint))
@@ -61,14 +64,6 @@ public class SecutityConfig {
 
         return http.build();
 
-    }
-
-    @Bean
-    RoleHierarchy roleHierarchy() {
-        return RoleHierarchyImpl.withDefaultRolePrefix()
-                .role("ADMIN").implies("USER")
-                .role("ADMIN").implies("TRANSLATOR")
-                .build();
     }
 
 }

@@ -40,17 +40,6 @@ public class TransGroupController {
                 .build();
     }
 
-    @GetMapping("/admin/transgroups")
-    public ApiResponse<List<TransGroupResponse>> getGroups(
-            @RequestParam(required = false) TransGroupStatus status
-    ) {
-        List<TransGroupResponse> responses = transGroupService.getGroups(status);
-
-        return ApiResponse.<List<TransGroupResponse>>builder()
-                .result(responses)
-                .build();
-    }
-
     @DeleteMapping("/transgroups/{id}")
     public ApiResponse<String> softDeleteGroupById(@PathVariable @NonNull String id) {
         transGroupService.softDeleteGroupById(id);
@@ -62,7 +51,18 @@ public class TransGroupController {
                 .build();
     }
 
-    @PatchMapping("/transgroups/{id}/approve")
+    @GetMapping("/admin/transgroups")
+    public ApiResponse<List<TransGroupResponse>> getGroups(
+            @RequestParam(required = false) TransGroupStatus status
+    ) {
+        List<TransGroupResponse> responses = transGroupService.getGroups(status);
+
+        return ApiResponse.<List<TransGroupResponse>>builder()
+                .result(responses)
+                .build();
+    }
+
+    @PatchMapping("/admin/transgroups/{id}/approve")
     public ApiResponse<TransGroupResponse> approveCreateGroup(@PathVariable @NonNull String id) {
         TransGroupResponse response = transGroupService.approveCreateGroup(id);
 
@@ -71,7 +71,7 @@ public class TransGroupController {
                 .build();
     }
 
-    @PatchMapping("/transgroups/{id}/reject")
+    @PatchMapping("/admin/transgroups/{id}/reject")
     public ApiResponse<TransGroupResponse> rejectCreateGroup(@PathVariable @NonNull String id) {
         TransGroupResponse response = transGroupService.rejectCreateGroup(id);
 

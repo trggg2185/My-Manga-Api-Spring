@@ -36,18 +36,22 @@ public class TransGroupService {
     TransGroupMapper transGroupMapper;
 
     @Transactional // Giúp không đóng hibernate session khi save, để không bị LazyException
-    @PreAuthorize("hasRole('USER')") // tức là phải đăng nhập mới có quyền
     public TransGroupResponse requestCreateGroup(@NotNull TransGroupCreationRequest request) {
 
         String username = SecurityUtils.getCurrentUsername();
 
-        if (transGroupRepository.existsByName(request.getName())) {
-            throw new AppException(ResponseCode.TRANSGROUP_NAME_ALREADY_EXISTS);
-        }
-
         User leader = userRepository
                 .findByUsername(username)
                 .orElseThrow(() -> new AppException(ResponseCode.USER_NOT_FOUND));
+
+        // Check người này đã có ở trong group chưa
+        if (leader.getTransGroup() != null) {
+            throw new AppException(ResponseCode.USER_ALREADY_IN_GROUP);
+        }
+
+        if (transGroupRepository.existsByName(request.getName())) {
+            throw new AppException(ResponseCode.TRANSGROUP_NAME_ALREADY_EXISTS);
+        }
 
         TransGroup transGroup = transGroupMapper.toTransGroup(request);
         transGroup.setLeader(leader);
@@ -65,7 +69,6 @@ public class TransGroupService {
         return transGroupMapper.toTransGroupResponse(transGroup);
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
     public TransGroupResponse approveCreateGroup(@NonNull String id) {
 
         TransGroup transGroup = transGroupRepository
@@ -82,7 +85,6 @@ public class TransGroupService {
         return transGroupMapper.toTransGroupResponse(transGroupRepository.save(transGroup));
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
     public TransGroupResponse rejectCreateGroup(@NonNull String id) {
 
         TransGroup transGroup = transGroupRepository
