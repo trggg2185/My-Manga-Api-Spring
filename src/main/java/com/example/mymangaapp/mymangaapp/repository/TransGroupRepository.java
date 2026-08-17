@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface TransGroupRepository extends JpaRepository<TransGroup, String> {
 
@@ -19,6 +20,11 @@ public interface TransGroupRepository extends JpaRepository<TransGroup, String> 
     @EntityGraph(attributePaths = { "leader", "leader.roles", "leader.roles.permissions", "members" })
     @NotNull
     List<TransGroup> findAll();
+
+    // Hàm này để tìm group theo id đã đc fetch sẵn các dữ liệu như leader, roles, permissions và members
+    // vì chúng là lazy và để tránh n + 1 query
+    @EntityGraph(attributePaths = { "leader", "leader.roles", "leader.roles.permissions", "members" })
+    Optional<TransGroup> findWithDetailsById(String id);
 
     @EntityGraph(attributePaths = { "leader", "leader.roles", "leader.roles.permissions", "members" })
     List<TransGroup> findAllByStatus(TransGroupStatus status);

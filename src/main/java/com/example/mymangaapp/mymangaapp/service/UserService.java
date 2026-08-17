@@ -66,7 +66,8 @@ public class UserService {
         // Set role mặc định cho user mới tạo
         user.setRoles(Set.of(role));
 
-        return userMapper.toUserResponse(userRepository.save(user));
+        // Vì có transactional nên không phải save do dirty checking tự update db
+        return userMapper.toUserResponse(user);
 
     }
 
@@ -119,10 +120,6 @@ public class UserService {
 
         // Mapstruct tự động map từ UserUpdateRequest -> User
         userMapper.updateUserFromRequest(user, request);
-
-        if (user == null) {
-            throw new AppException(ResponseCode.UNCATEGORIZED_ERROR);
-        }
 
         return userMapper.toUserResponse(userRepository.save(user));
     }

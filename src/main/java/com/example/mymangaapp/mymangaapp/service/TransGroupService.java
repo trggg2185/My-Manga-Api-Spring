@@ -60,19 +60,26 @@ public class TransGroupService {
         // Trưởng nhóm dịch cũng là 1 thành viên
         transGroup.getMembers().add(leader);
 
+        // Nếu admin muốn tạo nhóm thì duyệt luôn
+        if (SecurityUtils.isAdmin()) {
+            transGroup.setStatus(TransGroupStatus.APPROVED);
+        }
+
         transGroup = transGroupRepository.save(transGroup);
 
         // Cho user thuộc về nhóm dịch
         leader.setTransGroup(transGroup);
         userRepository.save(leader);
 
+        // transgroup không save vì transactional có dirty checking tự update db
         return transGroupMapper.toTransGroupResponse(transGroup);
     }
 
+    @Transactional
     public TransGroupResponse approveCreateGroup(@NonNull String id) {
 
         TransGroup transGroup = transGroupRepository
-                .findById(id)
+                .findWithDetailsById(id)
                 .orElseThrow(() -> new AppException(ResponseCode.TRANSGROUP_NOT_FOUND));
 
         // Duyệt nhóm tức là nhóm phải đang ở trạng thái chờ (PENDING) -> chấp nhận (APPROVED)
@@ -82,13 +89,15 @@ public class TransGroupService {
 
         transGroup.setStatus(TransGroupStatus.APPROVED);
 
-        return transGroupMapper.toTransGroupResponse(transGroupRepository.save(transGroup));
+        // transgroup không save vì transactional có dirty checking tự update db
+        return transGroupMapper.toTransGroupResponse(transGroup);
     }
 
+    @Transactional
     public TransGroupResponse rejectCreateGroup(@NonNull String id) {
 
         TransGroup transGroup = transGroupRepository
-                .findById(id)
+                .findWithDetailsById(id)
                 .orElseThrow(() -> new AppException(ResponseCode.TRANSGROUP_NOT_FOUND));
 
         // Từ chối nhóm tức là nhóm phải đang ở trạng thái chờ (PENDING) -> từ chối (REJECTED)

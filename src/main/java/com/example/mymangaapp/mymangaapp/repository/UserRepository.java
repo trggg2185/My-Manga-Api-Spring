@@ -18,8 +18,12 @@ public interface UserRepository extends JpaRepository<User, String> {
     boolean existsByEmail(String email);
 
     // Khi lấy user, lấy luôn roles, và khi lấy các roles, lấy luôn các permissions
-    @EntityGraph(attributePaths = { "roles", "roles.permissions", "transGroup" })
+    @EntityGraph(attributePaths = { "roles", "roles.permissions" })
     Optional<User> findByUsername(String username);
+
+    @EntityGraph(attributePaths = { "roles", "roles.permissions" })
+    @NonNull
+    Optional<User> findById(@NonNull String id);
 
     @EntityGraph(attributePaths = { "roles", "roles.permissions" })
     @NonNull
