@@ -53,20 +53,6 @@ public class InitApplicationConfig {
                             .description("create new post permission")
                             .build()));
 
-            Permission approveGroup = permissionRepository
-                    .findById("APPROVE_GROUP")
-                    .orElseGet(() -> permissionRepository.save(Permission.builder()
-                            .name("APPROVE_GROUP")
-                            .description("approve group creation permission")
-                            .build()));
-
-            Permission deleteGroup = permissionRepository
-                    .findById("DELETE_GROUP")
-                    .orElseGet(() -> permissionRepository.save(Permission.builder()
-                            .name("DELETE_GROUP")
-                            .description("delete trans group permission")
-                            .build()));
-
             Permission createManga = permissionRepository
                     .findById("CREATE_MANGA")
                     .orElseGet(() -> permissionRepository.save(Permission.builder()
@@ -87,7 +73,7 @@ public class InitApplicationConfig {
                     .orElseGet(() -> roleRepository.save(Role.builder()
                             .name("ADMIN")
                             .description("Role admin")
-                            .permissions(Set.of(createPost, approveGroup, deleteGroup, createManga, updateManga))
+                            .permissions(Set.of(createPost, createManga, updateManga))
                             .build()));
 
             if (!roleRepository.existsById("USER")) {

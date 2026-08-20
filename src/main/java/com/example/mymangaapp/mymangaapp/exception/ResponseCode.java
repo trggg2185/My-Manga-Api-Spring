@@ -2,7 +2,6 @@ package com.example.mymangaapp.mymangaapp.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
-import org.springframework.lang.NonNull;
 
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -41,7 +40,10 @@ public enum ResponseCode {
     BIO_INVALID("3004", "Thông tin cá nhân không quá {max} Ký tự!", HttpStatus.BAD_REQUEST),
     USERNAME_REQUIRED("3005", "Tên người dùng không được để trống!", HttpStatus.BAD_REQUEST),
     PASSWORD_REQUIRED("3006", "Mật khẩu không được để trống!", HttpStatus.BAD_REQUEST),
-    TRANSGROUP_DESCRIPTION_INVALID("3007", "Mô tả nhóm dịch không quá {max} ký tự!", HttpStatus.BAD_REQUEST),
+    TRANSGROUP_NAME_INVALID("3007", "Tên nhóm dịch ít nhất phải có {min} ký tự!", HttpStatus.BAD_REQUEST),
+    MANGA_NAME_INVALID("3008", "Tên truyện ít nhất phải có {min} ký tự!", HttpStatus.BAD_REQUEST),
+    AUTHORS_NAME_REQUIRED("3009", "Tên tác giả không được để trống!", HttpStatus.BAD_REQUEST),
+    GENRES_REQUIRED("30010", "Thể loại truyện không được để trống!", HttpStatus.BAD_REQUEST),
 
     USER_NOT_FOUND("4001", "Người dùng không tồn tại!", HttpStatus.NOT_FOUND),
     ROLE_NOT_FOUND("4002", "Vai trò không tồn tại!", HttpStatus.NOT_FOUND),
@@ -56,7 +58,9 @@ public enum ResponseCode {
     PERMISSION_INVALID("5006", "Các quyền không hợp lệ! (Các quyền không tồn tại hoặc mảng các quyền của request rỗng)", HttpStatus.BAD_REQUEST),
     PERMISSION_REQUIRED("5007", "Mảng các quyền không được để trống!", HttpStatus.BAD_REQUEST),
     TRANSGROUP_STATUS_INVALID("5008", "Nhóm dịch đã được chấp nhận, bị từ chối hoặc đã bị xoá!", HttpStatus.BAD_REQUEST),
-    USER_ALREADY_IN_GROUP("5009", "Người dùng đã trong nhóm dịch!", HttpStatus.BAD_REQUEST);
+    USER_ALREADY_IN_GROUP("5009", "Người dùng đã trong nhóm dịch!", HttpStatus.BAD_REQUEST),
+    MANGA_ALREADY_EXISTS("5010", "Truyện đã tồn tại!", HttpStatus.BAD_REQUEST),
+    TRANSGROUP_NOT_APPROVED("5011", "Nhóm dịch chưa được duyệt!", HttpStatus.BAD_REQUEST);
 
     String code;
     String message;

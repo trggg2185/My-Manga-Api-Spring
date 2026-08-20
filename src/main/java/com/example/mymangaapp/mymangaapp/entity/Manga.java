@@ -6,18 +6,7 @@ import java.util.Set;
 
 import com.example.mymangaapp.mymangaapp.enums.MangaStatus;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -25,6 +14,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Getter
 @Setter
@@ -32,6 +23,7 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Builder
+@EntityListeners(AuditingEntityListener.class)
 @Entity
 public class Manga {
 
@@ -52,7 +44,13 @@ public class Manga {
     MangaStatus status = MangaStatus.ONGOING;
 
     String description;
-    Integer view;
+
+    // Khởi tạo views mặc định là 0, phải có builder default không builder sẽ ignore view mình gán mất
+    @Builder.Default
+    Long views = 0L;
+
+    @CreatedDate
+    @Column(name = "published_date", nullable = false, updatable = false)
     LocalDate publishedDate;
 
     // QH: 1 manga có thể có nhiều trans group dịch

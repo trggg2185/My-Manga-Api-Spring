@@ -11,7 +11,7 @@ import lombok.experimental.FieldDefaults;
 @Builder
 public class TransGroupCreationRequest {
 
-    @Size(max = 300, message = "TRANSGROUP_DESCRIPTION_INVALID")
+    @Size(min = 3, message = "TRANSGROUP_NAME_INVALID")
     String name;
 
 }

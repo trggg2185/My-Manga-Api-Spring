@@ -24,6 +24,11 @@ public class GroupSecurity {
             return true;
         }
 
+        return isGroupLeader(groupId);
+    }
+
+    // Check user hiện tại là leader nhóm này không
+    public boolean isGroupLeader(String groupId) {
         String currentUserId = SecurityUtils.getCurrentUserId();
 
         return transGroupRepository.existsByIdAndLeaderId(groupId, currentUserId);
