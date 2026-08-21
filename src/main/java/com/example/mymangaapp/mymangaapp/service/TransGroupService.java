@@ -2,12 +2,14 @@ package com.example.mymangaapp.mymangaapp.service;
 
 import com.example.mymangaapp.mymangaapp.dto.request.TransGroupCreationRequest;
 import com.example.mymangaapp.mymangaapp.dto.response.TransGroupResponse;
+import com.example.mymangaapp.mymangaapp.entity.Role;
 import com.example.mymangaapp.mymangaapp.entity.TransGroup;
 import com.example.mymangaapp.mymangaapp.entity.User;
 import com.example.mymangaapp.mymangaapp.enums.TransGroupStatus;
 import com.example.mymangaapp.mymangaapp.exception.AppException;
 import com.example.mymangaapp.mymangaapp.exception.ResponseCode;
 import com.example.mymangaapp.mymangaapp.mapper.TransGroupMapper;
+import com.example.mymangaapp.mymangaapp.repository.RoleRepository;
 import com.example.mymangaapp.mymangaapp.repository.TransGroupRepository;
 import com.example.mymangaapp.mymangaapp.repository.UserRepository;
 import com.example.mymangaapp.mymangaapp.utils.SecurityUtils;
@@ -30,6 +32,7 @@ import java.util.List;
 @Slf4j
 public class TransGroupService {
 
+    RoleRepository roleRepository;
     UserRepository userRepository;
     TransGroupRepository transGroupRepository;
 
@@ -88,8 +91,14 @@ public class TransGroupService {
 
         transGroup.setStatus(TransGroupStatus.APPROVED);
 
-        // transgroup không save vì transactional có dirty checking tự update db
-        return transGroupMapper.toTransGroupResponse(transGroup);
+        Role translatorRole = roleRepository
+                .findById("TRANSLATOR")
+                .orElseThrow(() -> new AppException(ResponseCode.ROLE_NOT_FOUND));
+
+        // Từ khi nhóm này được chấp nhận thì leader nhóm chính thức được gán thêm role TRANSLATOR
+        transGroup.getLeader().getRoles().add(translatorRole);
+
+        return transGroupMapper.toTransGroupResponse(transGroupRepository.save(transGroup));
     }
 
     @Transactional
@@ -152,6 +161,13 @@ public class TransGroupService {
 
         // Xoá tất cả các thành viên ra khỏi nhóm (method tự định nghĩa query)
         userRepository.clearTransGroupFromMembers(id);
+
+        Role translatorRole = roleRepository
+                .findById("TRANSLATOR")
+                .orElseThrow(() -> new AppException(ResponseCode.ROLE_NOT_FOUND));
+
+        // Xoá tất role TRANSLATOR ra tất cả các thành viên
+        transGroup.getMembers().forEach(member -> member.getRoles().remove(translatorRole));
 
         transGroupRepository.save(transGroup);
     }
