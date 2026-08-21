@@ -29,5 +29,8 @@ public interface TransGroupRepository extends JpaRepository<TransGroup, String> 
     @EntityGraph(attributePaths = { "leader", "leader.roles", "leader.roles.permissions", "members" })
     List<TransGroup> findAllByStatus(TransGroupStatus status);
 
+    @EntityGraph(attributePaths = { "leader", "leader.roles", "leader.roles.permissions", "members" })
+    Optional<TransGroup> findByIdAndStatus(String id, TransGroupStatus status);
+
     boolean existsByIdAndLeaderId(String id, String leaderId);
 }

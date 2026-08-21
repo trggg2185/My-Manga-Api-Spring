@@ -1,15 +1,12 @@
 package com.example.mymangaapp.mymangaapp.controller;
 
-import com.example.mymangaapp.mymangaapp.dto.request.MangaCreationRequest;
 import com.example.mymangaapp.mymangaapp.dto.request.TransGroupCreationRequest;
 import com.example.mymangaapp.mymangaapp.dto.response.ApiResponse;
-import com.example.mymangaapp.mymangaapp.dto.response.MangaResponse;
 import com.example.mymangaapp.mymangaapp.dto.response.TransGroupResponse;
 import com.example.mymangaapp.mymangaapp.enums.TransGroupStatus;
 import com.example.mymangaapp.mymangaapp.exception.ResponseCode;
 import com.example.mymangaapp.mymangaapp.service.MangaService;
 import com.example.mymangaapp.mymangaapp.service.TransGroupService;
-import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -24,7 +21,6 @@ import java.util.List;
 public class TransGroupController {
 
     TransGroupService transGroupService;
-
     MangaService mangaService;
 
     @PostMapping("/transgroups")
@@ -54,20 +50,6 @@ public class TransGroupController {
                 .code(ResponseCode.SUCCESS.getCode())
                 .message(ResponseCode.SUCCESS.getMessage())
                 .result("Group id: " + id)
-                .build();
-    }
-
-    // Riêng việc tạo manga, ta lồng vào trong trans group thể hiện việc
-    // tạo mới manga cho group này, còn lại các endpoints khác vẫn viết bên manga controller
-    @PostMapping("/transgroups/{id}/mangas")
-    public ApiResponse<MangaResponse> createManga(
-            @Valid @RequestBody MangaCreationRequest request,
-            @PathVariable String id
-    ) {
-        MangaResponse response = mangaService.createManga(request, id);
-
-        return ApiResponse.<MangaResponse>builder()
-                .result(response)
                 .build();
     }
 

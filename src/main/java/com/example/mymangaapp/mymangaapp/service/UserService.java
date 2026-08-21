@@ -5,6 +5,7 @@ import java.util.Set;
 
 import com.example.mymangaapp.mymangaapp.utils.SecurityUtils;
 import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.lang.NonNull;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -26,6 +27,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
@@ -42,6 +44,8 @@ public class UserService {
     // Tạo user mới
     @Transactional
     public UserResponse createUser(@NotNull UserCreationRequest request) {
+
+        log.info("Create user here!------------------------------");
 
         // Mặc dù username có unique vẫn phải check đã tồn tại ở service
         if (userRepository.existsByUsername(request.getUsername())) {
@@ -66,8 +70,7 @@ public class UserService {
         // Set role mặc định cho user mới tạo
         user.setRoles(Set.of(role));
 
-        // Vì có transactional nên không phải save do dirty checking tự update db
-        return userMapper.toUserResponse(user);
+        return userMapper.toUserResponse(userRepository.save(user));
 
     }
 

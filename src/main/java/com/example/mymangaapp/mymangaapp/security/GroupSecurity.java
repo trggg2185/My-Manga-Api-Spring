@@ -31,6 +31,9 @@ public class GroupSecurity {
     public boolean isGroupLeader(String groupId) {
         String currentUserId = SecurityUtils.getCurrentUserId();
 
+        log.info("Current user id: {}", currentUserId);
+        log.info("Group id: {}", groupId);
+
         return transGroupRepository.existsByIdAndLeaderId(groupId, currentUserId);
     }
 

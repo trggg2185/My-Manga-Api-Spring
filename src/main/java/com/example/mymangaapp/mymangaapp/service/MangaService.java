@@ -34,11 +34,11 @@ public class MangaService {
     MangaMapper mangaMapper;
 
     @PreAuthorize("hasAuthority('CREATE_MANGA')")
-    public MangaResponse createManga(@NotNull MangaCreationRequest request, @NonNull String id) {
+    public MangaResponse createManga(@NotNull MangaCreationRequest request, @NonNull String groupId) {
 
         // Vẫn phải check nhóm tồn tại không
         TransGroup transGroup = transGroupRepository
-                .findWithDetailsById(id)
+                .findWithDetailsById(groupId)
                 .orElseThrow(() -> new AppException(ResponseCode.TRANSGROUP_NOT_FOUND));
 
         // Nhóm này đã được admin approve chưa

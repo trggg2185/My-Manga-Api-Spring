@@ -71,8 +71,7 @@ public class TransGroupService {
         leader.setTransGroup(transGroup);
         userRepository.save(leader);
 
-        // transgroup không save vì transactional có dirty checking tự update db
-        return transGroupMapper.toTransGroupResponse(transGroup);
+        return transGroupMapper.toTransGroupResponse(transGroupRepository.save(transGroup));
     }
 
     @Transactional
