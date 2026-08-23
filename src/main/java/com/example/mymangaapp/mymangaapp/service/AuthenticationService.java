@@ -45,7 +45,7 @@ public class AuthenticationService {
     public AuthenticationResponse login(@NotNull AuthenticationRequest request) {
 
         User user = userRepository
-                .findByUsername(request.getUsername())
+                .findWithDetailsByUsername(request.getUsername())
                 .orElseThrow(() -> new AppException(ResponseCode.USER_NOT_FOUND));
 
         boolean authenticated = passwordEncoder.matches(request.getPassword(), user.getPassword());
@@ -112,7 +112,7 @@ public class AuthenticationService {
 
         String username = jwtUtils.extractUsername(request.getToken());
 
-        User user = userRepository.findByUsername(username)
+        User user = userRepository.findWithDetailsById(username)
                 .orElseThrow(() -> new AppException(ResponseCode.USER_NOT_FOUND));
 
         return AuthenticationResponse.builder()

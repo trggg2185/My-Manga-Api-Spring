@@ -88,8 +88,10 @@ public class UserService {
     public UserResponse getMyInfo() {
         String username = SecurityUtils.getCurrentUsername();
 
+        log.info("username: {}", username);
+
         User user = userRepository
-                .findByUsername(username)
+                .findWithDetailsByUsername(username)
                 .orElseThrow(() -> new AppException(ResponseCode.USER_NOT_FOUND));
 
         return userMapper.toUserResponse(user);
@@ -98,7 +100,7 @@ public class UserService {
     // Lấy user bằng id
     public UserResponse getUserById(@NonNull String id) {
         User user = userRepository
-                .findById(id)
+                .findWithDetailsById(id)
                 .orElseThrow(() -> 
                         new AppException(ResponseCode.USER_NOT_FOUND));
 

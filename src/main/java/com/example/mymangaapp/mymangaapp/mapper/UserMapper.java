@@ -1,5 +1,6 @@
 package com.example.mymangaapp.mymangaapp.mapper;
 
+import com.example.mymangaapp.mymangaapp.dto.response.UserSummaryResponse;
 import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -41,6 +42,9 @@ public interface UserMapper {
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     void updateUserFromRequest(@MappingTarget User user, UserUpdateRequest request);
 
+    @Mapping(target = "transGroupId", source = "transGroup.id")
     UserResponse toUserResponse(User user);
+
+    UserSummaryResponse toUserSummaryResponse(User user);
 
 }

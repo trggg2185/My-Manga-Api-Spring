@@ -8,6 +8,7 @@ import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.lang.NonNull;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -21,7 +22,7 @@ public class MangaController {
     @PostMapping("/transgroups/{groupId}/mangas")
     public ApiResponse<MangaResponse> createManga(
             @Valid @RequestBody MangaCreationRequest request,
-            @PathVariable String groupId
+            @PathVariable @NonNull String groupId
     ) {
         MangaResponse response = mangaService.createManga(request, groupId);
 

@@ -7,6 +7,7 @@ import com.example.mymangaapp.mymangaapp.service.GroupJoinRequestService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.lang.NonNull;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,7 +21,7 @@ public class GroupJoinRequestController {
 
     // 1 user xin vào làm thành viên của 1 nhóm dịch
     @PostMapping("/transgroups/{groupId}/join-requests")
-    public ApiResponse<JoinRequestResponse> requestJoinGroup(@PathVariable String groupId) {
+    public ApiResponse<JoinRequestResponse> requestJoinGroup(@PathVariable @NonNull String groupId) {
         JoinRequestResponse response = groupJoinRequestService.requestJoinGroup(groupId);
 
         return ApiResponse.<JoinRequestResponse>builder()
@@ -32,7 +33,7 @@ public class GroupJoinRequestController {
     @GetMapping("/transgroups/{groupId}/join-requests")
     public ApiResponse<List<JoinRequestResponse>> getJoinRequests(
             @RequestParam(required = false) GroupJoinRequestStatus status,
-            @PathVariable String groupId
+            @PathVariable @NonNull String groupId
             ) {
         List<JoinRequestResponse> responses = groupJoinRequestService.getJoinRequests(status, groupId);
 
@@ -41,6 +42,17 @@ public class GroupJoinRequestController {
                 .build();
     }
 
+    @PatchMapping("/transgroups/{groupId}/join-requests/{requestId}/approve")
+    public ApiResponse<JoinRequestResponse> approveJoinGroup(
+            @PathVariable @NonNull String groupId,
+            @PathVariable @NonNull String requestId
+    ) {
 
+        JoinRequestResponse response = groupJoinRequestService.approveJoinGroup(groupId, requestId);
+
+        return ApiResponse.<JoinRequestResponse>builder()
+                .result(response)
+                .build();
+    }
 
 }

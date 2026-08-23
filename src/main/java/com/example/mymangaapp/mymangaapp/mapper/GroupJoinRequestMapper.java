@@ -8,8 +8,8 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring")
 public interface GroupJoinRequestMapper {
 
-    // Không gán toàn bộ transgroup và user vào response, chỉ cần id là đủ
-    @Mapping(target = "transGroupId", source = "transGroup.id")
-    @Mapping(target = "userId", source = "user.id")
+    // Không gán toàn bộ transgroup và user vào response, chỉ cần name là đủ
+    @Mapping(target = "transGroupName", source = "transGroup.name")
+    @Mapping(target = "username", source = "user.username")
     JoinRequestResponse toJoinRequestResponse(GroupJoinRequest groupJoinRequest);
 }

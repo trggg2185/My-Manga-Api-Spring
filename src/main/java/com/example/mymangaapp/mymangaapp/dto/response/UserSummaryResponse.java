@@ -8,11 +8,9 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class JoinRequestResponse {
+public class UserSummaryResponse {
 
     String id;
-    String transGroupName;
     String username;
-    String status;
 
 }

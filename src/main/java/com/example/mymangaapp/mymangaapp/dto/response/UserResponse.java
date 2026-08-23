@@ -25,5 +25,6 @@ public class UserResponse {
     String discord;
     String bio;
     Set<RoleResponse> roles;
+    String transGroupId;
 
 }

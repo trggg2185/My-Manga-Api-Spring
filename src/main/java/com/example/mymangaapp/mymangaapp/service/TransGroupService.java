@@ -38,13 +38,13 @@ public class TransGroupService {
 
     TransGroupMapper transGroupMapper;
 
-    @Transactional // Giúp không đóng hibernate session khi save, để không bị LazyException
+    @Transactional
     public TransGroupResponse requestCreateGroup(@NotNull TransGroupCreationRequest request) {
 
         String username = SecurityUtils.getCurrentUsername();
 
         User leader = userRepository
-                .findByUsername(username)
+                .findWithDetailsByUsername(username)
                 .orElseThrow(() -> new AppException(ResponseCode.USER_NOT_FOUND));
 
         // Check người này đã có ở trong group chưa
@@ -74,7 +74,11 @@ public class TransGroupService {
         leader.setTransGroup(transGroup);
         userRepository.save(leader);
 
-        return transGroupMapper.toTransGroupResponse(transGroupRepository.save(transGroup));
+        // TH đặc biệt, trong trường hợp này mapper sẽ kẹt vòng lặp
+        // khiến không thể trả về group id cho user response được
+        // dù trong db vẫn có, giải quyết là khỏi hiển thị group id cho user response
+        // thay vào đó ta dùng user summary response cho gọn nhẹ
+        return transGroupMapper.toTransGroupResponse(transGroup);
     }
 
     @Transactional

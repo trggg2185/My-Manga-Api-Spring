@@ -1,6 +1,5 @@
 package com.example.mymangaapp.mymangaapp.utils;
 
-import com.example.mymangaapp.mymangaapp.entity.User;
 import com.example.mymangaapp.mymangaapp.exception.AppException;
 import com.example.mymangaapp.mymangaapp.exception.ResponseCode;
 import com.example.mymangaapp.mymangaapp.security.CustomUserDetails;

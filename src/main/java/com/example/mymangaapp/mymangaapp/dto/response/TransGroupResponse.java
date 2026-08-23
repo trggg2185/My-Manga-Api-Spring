@@ -14,10 +14,11 @@ import java.util.Set;
 public class TransGroupResponse {
 
     String id;
-    UserResponse leader;
+    // dùng response này của user cho gọn, ko select thêm role, permision, transgroup cho mệt
+    UserSummaryResponse leader;
     String name;
     String status;
-    Set<UserResponse> members;
+    Set<UserSummaryResponse> members;
     String description;
     LocalDate foundedDate;
 

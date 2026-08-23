@@ -38,7 +38,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     public CustomUserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         
         User user = userRepository
-                .findByUsername(username)
+                .findWithDetailsByUsername(username)
                 .orElseThrow(() -> new AppException(ResponseCode.USER_NOT_FOUND));
 
         // Ta sẽ nạp tất cả các roles và permissions mà user có vào đây
