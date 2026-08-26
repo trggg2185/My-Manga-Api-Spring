@@ -12,10 +12,20 @@ import java.util.Optional;
 public interface GroupJoinRequestRepository extends JpaRepository<GroupJoinRequest, String> {
 
     @EntityGraph(attributePaths = { "transGroup", "user" })
+    @NonNull
+    List<GroupJoinRequest> findAll();
+
+    @EntityGraph(attributePaths = { "transGroup", "user" })
     List<GroupJoinRequest> findAllByStatus(GroupJoinRequestStatus status);
 
     @EntityGraph(attributePaths = { "transGroup", "user" })
     @NonNull
     Optional<GroupJoinRequest> findWithDetailsById(@NonNull String id);
+
+    @EntityGraph(attributePaths = { "transGroup", "user" })
+    List<GroupJoinRequest> findAllByUserId(String userId);
+
+    @EntityGraph(attributePaths = { "transGroup", "user" })
+    List<GroupJoinRequest> findAllByUserIdAndStatus(String userId, GroupJoinRequestStatus status);
 
 }

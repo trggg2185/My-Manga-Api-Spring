@@ -34,4 +34,11 @@ public interface UserRepository extends JpaRepository<User, String> {
     @Modifying // Cho truy vấn update/delete làm thay đổi dữ liệu trong db
     @Query("UPDATE User u SET u.transGroup = null WHERE u.transGroup.id = :transGroupId")
     void clearTransGroupFromMembers(@Param("transGroupId") String id);
+
+    // Câu sql thuần để xoá role translator ra khỏi các members hiện tại trong 1 trans group
+    @Modifying
+    @Query(value = "DELETE FROM user_roles WHERE users_id IN " +
+                   "(SELECT id FROM user WHERE transgroup_id = :transGroupId) " +
+                   "AND roles_name = 'TRANSLATOR'", nativeQuery = true)
+    void removeTranslatorRoleFromMembers(@Param("transGroupId") String id);
 }

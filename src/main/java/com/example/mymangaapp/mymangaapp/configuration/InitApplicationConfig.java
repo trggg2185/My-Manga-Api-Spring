@@ -1,7 +1,13 @@
 package com.example.mymangaapp.mymangaapp.configuration;
 
+import java.util.List;
 import java.util.Set;
 
+import com.example.mymangaapp.mymangaapp.entity.TransGroup;
+import com.example.mymangaapp.mymangaapp.enums.TransGroupStatus;
+import com.example.mymangaapp.mymangaapp.exception.AppException;
+import com.example.mymangaapp.mymangaapp.exception.ResponseCode;
+import com.example.mymangaapp.mymangaapp.repository.TransGroupRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Bean;
@@ -28,20 +34,24 @@ public class InitApplicationConfig {
     
     final PasswordEncoder passwordEncoder;
 
-    @Value("${app.init.admin.username}")
-    String defaultAdminUsername;
-
     @Value("${app.init.admin.password}")
-    String defaultAdminPassword;
+    String adminPassword;
 
-    @Value("${app.init.admin.email}")
-    String defaultAdminEmail;
+    @Value("${app.init.user1.password}")
+    String user1Password;
+
+    @Value("${app.init.user2.password}")
+    String user2Password;
+
+    @Value("${app.init.user3.password}")
+    String user3Password;
 
     @Bean
     ApplicationRunner applicationRunner(
                 UserRepository userRepository,
                 RoleRepository roleRepository,
-                PermissionRepository permissionRepository
+                PermissionRepository permissionRepository,
+                TransGroupRepository transGroupRepository
     ) {
         return args -> {
             log.info("................Init application starts...............");
@@ -76,13 +86,13 @@ public class InitApplicationConfig {
                             .permissions(Set.of(createPost, createManga, updateManga))
                             .build()));
 
-            if (!roleRepository.existsById("USER")) {
-                roleRepository.save(Role.builder()
-                        .name("USER")
-                        .description("Role user")
-                        .permissions(Set.of(createPost))
-                        .build());
-            }
+            Role userRole = roleRepository
+                    .findById("USER")
+                    .orElseGet(() -> roleRepository.save(Role.builder()
+                            .name("USER")
+                            .description("Role user")
+                            .permissions(Set.of(createPost))
+                            .build()));
 
             if (!roleRepository.existsById("TRANSLATOR")) {
                 roleRepository.save(Role.builder()
@@ -92,16 +102,57 @@ public class InitApplicationConfig {
                         .build());
             }
 
-            if (!userRepository.existsByUsername(defaultAdminUsername)) {
+            // Khởi tạo 1 admin và 3 user
+            if (userRepository.count() == 0) {
                 User admin = User.builder()
-                        .username(defaultAdminUsername)
-                        .password(passwordEncoder.encode(defaultAdminPassword))
-                        .email(defaultAdminEmail)
+                        .username("admin")
+                        .password(passwordEncoder.encode(adminPassword))
+                        .email("admin@gmail.com")
                         .roles(Set.of(adminRole))
                         .build();
 
-                userRepository.save(admin);
-                log.info("Create admin successfully! Default password: {}", defaultAdminPassword);
+                User user1 = User.builder()
+                        .username("trg25")
+                        .password(passwordEncoder.encode(user1Password))
+                        .email("trg25@gmail.com")
+                        .roles(Set.of(userRole))
+                        .build();
+
+                User user2 = User.builder()
+                        .username("khoa12")
+                        .password(passwordEncoder.encode(user2Password))
+                        .email("khoa12@gmail.com")
+                        .roles(Set.of(userRole))
+                        .build();
+
+                User user3 = User.builder()
+                        .username("linh25")
+                        .password(passwordEncoder.encode(user3Password))
+                        .email("linh25@gmail.com")
+                        .roles(Set.of(userRole))
+                        .build();
+
+                userRepository.saveAll(List.of(admin, user1, user2, user3));
+                log.info("Create users successfully!");
+            }
+
+            if (transGroupRepository.count() == 0) {
+                User leader = userRepository
+                        .findByUsername("admin")
+                        .orElseThrow(() -> new AppException(ResponseCode.USER_NOT_FOUND));
+
+                TransGroup transGroup = TransGroup.builder()
+                        .name("Admin Team")
+                        .leader(leader)
+                        .status(TransGroupStatus.APPROVED)
+                        .members(Set.of(leader))
+                        .description("Transgroup của admin!")
+                        .build();
+
+                transGroup = transGroupRepository.save(transGroup);
+
+                leader.setTransGroup(transGroup);
+                userRepository.save(leader);
             }
 
             log.info(".................Init application ends...................");

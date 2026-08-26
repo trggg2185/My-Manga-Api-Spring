@@ -163,15 +163,13 @@ public class TransGroupService {
         // Cập nhập trạng thái nhóm đã bị xoá
         transGroup.setStatus(TransGroupStatus.DELETED);
 
+        // Xoá tất role TRANSLATOR ra tất cả các thành viên
+        // Method này phải chạy trc method clear, nếu chạy sau
+        // thì members trong group bị clear hết thì method này ko hoạt động nữa
+        userRepository.removeTranslatorRoleFromMembers(id);
+
         // Xoá tất cả các thành viên ra khỏi nhóm (method tự định nghĩa query)
         userRepository.clearTransGroupFromMembers(id);
-
-        Role translatorRole = roleRepository
-                .findById("TRANSLATOR")
-                .orElseThrow(() -> new AppException(ResponseCode.ROLE_NOT_FOUND));
-
-        // Xoá tất role TRANSLATOR ra tất cả các thành viên
-        transGroup.getMembers().forEach(member -> member.getRoles().remove(translatorRole));
 
         transGroupRepository.save(transGroup);
     }

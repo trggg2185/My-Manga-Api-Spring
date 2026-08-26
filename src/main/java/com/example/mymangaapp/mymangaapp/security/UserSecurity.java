@@ -16,6 +16,7 @@ public class UserSecurity {
 
     UserRepository userRepository;
 
+    // Check chính mình hoặc admin
     public boolean isSelfOrAdmin(String userId) {
         if (SecurityUtils.isAdmin()) {
             return true;

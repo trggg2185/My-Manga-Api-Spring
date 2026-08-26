@@ -107,17 +107,17 @@ public class GroupJoinRequestService {
             throw new AppException(ResponseCode.GROUP_JOIN_REQUEST_INVALID);
         }
 
-        // Check xem yêu cầu này có thật đang đợi duyệt không
-        if (!groupJoinRequest.getStatus().equals(GroupJoinRequestStatus.PENDING)) {
-            throw new AppException(ResponseCode.GROUP_JOIN_REQUEST_STATUS_INVALID);
-        }
-        groupJoinRequest.setStatus(GroupJoinRequestStatus.APPROVED);
-
         // Vẫn phải check user có group chưa
         // Nhỡ đâu trong khi đợi nhóm này duyệt, user vào nhóm khác mất rồi
         if (user.getTransGroup() != null) {
             throw new AppException(ResponseCode.USER_ALREADY_IN_GROUP);
         }
+
+        // Check xem yêu cầu này có thật đang đợi duyệt không
+        if (!groupJoinRequest.getStatus().equals(GroupJoinRequestStatus.PENDING)) {
+            throw new AppException(ResponseCode.GROUP_JOIN_REQUEST_STATUS_INVALID);
+        }
+        groupJoinRequest.setStatus(GroupJoinRequestStatus.APPROVED);
 
         Role translatorRole = roleRepository
                 .findById("TRANSLATOR")
@@ -137,6 +137,54 @@ public class GroupJoinRequestService {
         return groupJoinRequestMapper.toJoinRequestResponse(
                 groupJoinRequestRepository.save(groupJoinRequest)
         );
+    }
+
+    @PreAuthorize("@groupSec.isGroupLeader(#groupId)")
+    @Transactional
+    public JoinRequestResponse rejectJoinGroup(@NonNull String groupId, @NonNull String requestId) {
+
+        GroupJoinRequest groupJoinRequest = groupJoinRequestRepository
+                .findWithDetailsById(requestId)
+                .orElseThrow(() -> new AppException(ResponseCode.TRANSGROUP_JOIN_REQUEST_NOT_FOUND));
+
+        TransGroup transGroup = groupJoinRequest.getTransGroup();
+
+        // Check xem request này có thực sự của của nhóm leader này không
+        // Tránh việc leader gửi có kèm groupId vượt preauthorize
+        // nhưng lại điền request id của nhóm khác để duyệt trộm
+        if (!transGroup.getId().equals(groupId)) {
+            throw new AppException(ResponseCode.GROUP_JOIN_REQUEST_INVALID);
+        }
+
+        // Check xem yêu cầu này có thật đang đợi duyệt không
+        if (!groupJoinRequest.getStatus().equals(GroupJoinRequestStatus.PENDING)) {
+            throw new AppException(ResponseCode.GROUP_JOIN_REQUEST_STATUS_INVALID);
+        }
+        groupJoinRequest.setStatus(GroupJoinRequestStatus.REJECTED);
+
+        return groupJoinRequestMapper.toJoinRequestResponse(
+                groupJoinRequestRepository.save(groupJoinRequest)
+        );
+    }
+
+    // Hàm lấy những yêu cầu tham gia nhóm từ chính user hiện tại đang đăng nhập
+    public List<JoinRequestResponse> getMyJoinRequests(GroupJoinRequestStatus status) {
+
+        String currentUserId = SecurityUtils.getCurrentUserId();
+
+        if (status != null) {
+            return groupJoinRequestRepository
+                    .findAllByUserIdAndStatus(currentUserId, status)
+                    .stream()
+                    .map(groupJoinRequestMapper::toJoinRequestResponse)
+                    .toList();
+        }
+
+        return groupJoinRequestRepository
+                .findAllByUserId(currentUserId)
+                .stream()
+                .map(groupJoinRequestMapper::toJoinRequestResponse)
+                .toList();
     }
 
 }

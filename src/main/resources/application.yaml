@@ -26,6 +26,10 @@ jwt:
 app:
     init:
         admin:
-            username: admin
             password: ${INIT_ADMIN_PASSWORD}
-            email: admin@gmail.com
+        user1:
+            password: ${INIT_USER1_PASSWORD}
+        user2:
+            password: ${INIT_USER2_PASSWORD}
+        user3:
+            password: ${INIT_USER3_PASSWORD}

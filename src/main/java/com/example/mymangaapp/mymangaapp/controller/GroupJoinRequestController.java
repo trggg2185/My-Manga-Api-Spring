@@ -55,4 +55,29 @@ public class GroupJoinRequestController {
                 .build();
     }
 
+    @PatchMapping("/transgroups/{groupId}/join-requests/{requestId}/reject")
+    public ApiResponse<JoinRequestResponse> rejectJoinGroup(
+            @PathVariable @NonNull String groupId,
+            @PathVariable @NonNull String requestId
+    ) {
+
+        JoinRequestResponse response = groupJoinRequestService.rejectJoinGroup(groupId, requestId);
+
+        return ApiResponse.<JoinRequestResponse>builder()
+                .result(response)
+                .build();
+    }
+
+    @GetMapping("/users/me/join-requests")
+    public ApiResponse<List<JoinRequestResponse>> getMyJoinRequests(
+            @RequestParam(required = false) GroupJoinRequestStatus status
+    ) {
+
+        List<JoinRequestResponse> responses = groupJoinRequestService.getMyJoinRequests(status);
+
+        return ApiResponse.<List<JoinRequestResponse>>builder()
+                .result(responses)
+                .build();
+    }
+
 }
