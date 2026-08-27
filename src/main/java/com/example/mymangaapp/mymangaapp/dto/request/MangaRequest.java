@@ -10,7 +10,7 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Builder
-public class MangaCreationRequest {
+public class MangaRequest {
 
     @Size(min = 3, message = "MANGA_NAME_INVALID")
     String name;

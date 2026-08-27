@@ -104,7 +104,7 @@ public class GroupJoinRequestService {
         // Tránh việc leader gửi có kèm groupId vượt preauthorize
         // nhưng lại điền request id của nhóm khác để duyệt trộm
         if (!transGroup.getId().equals(groupId)) {
-            throw new AppException(ResponseCode.GROUP_JOIN_REQUEST_INVALID);
+            throw new AppException(ResponseCode.UNAUTHORIZED);
         }
 
         // Vẫn phải check user có group chưa
@@ -153,7 +153,7 @@ public class GroupJoinRequestService {
         // Tránh việc leader gửi có kèm groupId vượt preauthorize
         // nhưng lại điền request id của nhóm khác để duyệt trộm
         if (!transGroup.getId().equals(groupId)) {
-            throw new AppException(ResponseCode.GROUP_JOIN_REQUEST_INVALID);
+            throw new AppException(ResponseCode.UNAUTHORIZED);
         }
 
         // Check xem yêu cầu này có thật đang đợi duyệt không

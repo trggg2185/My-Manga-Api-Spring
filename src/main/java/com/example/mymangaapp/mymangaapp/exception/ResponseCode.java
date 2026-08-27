@@ -43,13 +43,14 @@ public enum ResponseCode {
     TRANSGROUP_NAME_INVALID("3007", "Tên nhóm dịch ít nhất phải có {min} ký tự!", HttpStatus.BAD_REQUEST),
     MANGA_NAME_INVALID("3008", "Tên truyện ít nhất phải có {min} ký tự!", HttpStatus.BAD_REQUEST),
     AUTHORS_NAME_REQUIRED("3009", "Tên tác giả không được để trống!", HttpStatus.BAD_REQUEST),
-    GENRES_REQUIRED("30010", "Thể loại truyện không được để trống!", HttpStatus.BAD_REQUEST),
+    GENRES_REQUIRED("3010", "Thể loại truyện không được để trống!", HttpStatus.BAD_REQUEST),
 
     USER_NOT_FOUND("4001", "Người dùng không tồn tại!", HttpStatus.NOT_FOUND),
     ROLE_NOT_FOUND("4002", "Vai trò không tồn tại!", HttpStatus.NOT_FOUND),
     PERMISSION_NOT_FOUND("4003", "Quyền không tồn tại!", HttpStatus.NOT_FOUND),
     TRANSGROUP_NOT_FOUND("4004", "Nhóm dịch không tồn tại!", HttpStatus.NOT_FOUND),
     TRANSGROUP_JOIN_REQUEST_NOT_FOUND("4005", "Yêu cầu vào nhóm không tồn tại!", HttpStatus.NOT_FOUND),
+    MANGA_NOT_FOUND("4006", "Manga không tồn tại!", HttpStatus.NOT_FOUND),
 
     USERNAME_ALREADY_EXISTS("5001", "Tên người dùng đã tồn tại!", HttpStatus.BAD_REQUEST),
     EMAIL_ALREADY_EXISTS("5002", "Email đã tồn tại!", HttpStatus.BAD_REQUEST),
@@ -60,10 +61,8 @@ public enum ResponseCode {
     PERMISSION_REQUIRED("5007", "Mảng các quyền không được để trống!", HttpStatus.BAD_REQUEST),
     TRANSGROUP_STATUS_INVALID("5008", "Nhóm dịch đã được chấp nhận, bị từ chối hoặc đã bị xoá!", HttpStatus.BAD_REQUEST),
     USER_ALREADY_IN_GROUP("5009", "Người dùng đã trong nhóm dịch!", HttpStatus.BAD_REQUEST),
-    MANGA_ALREADY_EXISTS("5010", "Truyện đã tồn tại!", HttpStatus.BAD_REQUEST),
     TRANSGROUP_NOT_APPROVED("5011", "Nhóm dịch chưa được duyệt!", HttpStatus.BAD_REQUEST),
-    GROUP_JOIN_REQUEST_INVALID("5012", "Yêu cầu vào nhóm không hợp lệ!", HttpStatus.BAD_REQUEST),
-    GROUP_JOIN_REQUEST_STATUS_INVALID("5013", "Yêu cầu vào nhóm đã được chập nhận hoặc bị tự chối!", HttpStatus.BAD_REQUEST);
+    GROUP_JOIN_REQUEST_STATUS_INVALID("5012", "Yêu cầu vào nhóm đã được chập nhận hoặc bị tự chối!", HttpStatus.BAD_REQUEST);
 
     String code;
     String message;

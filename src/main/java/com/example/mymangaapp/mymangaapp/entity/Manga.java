@@ -2,7 +2,6 @@ package com.example.mymangaapp.mymangaapp.entity;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Set;
 
 import com.example.mymangaapp.mymangaapp.enums.MangaStatus;
 
@@ -45,10 +44,6 @@ public class Manga {
 
     String description;
 
-    // Khởi tạo views mặc định là 0, phải có builder default không builder sẽ ignore view mình gán mất
-    @Builder.Default
-    Long views = 0L;
-
     @CreatedDate
     @Column(name = "published_date", nullable = false, updatable = false)
     LocalDate publishedDate;
@@ -60,7 +55,8 @@ public class Manga {
         joinColumns = @JoinColumn(name = "manga_id"),
         inverseJoinColumns = @JoinColumn(name = "transgroup_id")
     )
-    Set<TransGroup> transGroups;
+    // Lưu dạng List chứ ko dùng Set
+    List<TransGroup> transGroups;
 
     // QH: 1 manga có nhiều chapter
     @OneToMany(mappedBy = "manga", fetch = FetchType.LAZY)

@@ -4,6 +4,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -17,6 +18,7 @@ public class MangaResponse {
     String authorsName;
     String genres;
     String status;
+    List<String> transGroupsId;
     String description;
     LocalDate publishedDate;
 

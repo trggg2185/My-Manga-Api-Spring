@@ -1,19 +1,16 @@
 package com.example.mymangaapp.mymangaapp.mapper;
 
-import com.example.mymangaapp.mymangaapp.dto.request.MangaCreationRequest;
+import com.example.mymangaapp.mymangaapp.dto.request.MangaRequest;
 import com.example.mymangaapp.mymangaapp.dto.response.MangaResponse;
 import com.example.mymangaapp.mymangaapp.entity.Manga;
-import org.mapstruct.BeanMapping;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.NullValuePropertyMappingStrategy;
+import com.example.mymangaapp.mymangaapp.entity.TransGroup;
+import org.mapstruct.*;
 
 @Mapper(componentModel = "spring")
 public interface MangaMapper {
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "transGroups", ignore = true)
-    @Mapping(target = "views", ignore = true)
     @Mapping(target = "publishedDate", ignore = true)
     @Mapping(target = "chapters", ignore = true)
     /*
@@ -22,8 +19,21 @@ public interface MangaMapper {
     * hãy giữ nguyên giá trị mặc định của Manga."
     * */
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    Manga toManga(MangaCreationRequest request);
+    Manga toManga(MangaRequest request);
 
+    @Mapping(target = "transGroupsId", source = "transGroups")
     MangaResponse toMangaResponse(Manga manga);
+
+    // Để mapper tự map từng phần tử transGroup thành transGroupId
+    default String mapTransGroupToId(TransGroup transGroup) {
+        return (transGroup != null) ? transGroup.getId() : null;
+    }
+
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "transGroups", ignore = true)
+    @Mapping(target = "publishedDate", ignore = true)
+    @Mapping(target = "chapters", ignore = true)
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    void updateMangaFromRequest(@MappingTarget Manga manga, MangaRequest request);
 
 }

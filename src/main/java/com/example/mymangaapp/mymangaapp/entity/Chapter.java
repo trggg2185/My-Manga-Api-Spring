@@ -37,6 +37,10 @@ public class Chapter {
     @JoinColumn(name = "manga_id", nullable = false)
     Manga manga;
 
+    // Khởi tạo views mặc định là 0, phải có builder default không builder sẽ ignore view mình gán mất
+    @Builder.Default
+    Long views = 0L;
+
     String name;
     String title;
     LocalDate publishedDate;
