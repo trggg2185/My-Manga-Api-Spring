@@ -1,7 +1,5 @@
 package com.example.mymangaapp.mymangaapp.dto.request;
 
-import java.util.Set;
-
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Size;
 import lombok.AccessLevel;

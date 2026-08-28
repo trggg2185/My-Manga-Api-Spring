@@ -39,7 +39,7 @@ public class AuthenticationController {
     }
 
     @PostMapping("/introspect")
-    public ApiResponse<IntrospectResponse> login(@RequestBody IntrospectRequest request) {
+    public ApiResponse<IntrospectResponse> introspect(@RequestBody IntrospectRequest request) {
 
         IntrospectResponse response = authenticationService.introspect(request);
 

@@ -46,7 +46,7 @@ public class TransGroup {
     @Column(name = "name", unique = true, columnDefinition = "VARCHAR(255) COLLATE utf8mb4_unicode_ci")
     String name;
 
-    @Column(name = "description", nullable = true, length = 300)
+    @Column(name = "description", length = 300)
     String description;
 
     @Enumerated(EnumType.STRING)

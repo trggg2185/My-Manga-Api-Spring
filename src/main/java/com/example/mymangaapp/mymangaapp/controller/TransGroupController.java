@@ -21,7 +21,6 @@ import java.util.List;
 public class TransGroupController {
 
     TransGroupService transGroupService;
-    MangaService mangaService;
 
     @PostMapping("/transgroups")
     public ApiResponse<TransGroupResponse> requestCreateGroup(@RequestBody TransGroupCreationRequest request) {

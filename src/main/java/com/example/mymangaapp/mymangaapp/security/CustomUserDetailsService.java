@@ -4,8 +4,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import com.example.mymangaapp.mymangaapp.entity.Role;
-import com.example.mymangaapp.mymangaapp.repository.PermissionRepository;
-import com.example.mymangaapp.mymangaapp.repository.RoleRepository;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -31,8 +29,6 @@ import lombok.experimental.FieldDefaults;
 public class CustomUserDetailsService implements UserDetailsService {
 
     UserRepository userRepository;
-    RoleRepository roleRepository;
-    PermissionRepository permissionRepository;
 
     @Override
     public CustomUserDetails loadUserByUsername(String username) throws UsernameNotFoundException {

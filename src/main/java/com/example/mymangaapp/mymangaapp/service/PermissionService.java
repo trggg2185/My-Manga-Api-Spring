@@ -45,8 +45,7 @@ public class PermissionService {
 
         return permissions
                 .stream()
-                .map(permission ->
-                        permissionMapper.toPermissionResponse(permission))
+                .map(permissionMapper::toPermissionResponse)
                 .toList();
     }
 

@@ -79,8 +79,7 @@ public class UserService {
         List<User> users = userRepository.findAll();
 
         return users.stream()
-                .map(user -> 
-                        userMapper.toUserResponse(user))
+                .map(userMapper::toUserResponse)
                 .toList();
 
     }

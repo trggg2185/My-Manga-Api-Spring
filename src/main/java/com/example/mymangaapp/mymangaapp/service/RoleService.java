@@ -63,8 +63,7 @@ public class RoleService {
         List<Role> roles = roleRepository.findAll();
 
         return roles.stream()
-                .map(role -> 
-                        roleMapper.toRoleResponse(role))
+                .map(roleMapper::toRoleResponse)
                 .toList();
     }
 

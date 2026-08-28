@@ -65,12 +65,12 @@ public class User {
     String facebook;
     String discord;
 
-    @Column(name = "bio", nullable = true, length = 300)
+    @Column(name = "bio", length = 300)
     String bio;
 
     // QH: Nhiều user có thể thuộc về 1 trans group
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "transgroup_id", nullable = true) // chỉ định tên cột khoá ngoại sẽ sinh dưới db
+    @JoinColumn(name = "transgroup_id") // chỉ định tên cột khoá ngoại sẽ sinh dưới db
     TransGroup transGroup;
 
     // QH: 1 user có thể có nhiểu role

@@ -1,6 +1,5 @@
 package com.example.mymangaapp.mymangaapp.security;
 
-import com.example.mymangaapp.mymangaapp.repository.UserRepository;
 import com.example.mymangaapp.mymangaapp.utils.SecurityUtils;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -13,8 +12,6 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class UserSecurity {
-
-    UserRepository userRepository;
 
     // Check chính mình hoặc admin
     public boolean isSelfOrAdmin(String userId) {

@@ -15,6 +15,7 @@ import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.UUID;
 
 // Cung cấp các phương thức tương tác với file: lưu trữ, xoá, ...
@@ -33,7 +34,7 @@ public class StorageService {
     @Value("${cloud.r2.s3.public-url}")
     String publicUrl;
 
-    // upload file lên r2 và trả về url cho frontend truy cập để hiển thị
+    // upload 1 file
     public String uploadTmpFile(MultipartFile file) {
 
         try {
@@ -44,7 +45,7 @@ public class StorageService {
             // lấy đuôi file (.jpg, .png, ...)
             String extension = StringUtils.getFilenameExtension(originalFileName);
 
-            String filename = UUID.randomUUID().toString() + "." + extension;
+            String filename = UUID.randomUUID() + "." + extension;
 
             // tạo url folder theo ngày
             String dateFolder = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
@@ -65,12 +66,20 @@ public class StorageService {
                     RequestBody.fromInputStream(file.getInputStream(), file.getSize())
             );
 
+            // trả về url cho frontend truy cập để hiển thị
             return publicUrl + "/" + objectKey;
         }
         catch (IOException exception) {
             throw new RuntimeException("Lỗi liên quan đến IO!", exception);
         }
 
+    }
+
+    // upload nhiều files
+    public List<String> uploadMultiTmpFiles(List<MultipartFile> files) {
+
+
+        return null;
     }
 
 }
