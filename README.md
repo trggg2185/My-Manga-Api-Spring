@@ -1,4 +1,4 @@
-MỘT HỆ THỐNG SPRING BACKEND MANGA ĐƠN GIẢN
+MỘT HỆ THỐNG BACKEND MANGA
 
 * DB
     - user(id, transgroup_id(nullable), username(unique), password, email, member_since, facebook, discord, bio) 
@@ -13,3 +13,10 @@ MỘT HỆ THỐNG SPRING BACKEND MANGA ĐƠN GIẢN
     - manga_transgroups(manga_id, transgroup_id)
     - invalidated_token(id, expiration_time)
     - group_join_request(id, status, transgroup_id, user_id)
+
+* Công nghệ sử dụng
+    - Spring Boot
+    - Spring JPA
+    - Spring Security
+    - Redis
+    - Amazon Web Service SDK S3 (R2 Object Storage)
