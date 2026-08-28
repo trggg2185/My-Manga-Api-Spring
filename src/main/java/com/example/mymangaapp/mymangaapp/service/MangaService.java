@@ -2,6 +2,7 @@ package com.example.mymangaapp.mymangaapp.service;
 
 import com.example.mymangaapp.mymangaapp.dto.request.MangaRequest;
 import com.example.mymangaapp.mymangaapp.dto.response.MangaResponse;
+import com.example.mymangaapp.mymangaapp.dto.response.MangaSummaryResponse;
 import com.example.mymangaapp.mymangaapp.entity.Manga;
 import com.example.mymangaapp.mymangaapp.entity.TransGroup;
 import com.example.mymangaapp.mymangaapp.enums.MangaStatus;
@@ -40,25 +41,25 @@ public class MangaService {
     public MangaResponse createManga(@NotNull MangaRequest request, @NonNull String groupId) {
 
         // Vẫn phải check nhóm tồn tại không
-        TransGroup transGroup = transGroupRepository
+        TransGroup ownerTransGroup = transGroupRepository
                 .findWithDetailsById(groupId)
                 .orElseThrow(() -> new AppException(ResponseCode.TRANSGROUP_NOT_FOUND));
 
         // Nhóm này đã được admin approve chưa
-        if (!transGroup.getStatus().equals(TransGroupStatus.APPROVED)) {
+        if (!ownerTransGroup.getStatus().equals(TransGroupStatus.APPROVED)) {
             throw new AppException(ResponseCode.TRANSGROUP_NOT_APPROVED);
         }
 
         String currentUsername = SecurityUtils.getCurrentUsername();
 
         // Check user hiện tại phải là leader của trans group thì mới được tạo
-        if (!transGroup.getLeader().getUsername().equals(currentUsername)) {
+        if (!ownerTransGroup.getLeader().getUsername().equals(currentUsername)) {
             throw new AppException(ResponseCode.UNAUTHORIZED);
         }
 
         Manga manga = mangaMapper.toManga(request);
-
-        manga.setTransGroups(List.of(transGroup));
+        manga.setOwnerTransGroup(ownerTransGroup);
+        manga.setTransGroups(List.of(ownerTransGroup));
 
         return mangaMapper.toMangaResponse(mangaRepository.save(manga));
     }
@@ -82,6 +83,20 @@ public class MangaService {
     }
 
     // public
+    public List<MangaSummaryResponse> getMangasByGroupId(@NonNull String groupId) {
+
+        if (!transGroupRepository.existsById(groupId)) {
+            throw new AppException(ResponseCode.TRANSGROUP_NOT_FOUND);
+        }
+
+        return mangaRepository
+                .findAllByTransGroupsId(groupId)
+                .stream()
+                .map(mangaMapper::toMangaSummaryResponse)
+                .toList();
+    }
+
+    // public
     public MangaResponse getMangaById(@NonNull String id) {
         Manga manga = mangaRepository
                 .findById(id)
@@ -99,12 +114,12 @@ public class MangaService {
                 .findById(mangaId)
                 .orElseThrow(() -> new AppException(ResponseCode.MANGA_NOT_FOUND));
 
-        // Check xem manga này đúng là của nhóm không
+        // Những nhóm khác cùng dịch 1 bộ thì ko có quyền sửa thông tin manga đâu
+        // chỉ có nhóm chủ sở hữu bộ này thôi
+
+        // Check xem manga này đúng sở hữu bởi nhóm không
         // nhỡ manga của nhóm khác mà update thì toi
-        boolean isOwnManga = manga.getTransGroups()
-                .stream()
-                .anyMatch(transGroup -> transGroup.getId().equals(groupId));
-        if (!isOwnManga) {
+        if (!manga.getOwnerTransGroup().getId().equals(groupId)) {
             throw new AppException(ResponseCode.UNAUTHORIZED);
         }
 
@@ -112,5 +127,8 @@ public class MangaService {
 
         return mangaMapper.toMangaResponse(mangaRepository.save(manga));
     }
+
+    // làm sau
+    public void delete() {}
 
 }

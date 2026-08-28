@@ -39,7 +39,8 @@ public class SecutityConfig {
 
     static String[] GET_PUBLIC_ENDPOINTS = {
             "/transgroups",
-            "/mangas/{id}"
+            "/mangas/{id}",
+            "transgroups/{id}/mangas"
     };
 
     static String ADMIN = "ADMIN";

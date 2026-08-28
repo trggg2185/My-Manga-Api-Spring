@@ -3,6 +3,7 @@ package com.example.mymangaapp.mymangaapp.controller;
 import com.example.mymangaapp.mymangaapp.dto.request.MangaRequest;
 import com.example.mymangaapp.mymangaapp.dto.response.ApiResponse;
 import com.example.mymangaapp.mymangaapp.dto.response.MangaResponse;
+import com.example.mymangaapp.mymangaapp.dto.response.MangaSummaryResponse;
 import com.example.mymangaapp.mymangaapp.enums.MangaStatus;
 import com.example.mymangaapp.mymangaapp.service.MangaService;
 import jakarta.validation.Valid;
@@ -46,7 +47,17 @@ public class MangaController {
                 .build();
     }
 
+    // public to everyone
+    @GetMapping("/transgroups/{groupId}/mangas")
+    public ApiResponse<List<MangaSummaryResponse>> getMangasByGroupId(
+            @PathVariable @NonNull String groupId
+    ) {
+        List<MangaSummaryResponse> responses = mangaService.getMangasByGroupId(groupId);
 
+        return ApiResponse.<List<MangaSummaryResponse>>builder()
+                .result(responses)
+                .build();
+    }
 
     @GetMapping("/mangas/{id}")
     public ApiResponse<MangaResponse> getMangaById(

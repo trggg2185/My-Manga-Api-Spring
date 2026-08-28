@@ -48,6 +48,11 @@ public class Manga {
     @Column(name = "published_date", nullable = false, updatable = false)
     LocalDate publishedDate;
 
+    // Manga này do nhóm transgroup này sỡ hữu
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "owner_transgroup_id", nullable = false)
+    TransGroup ownerTransGroup;
+
     // QH: 1 manga có thể có nhiều trans group dịch
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(

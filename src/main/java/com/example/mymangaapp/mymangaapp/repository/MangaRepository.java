@@ -11,15 +11,17 @@ import java.util.Optional;
 
 public interface MangaRepository extends JpaRepository<Manga, String> {
 
-    @EntityGraph(attributePaths = { "transGroups" })
+    @EntityGraph(attributePaths = { "ownerTransGroup", "transGroups" })
     @NonNull
     List<Manga> findAll();
 
-    @EntityGraph(attributePaths = { "transGroups"})
+    @EntityGraph(attributePaths = { "ownerTransGroup", "transGroups"})
     List<Manga> findAllByStatus(MangaStatus status);
 
-    @EntityGraph(attributePaths = { "transGroups" })
+    @EntityGraph(attributePaths = { "ownerTransGroup", "transGroups" })
     @NonNull
     Optional<Manga> findById(@NonNull String id);
+
+    List<Manga> findAllByTransGroupsId(String groupId);
 
 }
