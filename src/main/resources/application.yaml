@@ -16,12 +16,27 @@ spring:
             ddl-auto: update
         show-sql: true
         open-in-view: false
+    servlet:
+        multipart:
+            max-file-size: 3MB
+            max-request-size: 50MB
 
 jwt:
     signer-key: ${SIGNER_KEY}
     access-token-validity-in-seconds: ${ACCESS_TOKEN_VALIDITY_IN_SECONDS}
     refreshable-duration-in-seconds: ${REFRESHABLE_DURATION_IN_SECONDS}
 
+cloud:
+    r2:
+        credentials:
+            access-key-id: ${CLOUDFLARE_R2_ACCESS_KEY_ID}
+            secret-access-key: ${CLOUDFLARE_R2_SECRET_ACCESS_KEY}
+        region:
+            static: auto
+        bucket: ${CLOUDFLARE_R2_BUCKET_NAME}
+        s3:
+            endpoint-url: ${CLOUDFLARE_R2_ENDPOINT_URL}
+            public-url: ${CLOUDFLARE_R2_PUBLIC_URL}
 
 app:
     init:

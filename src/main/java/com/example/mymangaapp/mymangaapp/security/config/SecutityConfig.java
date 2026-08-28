@@ -35,6 +35,7 @@ public class SecutityConfig {
             "/auth/introspect",
             "/auth/logout",
             "/auth/refresh",
+            "/upload/file"
     };
 
     static String[] GET_PUBLIC_ENDPOINTS = {

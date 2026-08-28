@@ -62,7 +62,8 @@ public enum ResponseCode {
     TRANSGROUP_STATUS_INVALID("5008", "Nhóm dịch đã được chấp nhận, bị từ chối hoặc đã bị xoá!", HttpStatus.BAD_REQUEST),
     USER_ALREADY_IN_GROUP("5009", "Người dùng đã trong nhóm dịch!", HttpStatus.BAD_REQUEST),
     TRANSGROUP_NOT_APPROVED("5011", "Nhóm dịch chưa được duyệt!", HttpStatus.BAD_REQUEST),
-    GROUP_JOIN_REQUEST_STATUS_INVALID("5012", "Yêu cầu vào nhóm đã được chập nhận hoặc bị tự chối!", HttpStatus.BAD_REQUEST);
+    GROUP_JOIN_REQUEST_STATUS_INVALID("5012", "Yêu cầu vào nhóm đã được chập nhận hoặc bị tự chối!", HttpStatus.BAD_REQUEST),
+    FILE_INVLAID("5013", "File không hợp lệ!", HttpStatus.BAD_REQUEST);
 
     String code;
     String message;
