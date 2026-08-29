@@ -1,6 +1,7 @@
 package com.example.mymangaapp.mymangaapp.entity;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.persistence.*;
@@ -50,6 +51,8 @@ public class Chapter {
     LocalDate updatedDate;
 
     // QH: 1 chapter chứa nhiều page (ảnh)
-    @OneToMany(mappedBy = "chapter", fetch = FetchType.LAZY)
-    List<Page> pages;
+    // cascade giúp ko tự lưu chapter và lưu page thủ công nữa, chỉ cần lưu chapter auto lưu page trong chapter đó
+    // orphanremoval giúp khi xoá chapter tự động xoá page thuộc về chapter đó
+    @OneToMany(mappedBy = "chapter", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    List<Page> pages = new ArrayList<>(); // khởi tạo list rỗng tránh null pointer ex khi add
 }

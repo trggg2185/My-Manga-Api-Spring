@@ -34,14 +34,13 @@ public class SecutityConfig {
             "/auth/login",
             "/auth/introspect",
             "/auth/logout",
-            "/auth/refresh",
-            "/upload/file"
+            "/auth/refresh"
     };
 
     static String[] GET_PUBLIC_ENDPOINTS = {
             "/transgroups",
             "/mangas/{id}",
-            "transgroups/{id}/mangas"
+            "/transgroups/{id}/mangas"
     };
 
     static String ADMIN = "ADMIN";

@@ -1,12 +1,6 @@
 package com.example.mymangaapp.mymangaapp.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -33,6 +27,12 @@ public class Page {
     @JoinColumn(name = "chapter_id", nullable = false)
     Chapter chapter;
 
+    // Field này để xác định trang này là
+    // trang bao nhiêu trong 1 chap
+    // có thể dùng để sx, thường được gán unique
+    // và đánh index để tăng tốc độ tìmkiếm
+    @Column(name = "page_number", unique = true)
     Integer pageNumber;
+
     String imageUrl;
 }
