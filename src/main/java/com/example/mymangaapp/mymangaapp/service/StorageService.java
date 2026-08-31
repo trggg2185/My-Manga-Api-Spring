@@ -121,7 +121,7 @@ public class StorageService {
 
     }
 
-    public void deleteFile(String key) {
+    private void deleteFile(String key) {
         DeleteObjectRequest deleteObjRequest = DeleteObjectRequest.builder()
                 .bucket(bucketName)
                 .key(key)
@@ -131,7 +131,7 @@ public class StorageService {
         log.info("Đã xoá file temp: {}", key);
     }
 
-    public String generatePublicUrl(String key) {
+    private String generatePublicUrl(String key) {
         return publicUrl + "/" + key;
     }
 

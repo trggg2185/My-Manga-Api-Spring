@@ -54,5 +54,6 @@ public class Chapter {
     // cascade giúp ko tự lưu chapter và lưu page thủ công nữa, chỉ cần lưu chapter auto lưu page trong chapter đó
     // orphanremoval giúp khi xoá chapter tự động xoá page thuộc về chapter đó
     @OneToMany(mappedBy = "chapter", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
     List<Page> pages = new ArrayList<>(); // khởi tạo list rỗng tránh null pointer ex khi add
 }
