@@ -10,6 +10,7 @@ import com.example.mymangaapp.mymangaapp.exception.ResponseCode;
 import com.example.mymangaapp.mymangaapp.mapper.ChapterMapper;
 import com.example.mymangaapp.mymangaapp.repository.ChapterRepository;
 import com.example.mymangaapp.mymangaapp.repository.MangaRepository;
+import com.example.mymangaapp.mymangaapp.utils.SecurityUtils;
 import com.github.slugify.Slugify;
 import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
@@ -49,6 +50,17 @@ public class ChapterService {
         Manga manga = mangaRepository
                 .findById(mangaId)
                 .orElseThrow(() -> new AppException(ResponseCode.MANGA_NOT_FOUND));
+
+        String currentUsername = SecurityUtils.getCurrentUsername();
+
+        // Chỉ cần user hiện tại là thành viên trong những
+        // nhóm đang dịch manga này là được
+        boolean isMember = manga.getTransGroups().stream()
+                .flatMap(transGroup -> transGroup.getMembers().stream())
+                .anyMatch(member -> member.getUsername().equals(currentUsername));
+        if (!isMember) {
+            throw new AppException(ResponseCode.UNAUTHORIZED);
+        }
 
         Chapter chapter = chapterMapper.toChapter(request);
 
