@@ -12,7 +12,7 @@ import com.example.mymangaapp.mymangaapp.exception.ResponseCode;
 import com.example.mymangaapp.mymangaapp.mapper.MangaMapper;
 import com.example.mymangaapp.mymangaapp.repository.MangaRepository;
 import com.example.mymangaapp.mymangaapp.repository.TransGroupRepository;
-import com.example.mymangaapp.mymangaapp.utils.SecurityUtils;
+import com.example.mymangaapp.mymangaapp.security.component.SecurityUtils;
 import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;

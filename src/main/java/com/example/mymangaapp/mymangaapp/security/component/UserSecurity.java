@@ -1,6 +1,5 @@
-package com.example.mymangaapp.mymangaapp.security;
+package com.example.mymangaapp.mymangaapp.security.component;
 
-import com.example.mymangaapp.mymangaapp.utils.SecurityUtils;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -20,7 +19,7 @@ public class UserSecurity {
         }
 
         String id = SecurityUtils.getCurrentUserId();
-
         return userId.equals(id);
     }
+
 }

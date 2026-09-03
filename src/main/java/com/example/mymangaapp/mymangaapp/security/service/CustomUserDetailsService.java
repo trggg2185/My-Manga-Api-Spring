@@ -1,4 +1,4 @@
-package com.example.mymangaapp.mymangaapp.security;
+package com.example.mymangaapp.mymangaapp.security.service;
 
 import java.util.HashSet;
 import java.util.Set;

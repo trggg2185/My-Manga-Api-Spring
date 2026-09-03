@@ -5,6 +5,7 @@ import com.example.mymangaapp.mymangaapp.exception.ResponseCode;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Value;
@@ -31,15 +32,17 @@ import java.util.UUID;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class StorageService {
 
-    final S3Client s3Client;
+    S3Client s3Client;
 
     @Value("${cloud.r2.bucket}")
+    @NonFinal
     String bucketName;
 
     @Value("${cloud.r2.s3.public-url}")
+    @NonFinal
     String publicUrl;
 
     // upload 1 file, yc có role translator

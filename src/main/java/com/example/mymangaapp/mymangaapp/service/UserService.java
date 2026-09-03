@@ -3,7 +3,7 @@ package com.example.mymangaapp.mymangaapp.service;
 import java.util.List;
 import java.util.Set;
 
-import com.example.mymangaapp.mymangaapp.utils.SecurityUtils;
+import com.example.mymangaapp.mymangaapp.security.component.SecurityUtils;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;

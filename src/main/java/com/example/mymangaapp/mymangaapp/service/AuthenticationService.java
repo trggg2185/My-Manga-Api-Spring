@@ -18,7 +18,7 @@ import com.example.mymangaapp.mymangaapp.exception.AppException;
 import com.example.mymangaapp.mymangaapp.exception.ResponseCode;
 import com.example.mymangaapp.mymangaapp.repository.InvalidatedTokenRepository;
 import com.example.mymangaapp.mymangaapp.repository.UserRepository;
-import com.example.mymangaapp.mymangaapp.utils.JwtUtils;
+import com.example.mymangaapp.mymangaapp.security.utils.JwtUtils;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;

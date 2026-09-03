@@ -1,4 +1,4 @@
-package com.example.mymangaapp.mymangaapp.utils;
+package com.example.mymangaapp.mymangaapp.security.utils;
 
 import java.text.ParseException;
 import java.time.Instant;

@@ -1,4 +1,4 @@
-package com.example.mymangaapp.mymangaapp.security;
+package com.example.mymangaapp.mymangaapp.security.jwt;
 
 import com.example.mymangaapp.mymangaapp.exception.AppException;
 import com.example.mymangaapp.mymangaapp.exception.ResponseCode;

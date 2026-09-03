@@ -2,7 +2,7 @@ package com.example.mymangaapp.mymangaapp.security.filter;
 
 import com.example.mymangaapp.mymangaapp.exception.AppException;
 import com.example.mymangaapp.mymangaapp.exception.ResponseCode;
-import com.example.mymangaapp.mymangaapp.security.CustomUserDetails;
+import com.example.mymangaapp.mymangaapp.security.service.CustomUserDetails;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.lang.NonNull;
 
@@ -14,8 +14,8 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 
-import com.example.mymangaapp.mymangaapp.security.CustomUserDetailsService;
-import com.example.mymangaapp.mymangaapp.utils.JwtUtils;
+import com.example.mymangaapp.mymangaapp.security.service.CustomUserDetailsService;
+import com.example.mymangaapp.mymangaapp.security.utils.JwtUtils;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;

@@ -1,4 +1,4 @@
-package com.example.mymangaapp.mymangaapp.security;
+package com.example.mymangaapp.mymangaapp.security.service;
 
 import lombok.Builder;
 import lombok.Getter;

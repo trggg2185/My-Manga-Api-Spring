@@ -1,11 +1,12 @@
-package com.example.mymangaapp.mymangaapp.utils;
+package com.example.mymangaapp.mymangaapp.security.component;
 
 import com.example.mymangaapp.mymangaapp.exception.AppException;
 import com.example.mymangaapp.mymangaapp.exception.ResponseCode;
-import com.example.mymangaapp.mymangaapp.security.CustomUserDetails;
+import com.example.mymangaapp.mymangaapp.security.service.CustomUserDetails;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+
 
 @Slf4j
 public class SecurityUtils {
