@@ -23,6 +23,14 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Builder
 @EntityListeners(AuditingEntityListener.class)
+@Table(
+        name = "chapter",
+        uniqueConstraints = {
+                // Set cặp id, index là duy nhất
+                // tức là cùng 1 bộ manga không thể có 2 chapter có index giống nhau
+                @UniqueConstraint(columnNames = { "manga_id", "chapter_index" })
+        }
+)
 @Entity
 public class Chapter {
 
@@ -39,7 +47,12 @@ public class Chapter {
     @Builder.Default
     Long views = 0L;
 
-    String name;
+    // field này dùng để săpxep và tính toàn các chương, dạng số nguyên
+    // Không đc đặt tên biến là index vi phạm quy tắc sql
+    @Column(name = "chapter_index", nullable = false)
+    Integer chapterIndex;
+
+    // title là tiêu đề của chương này ví dụ "Sự khởi đầu"
     String title;
 
     @CreatedDate

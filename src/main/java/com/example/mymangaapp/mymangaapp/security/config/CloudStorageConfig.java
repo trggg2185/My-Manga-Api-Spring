@@ -7,10 +7,13 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
+import software.amazon.awssdk.core.client.config.ClientOverrideConfiguration;
 import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.retries.StandardRetryStrategy;
 import software.amazon.awssdk.services.s3.S3Client;
 
 import java.net.URI;
+import java.time.Duration;
 
 // Cấu hình cho dịch vụ lưu trũ cloud r2 object storage của cloudflare
 @Configuration
@@ -37,6 +40,14 @@ public class CloudStorageConfig {
     *   + xoá file
     *   + lấy file
     *   + tạo, xoá bucket
+    * - Cơ chế của AWS SDK khi đang thực hiện thao tác mà mất mạng: Khi bạn dùng S3Client, AWS mặc định thiết lập 2 thứ rất "lì lợm":
+    *   + Retry Policy (Chính sách thử lại): Nếu rớt mạng hoặc S3 phản hồi chậm, SDK sẽ không báo lỗi ngay.
+    *     Nó sẽ ngầm tự động thử lại (retry) 3-5 lần, với thời gian chờ tăng dần (Exponential Backoff).
+    *   + TCP Socket Timeout: Khi bạn ngắt mạng đột ngột, kết nối TCP không gửi tín hiệu "Đóng" (RST).
+    *     Hệ điều hành và HTTP Client của AWS SDK sẽ rơi vào trạng thái "chờ đợi mù quáng" có thể lên tới 60 giây hoặc
+    *     vài phút trước khi chính thức kết luận là "Mất mạng".
+    * ==> Tác hại: Cơ chế này rất tốt cho các Job chạy ngầm, nhưng với REST API, nó sẽ block (khóa) Thread của Web Server.
+    *              Nếu 100 người dùng cùng upload lúc rớt mạng, 100 Thread của Tomcat sẽ bị treo, dẫn đến sập toàn bộ hệ thống!
     * */
     @Bean
     S3Client s3Client() {
@@ -46,10 +57,26 @@ public class CloudStorageConfig {
                 secretAccessKey
         );
 
+        // ghi đề cấu hình cho tất cả các requests gọi từ client này
+        ClientOverrideConfiguration config = ClientOverrideConfiguration.builder()
+                // tổng tg tối đa gọi api
+                .apiCallTimeout(Duration.ofSeconds(10))
+                // thời gian cho mỗi lần thử gọi api (5s kể từ khi gọi api mà có lỗi, vứt exception luôn)
+                .apiCallAttemptTimeout(Duration.ofSeconds(5))
+                // giảm số lần thử gọi api xuống còn 1
+                .retryStrategy(StandardRetryStrategy.builder()
+                        .maxAttempts(1)
+                        .build())
+                .build();
+
         return S3Client.builder()
                 // ghi đè endpoint của aws thành r2, để sdk gửi đến đúng server r2
                 .endpointOverride(URI.create(endpointUrl))
+                // ghi đề cấu hình cho requests
+                .overrideConfiguration(config)
+                // khu vực
                 .region(Region.of(region))
+                // thông tin xác thực
                 .credentialsProvider(StaticCredentialsProvider.create(credentials))
                 .build();
     }

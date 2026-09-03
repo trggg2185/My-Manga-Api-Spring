@@ -14,7 +14,7 @@ import java.util.List;
 public class ChapterResponse {
 
     String mangaName;
-    String name;
+    Integer chapterIndex;
     String title;
     Long views;
     LocalDate publishedDate;

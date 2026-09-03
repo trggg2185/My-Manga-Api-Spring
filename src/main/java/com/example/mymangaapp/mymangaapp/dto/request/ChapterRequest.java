@@ -12,7 +12,7 @@ import java.util.List;
 @Builder
 public class ChapterRequest {
 
-    String name;
+    Integer chapterIndex;
     String title;
 
     // Khi submit lưu chap thì frontend gửi 1 list các url của

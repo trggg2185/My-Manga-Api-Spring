@@ -15,20 +15,20 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
-import software.amazon.awssdk.services.s3.model.CopyObjectRequest;
-import software.amazon.awssdk.services.s3.model.CopyObjectResponse;
-import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
-import software.amazon.awssdk.services.s3.model.PutObjectRequest;
+import software.amazon.awssdk.services.s3.model.*;
+import software.amazon.awssdk.services.s3.paginators.ListObjectsV2Iterable;
 
 import java.io.IOException;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.UUID;
 
-// Cung cấp các phương thức tương tác với file: lưu trữ, xoá, ...
-// cho các services khác dùng
+// Giao tiếp với aws sdk để cung cấp các phương thức
+// tương tác với file: lưu trữ, xoá, ...
+// cho controller và các services khác dùng
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -46,7 +46,7 @@ public class StorageService {
     String publicUrl;
 
     // upload 1 file, yc có role translator
-    @PreAuthorize("hasRole('TRANSLATOR')")
+    @PreAuthorize("hasRole('TRANSLATOR') or hasRole('ADMIN')")
     public String uploadTmpFile(@NotNull MultipartFile file) {
 
         try {
@@ -88,7 +88,7 @@ public class StorageService {
     }
 
     // upload nhiều files
-    @PreAuthorize("hasRole('TRANSLATOR')")
+    @PreAuthorize("hasRole('TRANSLATOR') or hasRole('ADMIN')")
     public List<String> uploadMultiTmpFiles(@NotNull List<MultipartFile> files) {
 
         // Thay vì dùng foreach lặp tuần tự mất thời gian
@@ -108,23 +108,17 @@ public class StorageService {
                 .destinationKey(destinationKey)
                 .build();
 
-        CopyObjectResponse copyObjResponse = s3Client.copyObject(copyObjRequest);
+        s3Client.copyObject(copyObjRequest);
 
-        // Nếu copy thành công
-        if (copyObjResponse.copyObjectResult() != null) {
-            log.info("Copy file thành công! Từ {} sang {}", sourceKey, destinationKey);
+        log.info("Copy file thành công! Từ {} sang {}", sourceKey, destinationKey);
 
-            // Nếu hàm có option xoá file tmp cũ sau khi copy file thành công
-            if (deleteSource) deleteFile(sourceKey);
+        // Nếu hàm có option xoá file tmp cũ sau khi copy file thành công
+        if (deleteSource) deleteFile(sourceKey);
 
-            return generatePublicUrl(destinationKey);
-        } else {
-            throw new AppException(ResponseCode.FILE_COPY_FAILED);
-        }
-
+        return generatePublicUrl(destinationKey);
     }
 
-    private void deleteFile(String key) {
+    public void deleteFile(String key) {
         DeleteObjectRequest deleteObjRequest = DeleteObjectRequest.builder()
                 .bucket(bucketName)
                 .key(key)
@@ -134,7 +128,37 @@ public class StorageService {
         log.info("Đã xoá file temp: {}", key);
     }
 
-    private String generatePublicUrl(String key) {
+    // method này ko chỉ dùng để dọn files trong tmp/ quá 3 tiếng
+    // còn dùng để xoá các files với prefix nữa (dùng Instant.now())
+    public int deleteFilesWithPrefix(String prefix, Instant thresholdTime) {
+
+        // request lấy ds trong prefix
+        ListObjectsV2Request listRequest = ListObjectsV2Request.builder()
+                .bucket(bucketName)
+                .prefix(prefix)
+                .build();
+
+        // Gọi r2 lấy ds, nếu quá dài thì auto phân trang
+        ListObjectsV2Iterable paginator = s3Client.listObjectsV2Paginator(listRequest);
+
+        // số luọng file đã xoá
+        int deletedCount = 0;
+
+        // Duyệt qua ds
+        for (S3Object s3Object : paginator.contents()) {
+
+            // file nào đc tạo ta với thoigian trc thoigian 3 tiếng trc
+            // tức là quá 3 tiếng kể từ lúc file đó được up lên r2 thì dọn luôn
+            if (s3Object.lastModified().isBefore(thresholdTime)) {
+                deleteFile(s3Object.key());
+                deletedCount++;
+            }
+        }
+
+        return deletedCount;
+    }
+
+    public String generatePublicUrl(String key) {
         return publicUrl + "/" + key;
     }
 

@@ -98,14 +98,14 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     private ResponseEntity<ApiResponse<?>> handlingValidationException(MethodArgumentNotValidException exception) {
 
-        log.error("Giá trị các trường của request không hợp lệ!", exception);
+        log.error("Lỗi giá trị các trường của request không hợp lệ!", exception);
 
         ResponseCode responseCode = ResponseCode.ENUM_KEY_INVALID;
 
         FieldError fieldError = exception.getFieldError();
 
         // Lấy message ở field bị lỗi, chính là enum key của ResponseCode
-        String enumKey = fieldError.getDefaultMessage();
+        String enumKey = Objects.requireNonNull(fieldError).getDefaultMessage();
 
         try {
             responseCode = ResponseCode.valueOf(enumKey);
