@@ -23,7 +23,7 @@ public class StorageCleanupService {
 
     // Cron expression: second - minute - hour - day of month - month - day of week
     // 2 số 0 ở đầu nghĩa là chạy vào lúc 0 giây 0 phút của mọi giờ, mọi ngày
-    @Scheduled(cron = "0 0 * * * *")
+    @Scheduled(cron = "0 43 * * * *")
     public void cleanupTmpFiles() {
         log.info("Dọn dẹp tmp r2.................");
 
@@ -36,9 +36,7 @@ public class StorageCleanupService {
             String prefix = "tmp/" + dateFolder + "/";
 
             // gọi hàm xoá bên storage service
-            int deletedCount = storageService.deleteFilesWithPrefix(prefix, thresholdTime);
-
-            log.info("Dọn tmp r2 thành công! Đã dọn {} files", deletedCount);
+            storageService.deleteFilesWithPrefix(prefix, thresholdTime);
 
         } catch (Exception e) {
             log.error("Lỗi dọn dẹp tmp r2!", e);

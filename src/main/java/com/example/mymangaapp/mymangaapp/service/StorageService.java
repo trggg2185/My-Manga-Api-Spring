@@ -25,6 +25,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -101,7 +102,7 @@ public class StorageService {
             if (extension.equals(FIXED_EXTENSION) && file.getSize() <= MAX_BYPASS_SIZE) {
                 optimizedImageBytes = file.getBytes();
             } else {
-                optimizedImageBytes = optimizeImage(file, FIXED_TARGET_WIDTH, FIXED_QUALITY);
+                optimizedImageBytes = optimizeImage(file, FIXED_TARGET_WIDTH, FIXED_QUALITY, FIXED_EXTENSION);
             }
 
             // upload request
@@ -169,7 +170,8 @@ public class StorageService {
 
     // method này ko chỉ dùng để dọn files trong tmp/ quá 3 tiếng
     // còn dùng để xoá các files với prefix nữa (dùng Instant.now())
-    public int deleteFilesWithPrefix(String prefix, Instant thresholdTime) {
+    // update batch delete do aws sdk support
+    public void deleteFilesWithPrefix(String prefix, Instant thresholdTime) {
 
         // request lấy ds trong prefix
         ListObjectsV2Request listRequest = ListObjectsV2Request.builder()
@@ -182,9 +184,12 @@ public class StorageService {
 
         // số luọng file đã xoá
         int deletedCount = 0;
-
         // Kích thước tổng của các files đã xoá
         long totalSize = 0;
+
+        // gom các key lại vào đây rồi sau xoá hàng loạt với 1 lần call api duy nhất
+        // ko call nhiều lần bằng method deleteFile nữa
+        List<ObjectIdentifier> keysToDelete = new ArrayList<>();
 
         // Duyệt qua ds
         for (S3Object s3Object : paginator.contents()) {
@@ -192,18 +197,47 @@ public class StorageService {
             // file nào đc tạo ta với thoigian trc thoigian 3 tiếng trc
             // tức là quá 3 tiếng kể từ lúc file đó được up lên r2 thì dọn luôn
             if (s3Object.lastModified().isBefore(thresholdTime)) {
-                deleteFile(s3Object.key());
-                totalSize+= s3Object.size();
+
+                // add lần lượt key của các files muốn xoá
+                keysToDelete.add(ObjectIdentifier.builder()
+                        .key(s3Object.key())
+                        .build());
+                log.info("Gom key {}", s3Object.key());
+
+                totalSize += s3Object.size();
                 deletedCount++;
+
+                // Nếu gom được 1000 files thì xoá xoá hàng loạt luôn
+                // vì aws cho phép max là xoá 1000 files mỗi lượt
+                if (deletedCount == 1000) {
+                    executeBatchDelete(keysToDelete); // gửi request xoá hàng loạt
+                    keysToDelete.clear(); // clear ds keys đi
+                }
             }
         }
 
-        log.info("Tổng kích thước các files đã xoá: {}", totalSize);
-        return deletedCount;
+        // Nếu ko gom đủ 1000 files thì cũng xoá hàng loạt
+        // những files đã gom luôn
+        if (!keysToDelete.isEmpty()) {
+            executeBatchDelete(keysToDelete);
+        }
+
+        log.info("Đã xoá {} files, tổng kích thước là {} bytes", deletedCount, totalSize);
+    }
+
+    // Hàm giúp gửi request delete hàng loạt
+    public void executeBatchDelete(List<ObjectIdentifier> keysToDelete) {
+
+        DeleteObjectsRequest deleteObjsRequest = DeleteObjectsRequest.builder()
+                .bucket(bucketName)
+                .delete(delete -> delete.objects(keysToDelete))
+                .build();
+
+        s3Client.deleteObjects(deleteObjsRequest);
     }
 
     // Hàm giúp optimize ảnh (width, height, quality, extension)
-    public byte[] optimizeImage(MultipartFile file, int targetWidth, float quality) throws IOException {
+    public byte[] optimizeImage(MultipartFile file, int targetWidth, float quality, String extension) throws IOException {
 
         // hứng data sau khi nén
         ByteArrayOutputStream os = new ByteArrayOutputStream();
@@ -214,8 +248,8 @@ public class StorageService {
                 .width(targetWidth)
                 // chất lg
                 .outputQuality(quality)
-                // ép đầu ra thành file webp (auto gọi webp-imageio)
-                .outputFormat(FIXED_EXTENSION)
+                // ép đầu ra thành định dạng file nào đó
+                .outputFormat(extension)
                 // đổ vào cái hứng data
                 .toOutputStream(os);
 
