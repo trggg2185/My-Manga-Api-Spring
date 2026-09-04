@@ -45,6 +45,7 @@ public enum ResponseCode {
     MANGA_NAME_INVALID("3008", "Tên truyện ít nhất phải có {min} ký tự!", HttpStatus.BAD_REQUEST),
     AUTHORS_NAME_REQUIRED("3009", "Tên tác giả không được để trống!", HttpStatus.BAD_REQUEST),
     GENRES_REQUIRED("3010", "Thể loại truyện không được để trống!", HttpStatus.BAD_REQUEST),
+    FILE_REQUIRED("3011", "File không được để trống!", HttpStatus.BAD_REQUEST),
 
     USER_NOT_FOUND("4001", "Người dùng không tồn tại!", HttpStatus.NOT_FOUND),
     ROLE_NOT_FOUND("4002", "Vai trò không tồn tại!", HttpStatus.NOT_FOUND),

@@ -2,7 +2,7 @@ package com.example.mymangaapp.mymangaapp.service;
 
 import java.util.Date;
 
-import org.jetbrains.annotations.NotNull;
+import org.springframework.lang.NonNull;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -42,7 +42,7 @@ public class AuthenticationService {
     // là 1 lỗi ứng dụng nên khi false sẽ ném ra ngoại lệ luôn
     
     // Đăng nhập (tạo access token)
-    public AuthenticationResponse login(@NotNull AuthenticationRequest request) {
+    public AuthenticationResponse login(@NonNull AuthenticationRequest request) {
 
         User user = userRepository
                 .findWithDetailsByUsername(request.getUsername())
@@ -62,7 +62,7 @@ public class AuthenticationService {
     }
 
     // Check token hợp lệ
-    public IntrospectResponse introspect(@NotNull IntrospectRequest request) {
+    public IntrospectResponse introspect(@NonNull IntrospectRequest request) {
 
         // introspect sẽ trả về kết quả true hoặc false cho token
         boolean valid = jwtUtils.verifyToken(request.getToken());
@@ -74,7 +74,7 @@ public class AuthenticationService {
     }
 
     // Đăng xuất (vô hiệu hoá token)
-    public void logout(@NotNull LogoutRequest request) {
+    public void logout(@NonNull LogoutRequest request) {
 
         String jwtId = jwtUtils.extractJwtId(request.getToken());
 
@@ -94,7 +94,7 @@ public class AuthenticationService {
     }
 
     // Refresh token mới
-    public AuthenticationResponse refresh(@NotNull RefreshRequest request) {
+    public AuthenticationResponse refresh(@NonNull RefreshRequest request) {
 
         // Xác thực token cũ ổn không
         if (!jwtUtils.verifyToken(request.getToken(), true)) {

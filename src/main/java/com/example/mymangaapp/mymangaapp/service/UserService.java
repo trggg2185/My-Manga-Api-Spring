@@ -6,7 +6,6 @@ import java.util.Set;
 import com.example.mymangaapp.mymangaapp.security.component.SecurityUtils;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.lang.NonNull;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -43,7 +42,7 @@ public class UserService {
 
     // Tạo user mới
     @Transactional
-    public UserResponse createUser(@NotNull UserCreationRequest request) {
+    public UserResponse createUser(@NonNull UserCreationRequest request) {
 
         log.info("Create user here!------------------------------");
 
@@ -107,7 +106,7 @@ public class UserService {
     }
 
     // Cập nhật user bằng id
-    public UserResponse updateUserById(@NonNull String id, @NotNull UserUpdateRequest request) {
+    public UserResponse updateUserById(@NonNull String id, @NonNull UserUpdateRequest request) {
         
         User user = userRepository
                 .findById(id)

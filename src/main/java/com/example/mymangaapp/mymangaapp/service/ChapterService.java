@@ -16,7 +16,6 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.lang.NonNull;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -45,7 +44,7 @@ public class ChapterService {
     // Chỉ cần có role translator là tạo được chương
     @PreAuthorize("hasRole('TRANSLATOR') or hasRole('ADMIN')")
     @Transactional
-    public ChapterResponse createChapter(@NonNull String mangaId, @NotNull ChapterRequest request) {
+    public ChapterResponse createChapter(@NonNull String mangaId, @NonNull ChapterRequest request) {
 
         Manga manga = mangaRepository
                 .findById(mangaId)
@@ -109,6 +108,7 @@ public class ChapterService {
             }
 
             isSuccess = true; // copy thành công
+            // copy files thành công thì xoá files trong tmp, nếu lỗi uri thì bỏ qua
             tmpPageUrls.parallelStream().forEach(tmpUrl -> {
                 try {
                     storageService.deleteFile(new URI(tmpUrl).getPath().substring(1));

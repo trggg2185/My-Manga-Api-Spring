@@ -130,7 +130,22 @@
 			<version>2.4</version>
 		</dependency>
 
-    </dependencies>
+		<!-- Thumbnailator cho xử lý JavaImageIO -->
+		<dependency>
+			<groupId>net.coobird</groupId>
+			<artifactId>thumbnailator</artifactId>
+			<version>0.4.20</version>
+		</dependency>
+
+		<!-- webp-imageio giúp thumpnailator (hoặc các depend trên ImageIO) tương tác đc với webp  -->
+		<dependency>
+			<groupId>org.sejda.imageio</groupId>
+			<artifactId>webp-imageio</artifactId>
+			<version>0.1.6</version>
+			<scope>compile</scope>
+		</dependency>
+
+	</dependencies>
 
 	<build>
 		<plugins>

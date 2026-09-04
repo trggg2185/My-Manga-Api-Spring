@@ -18,7 +18,6 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.lang.NonNull;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -38,7 +37,7 @@ public class MangaService {
 
     @PreAuthorize("hasAuthority('CREATE_MANGA')")
     @Transactional
-    public MangaResponse createManga(@NotNull MangaRequest request, @NonNull String groupId) {
+    public MangaResponse createManga(@NonNull MangaRequest request, @NonNull String groupId) {
 
         // Vẫn phải check nhóm tồn tại không
         TransGroup ownerTransGroup = transGroupRepository
@@ -108,7 +107,7 @@ public class MangaService {
     // chỉ dành cho leader
     @PreAuthorize("@groupSec.isGroupLeader(#groupId)")
     @Transactional
-    public MangaResponse updateMangaById(@NonNull String groupId, @NonNull String mangaId, @NotNull MangaRequest request) {
+    public MangaResponse updateMangaById(@NonNull String groupId, @NonNull String mangaId, @NonNull MangaRequest request) {
 
         Manga manga = mangaRepository
                 .findById(mangaId)

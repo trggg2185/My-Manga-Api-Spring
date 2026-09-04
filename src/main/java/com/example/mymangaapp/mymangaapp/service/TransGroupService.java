@@ -18,7 +18,6 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.lang.NonNull;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -39,7 +38,7 @@ public class TransGroupService {
     TransGroupMapper transGroupMapper;
 
     @Transactional
-    public TransGroupResponse requestCreateGroup(@NotNull TransGroupCreationRequest request) {
+    public TransGroupResponse requestCreateGroup(@NonNull TransGroupCreationRequest request) {
 
         String username = SecurityUtils.getCurrentUsername();
 

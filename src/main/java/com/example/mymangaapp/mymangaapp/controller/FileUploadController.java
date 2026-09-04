@@ -6,6 +6,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
+import org.springframework.lang.NonNull;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
@@ -16,7 +17,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class FileController {
+public class FileUploadController {
 
     StorageService storageService;
 
@@ -31,7 +32,7 @@ public class FileController {
     }
 
     @PostMapping("/files/upload-multi-tmp")
-    public ApiResponse<List<String>> uploadMultiTmpFiles(@RequestPart("files") List<MultipartFile> files) {
+    public ApiResponse<List<String>> uploadMultiTmpFiles(@RequestPart("files") @NonNull List<MultipartFile> files) {
 
         List<String> responses = storageService.uploadMultiTmpFiles(files);
 

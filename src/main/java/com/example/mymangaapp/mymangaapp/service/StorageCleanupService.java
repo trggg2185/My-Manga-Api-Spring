@@ -46,4 +46,13 @@ public class StorageCleanupService {
 
     }
 
+    // Chạy vào lúc 3h sáng mỗi ngày để dọn dẹp các files đã chuyển từ tmp sang mangas
+    // nhưng bị lỗi trong qtrình copy
+    @Scheduled(cron = "0 0 3 * * *")
+    public void cleanupFailedUploadedFiles() {
+        log.info("Dọn dẹp mangas r2.................");
+
+        // Chưa làm được, làm sau
+    }
+
 }
