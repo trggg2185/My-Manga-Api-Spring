@@ -49,15 +49,15 @@ public class StorageService {
     String publicUrl;
 
     // Các đuôi file chấp nhận cho upload
-    static List<String> VALID_EXTENSIONS = List.of("jpg", "png", "webp");
+    static List<String> VALID_EXTENSIONS = List.of("jpg", "jpeg", "png", "webp");
     // đuôi các file sẽ upload lên r2
     static String FIXED_EXTENSION = "webp";
     // content type
     static String FIXED_CONTENT_TYPE = "image/webp";
-    // width các file khi up lên r2
+    // width các file khi up lên r2 (1200px)
     static int FIXED_TARGET_WIDTH = 1200;
-    // chất lg các file khi up lên r2
-    static float FIXED_QUALITY = 0.9f;
+    // chất lg các file khi up lên r2 (mức 80% là tiêu chuẩn)
+    static float FIXED_QUALITY = 0.8f;
     // đây là kích thước tối đa của file sau khi optimize (1MB)
     static long MAX_BYPASS_SIZE = 1024 * 1024;
 

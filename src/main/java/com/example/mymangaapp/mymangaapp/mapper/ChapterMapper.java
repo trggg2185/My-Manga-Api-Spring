@@ -2,6 +2,7 @@ package com.example.mymangaapp.mymangaapp.mapper;
 
 import com.example.mymangaapp.mymangaapp.dto.request.ChapterRequest;
 import com.example.mymangaapp.mymangaapp.dto.response.ChapterResponse;
+import com.example.mymangaapp.mymangaapp.dto.response.ChapterSummaryResponse;
 import com.example.mymangaapp.mymangaapp.entity.Chapter;
 import com.example.mymangaapp.mymangaapp.entity.Page;
 import org.mapstruct.Mapper;
@@ -21,6 +22,8 @@ public interface ChapterMapper {
     @Mapping(target = "mangaName", source = "manga.name")
     @Mapping(target = "pageUrls", source = "pages")
     ChapterResponse toChapterResponse(Chapter chapter);
+
+    ChapterSummaryResponse toChapterSummaryResponse(Chapter chapter);
 
     default String mapPageToUrl(Page page) {
         if (page != null)

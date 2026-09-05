@@ -53,6 +53,7 @@ public enum ResponseCode {
     TRANSGROUP_NOT_FOUND("4004", "Nhóm dịch không tồn tại!", HttpStatus.NOT_FOUND),
     TRANSGROUP_JOIN_REQUEST_NOT_FOUND("4005", "Yêu cầu vào nhóm không tồn tại!", HttpStatus.NOT_FOUND),
     MANGA_NOT_FOUND("4006", "Manga không tồn tại!", HttpStatus.NOT_FOUND),
+    CHAPTER_NOT_FOUND("4007", "Chương này không tồn tại!", HttpStatus.NOT_FOUND),
 
     USERNAME_ALREADY_EXISTS("5001", "Tên người dùng đã tồn tại!", HttpStatus.BAD_REQUEST),
     EMAIL_ALREADY_EXISTS("5002", "Email đã tồn tại!", HttpStatus.BAD_REQUEST),
@@ -63,12 +64,12 @@ public enum ResponseCode {
     PERMISSION_REQUIRED("5007", "Mảng các quyền không được để trống!", HttpStatus.BAD_REQUEST),
     TRANSGROUP_STATUS_INVALID("5008", "Nhóm dịch đã được chấp nhận, bị từ chối hoặc đã bị xoá!", HttpStatus.BAD_REQUEST),
     USER_ALREADY_IN_GROUP("5009", "Người dùng đã trong nhóm dịch!", HttpStatus.BAD_REQUEST),
-    TRANSGROUP_NOT_APPROVED("5011", "Nhóm dịch chưa được duyệt!", HttpStatus.BAD_REQUEST),
-    GROUP_JOIN_REQUEST_STATUS_INVALID("5012", "Yêu cầu vào nhóm đã được chập nhận hoặc bị tự chối!", HttpStatus.BAD_REQUEST),
-    FILE_INVALID("5013", "File không hợp lệ!", HttpStatus.BAD_REQUEST),
-    FILE_UPLOAD_FAILED("5014", "Upload file thất bại!", HttpStatus.BAD_REQUEST),
-    FILE_COPY_FAILED("5015", "Copy file thất bại!", HttpStatus.BAD_REQUEST),
-    CHAPTER_INDEX_ALREADY_EXISTS("5016", "Chapter index đã tồn tại!", HttpStatus.BAD_REQUEST);
+    TRANSGROUP_NOT_APPROVED("5010", "Nhóm dịch chưa được duyệt!", HttpStatus.BAD_REQUEST),
+    GROUP_JOIN_REQUEST_STATUS_INVALID("5011", "Yêu cầu vào nhóm đã được chập nhận hoặc bị tự chối!", HttpStatus.BAD_REQUEST),
+    FILE_INVALID("5012", "File không hợp lệ!", HttpStatus.BAD_REQUEST),
+    FILE_UPLOAD_FAILED("5013", "Upload file thất bại!", HttpStatus.BAD_REQUEST),
+    FILE_COPY_FAILED("5014", "Copy file thất bại!", HttpStatus.BAD_REQUEST),
+    CHAPTER_INDEX_ALREADY_EXISTS("5015", "Chapter index đã tồn tại!", HttpStatus.BAD_REQUEST);
 
     String code;
     String message;

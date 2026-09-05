@@ -21,7 +21,7 @@ public class FileUploadController {
 
     StorageService storageService;
 
-    @PostMapping("/files/upload-tmp")
+    @PostMapping("/files/upload")
     public ApiResponse<String> uploadTmpFile(@RequestPart("file") MultipartFile file) {
 
         String response = storageService.uploadTmpFile(file);
@@ -31,7 +31,7 @@ public class FileUploadController {
                 .build();
     }
 
-    @PostMapping("/files/upload-multi-tmp")
+    @PostMapping("/files/upload-multi")
     public ApiResponse<List<String>> uploadMultiTmpFiles(@RequestPart("files") @NonNull List<MultipartFile> files) {
 
         List<String> responses = storageService.uploadMultiTmpFiles(files);

@@ -4,22 +4,19 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDate;
-import java.util.List;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class ChapterResponse {
+public class ChapterSummaryResponse {
 
+    // Chapterresponse trả về tối giản nhất
     String id;
-    String mangaName;
     Integer chapterIndex;
     String title;
     Long views;
-    LocalDate publishedDate;
     LocalDate updatedDate;
-    List<String> pageUrls;
 
 }

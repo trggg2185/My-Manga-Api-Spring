@@ -22,6 +22,9 @@ public interface MangaRepository extends JpaRepository<Manga, String> {
     @NonNull
     Optional<Manga> findById(@NonNull String id);
 
+    @EntityGraph(attributePaths = { "chapters" })
+    Optional<Manga> findWithChaptersById(String id);
+
     List<Manga> findAllByTransGroupsId(String groupId);
 
 }

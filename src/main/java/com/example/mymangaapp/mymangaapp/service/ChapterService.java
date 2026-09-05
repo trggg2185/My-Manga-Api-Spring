@@ -2,6 +2,7 @@ package com.example.mymangaapp.mymangaapp.service;
 
 import com.example.mymangaapp.mymangaapp.dto.request.ChapterRequest;
 import com.example.mymangaapp.mymangaapp.dto.response.ChapterResponse;
+import com.example.mymangaapp.mymangaapp.dto.response.ChapterSummaryResponse;
 import com.example.mymangaapp.mymangaapp.entity.Chapter;
 import com.example.mymangaapp.mymangaapp.entity.Manga;
 import com.example.mymangaapp.mymangaapp.entity.Page;
@@ -108,12 +109,6 @@ public class ChapterService {
             }
 
             isSuccess = true; // copy thành công
-            // copy files thành công thì xoá files trong tmp, nếu lỗi uri thì bỏ qua
-            tmpPageUrls.parallelStream().forEach(tmpUrl -> {
-                try {
-                    storageService.deleteFile(new URI(tmpUrl).getPath().substring(1));
-                } catch (URISyntaxException ignored) {} // bỏ qua khi lỗi url, ta có cron job lên lịch r ko sao
-            });
         } catch (URISyntaxException e) {
             throw new AppException(ResponseCode.URL_INVALID);
         } catch (Exception e) { // Cover hết các exception trong qtrình copy files
@@ -128,8 +123,21 @@ public class ChapterService {
         chapter.setPages(pages);
 
         return chapterMapper.toChapterResponse(
-            chapterRepository.save(chapter)
+            chapter
         );
+    }
+
+    // user thì ai cx vào manga bất kỳ và đều đọc đc các chapters
+    // ==> để public method này
+    public List<ChapterSummaryResponse> getAllChaptersByMangaId(String mangaId) {
+        Manga manga = mangaRepository
+                .findWithChaptersById(mangaId)
+                .orElseThrow(() -> new AppException(ResponseCode.MANGA_NOT_FOUND));
+
+        return manga.getChapters()
+                .stream()
+                .map(chapterMapper::toChapterSummaryResponse)
+                .toList();
     }
 
     @PreAuthorize("hasRole('TRANSLATOR') or hasRole('ADMIN')")

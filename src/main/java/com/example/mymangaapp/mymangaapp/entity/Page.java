@@ -15,6 +15,13 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Builder
+@Table(
+        name = "page",
+        uniqueConstraints = {
+                // đảm bảo 1 chapter ko có 2 page trùng pageNumber
+                @UniqueConstraint(columnNames = { "chapter_id", "page_number" })
+        }
+)
 @Entity
 public class Page {
 
@@ -31,7 +38,7 @@ public class Page {
     // trang bao nhiêu trong 1 chap
     // có thể dùng để sx, thường được gán unique
     // và đánh index để tăng tốc độ tìmkiếm
-    @Column(name = "page_number", unique = true)
+    @Column(name = "page_number", nullable = false)
     Integer pageNumber;
 
     String imageUrl;

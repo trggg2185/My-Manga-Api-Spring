@@ -30,17 +30,19 @@ public class SecutityConfig {
     JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 
     static String[] POST_PUBLIC_ENDPOINTS = {
-            "/users",
-            "/auth/login",
-            "/auth/introspect",
-            "/auth/logout",
-            "/auth/refresh"
+            "/users", // tạo acc mới cho user
+            "/auth/login", // đăng nhập
+            "/auth/introspect", // check nhanh token còn valid k
+            "/auth/logout", // đăng xuất
+            "/auth/refresh" // refresh token
     };
 
     static String[] GET_PUBLIC_ENDPOINTS = {
-            "/transgroups",
-            "/mangas/{id}",
-            "/transgroups/{id}/mangas"
+            "/transgroups", // lấy tất cả các nhóm dịch đang hoạt động (APPROVED)
+            "/mangas/{id}", // lấy info manga theo id
+            "/transgroups/{id}/mangas", // lấy các manga đang dịch của nhóm
+            "/mangas/{id}/chapters", // lấy các chapter của 1 manga
+            "/chapters/{id}/pages" // lấy các ảnh của 1 chapter
     };
 
     static String ADMIN = "ADMIN";
