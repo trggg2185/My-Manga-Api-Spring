@@ -6,7 +6,7 @@ MỘT HỆ THỐNG BACKEND MANGA
     - permission(id, name, description)
     - manga(id, name, authors_name, genres, status(completed, ongoing, onhold), description, published_date)
     - trans_group(id, leader_id, name, founded_date, description, status(pending, approved, rejected, deleted))
-    - chapter(id, manga_id, name, title, view, published_date, updated_date)
+    - chapter(id, manga_id, title, view, published_date, updated_date)
     - page(id, chapter_id, page_number, image_url)
     - user_roles(user_id, role_id)
     - role_permissions(role_id, permission_id)
