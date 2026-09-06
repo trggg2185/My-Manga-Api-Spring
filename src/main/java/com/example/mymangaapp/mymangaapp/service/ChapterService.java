@@ -95,6 +95,12 @@ public class ChapterService {
                 // chỉ lấy phần path của url để làm key
                 String tmpKey = new URI(tmpUrl).getPath().substring(1);
 
+                // tránh user đoán đc key của các truyện khác trong folder mangas/
+                // rồi sửa page url, phải check xem là up từ tmp/ lên
+                if (!tmpKey.startsWith("tmp/")) {
+                    throw new AppException(ResponseCode.UNAUTHORIZED);
+                }
+
                 // lấy đuôi file
                 String extension = StringUtils.getFilenameExtension(tmpUrl);
 
@@ -144,15 +150,20 @@ public class ChapterService {
     @Transactional
     public void deleteChapterById(@NonNull String mangaId, @NonNull String chapterId) {
 
-        Manga manga = mangaRepository
-                .findById(mangaId)
-                .orElseThrow(() -> new AppException(ResponseCode.MANGA_NOT_FOUND));
+        Chapter chapter = chapterRepository
+                .findById(chapterId)
+                .orElseThrow(() -> new AppException(ResponseCode.CHAPTER_NOT_FOUND));
+
+        // Check chapter có thuộc về manga này ko
+        if (!chapter.getManga().getId().equals(mangaId)) {
+            throw new AppException(ResponseCode.UNAUTHORIZED);
+        }
 
         String currentUsername = SecurityUtils.getCurrentUsername();
 
         // Chỉ cần user hiện tại là thành viên trong những
         // nhóm đang dịch manga này là được
-        boolean isMember = manga.getTransGroups().stream()
+        boolean isMember = chapter.getManga().getTransGroups().stream()
                 .flatMap(transGroup -> transGroup.getMembers().stream())
                 .anyMatch(member -> member.getUsername().equals(currentUsername));
         if (!isMember) {
@@ -161,7 +172,7 @@ public class ChapterService {
 
         // xoá chapter có cascade và orphanremoval nên page thuộc
         // về chapter cũng sẽ tự động xoá
-        chapterRepository.deleteById(chapterId);
+        chapterRepository.delete(chapter);
 
         String prefix = "mangas/" + mangaId + "/" + chapterId + "/";
 

@@ -112,7 +112,7 @@ public class AuthenticationService {
 
         String username = jwtUtils.extractUsername(request.getToken());
 
-        User user = userRepository.findWithDetailsById(username)
+        User user = userRepository.findWithDetailsByUsername(username)
                 .orElseThrow(() -> new AppException(ResponseCode.USER_NOT_FOUND));
 
         return AuthenticationResponse.builder()

@@ -12,7 +12,6 @@ import com.example.mymangaapp.mymangaapp.exception.ResponseCode;
 import com.example.mymangaapp.mymangaapp.mapper.MangaMapper;
 import com.example.mymangaapp.mymangaapp.repository.MangaRepository;
 import com.example.mymangaapp.mymangaapp.repository.TransGroupRepository;
-import com.example.mymangaapp.mymangaapp.security.component.SecurityUtils;
 import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -35,7 +34,8 @@ public class MangaService {
 
     MangaMapper mangaMapper;
 
-    @PreAuthorize("hasAuthority('CREATE_MANGA')")
+    // cần role translator và user hiện tại phải là leader nhóm mới có quyền
+    @PreAuthorize("hasRole('TRANSLATOR') and @groupSec.isGroupLeader(#groupId)")
     @Transactional
     public MangaResponse createManga(@NonNull MangaRequest request, @NonNull String groupId) {
 
@@ -47,13 +47,6 @@ public class MangaService {
         // Nhóm này đã được admin approve chưa
         if (!ownerTransGroup.getStatus().equals(TransGroupStatus.APPROVED)) {
             throw new AppException(ResponseCode.TRANSGROUP_NOT_APPROVED);
-        }
-
-        String currentUsername = SecurityUtils.getCurrentUsername();
-
-        // Check user hiện tại phải là leader của trans group thì mới được tạo
-        if (!ownerTransGroup.getLeader().getUsername().equals(currentUsername)) {
-            throw new AppException(ResponseCode.UNAUTHORIZED);
         }
 
         Manga manga = mangaMapper.toManga(request);
@@ -128,6 +121,8 @@ public class MangaService {
     }
 
     // làm sau
-    public void delete() {}
+    public void deleteMangaById(@NonNull String groupId, @NonNull String mangaId) {
+
+    }
 
 }

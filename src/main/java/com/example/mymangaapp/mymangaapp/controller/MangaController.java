@@ -5,6 +5,7 @@ import com.example.mymangaapp.mymangaapp.dto.response.ApiResponse;
 import com.example.mymangaapp.mymangaapp.dto.response.MangaResponse;
 import com.example.mymangaapp.mymangaapp.dto.response.MangaSummaryResponse;
 import com.example.mymangaapp.mymangaapp.enums.MangaStatus;
+import com.example.mymangaapp.mymangaapp.exception.ResponseCode;
 import com.example.mymangaapp.mymangaapp.service.MangaService;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
@@ -56,6 +57,21 @@ public class MangaController {
 
         return ApiResponse.<List<MangaSummaryResponse>>builder()
                 .result(responses)
+                .build();
+    }
+
+    @DeleteMapping("/transgroups/{groupId}/mangas/{mangaId}")
+    public ApiResponse<String> deleteMangaById(
+            @PathVariable @NonNull String groupId,
+            @PathVariable @NonNull String mangaId
+    ) {
+
+        mangaService.deleteMangaById(groupId, mangaId);
+
+        return ApiResponse.<String>builder()
+                .code(ResponseCode.SUCCESS.getCode())
+                .message(ResponseCode.SUCCESS.getMessage())
+                .result("Transgroup id: " + groupId + ", manga id: " + mangaId)
                 .build();
     }
 

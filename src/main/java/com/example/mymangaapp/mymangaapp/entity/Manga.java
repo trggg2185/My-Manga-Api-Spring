@@ -64,7 +64,10 @@ public class Manga {
     List<TransGroup> transGroups;
 
     // QH: 1 manga có nhiều chapter
-    @OneToMany(mappedBy = "manga", fetch = FetchType.LAZY)
+    // thêm orphanremoval = true giúp khi xoá manga sẽ đồng thời xoá các chapter của manga đó
+    // bên chapter cũng có, khi xoá chapter thì page cũng xoá theo luôn
+    @OneToMany(mappedBy = "manga", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("chapterIndex ASC") // luôn lấy chapter tăng dần theo chapterIndex
     List<Chapter> chapters;
 
 }
