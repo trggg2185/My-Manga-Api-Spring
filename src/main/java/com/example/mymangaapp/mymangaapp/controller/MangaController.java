@@ -4,6 +4,7 @@ import com.example.mymangaapp.mymangaapp.dto.request.MangaRequest;
 import com.example.mymangaapp.mymangaapp.dto.response.ApiResponse;
 import com.example.mymangaapp.mymangaapp.dto.response.MangaResponse;
 import com.example.mymangaapp.mymangaapp.dto.response.MangaSummaryResponse;
+import com.example.mymangaapp.mymangaapp.dto.response.PaginatedResponse;
 import com.example.mymangaapp.mymangaapp.enums.MangaStatus;
 import com.example.mymangaapp.mymangaapp.exception.ResponseCode;
 import com.example.mymangaapp.mymangaapp.service.MangaService;
@@ -13,8 +14,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.lang.NonNull;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -48,14 +47,17 @@ public class MangaController {
                 .build();
     }
 
-    // public to everyone
+    // public
     @GetMapping("/transgroups/{groupId}/mangas")
-    public ApiResponse<List<MangaSummaryResponse>> getMangasByGroupId(
-            @PathVariable @NonNull String groupId
+    public ApiResponse<PaginatedResponse<MangaSummaryResponse>> getMangasByGroupId(
+            @PathVariable @NonNull String groupId,
+            @RequestParam(defaultValue = "0") int page, // số trang
+            @RequestParam(defaultValue = "20") int size, // số bản ghi mỗi trang
+            @RequestParam(defaultValue = "publishedDate") String sortBy // sxep theo field nào
     ) {
-        List<MangaSummaryResponse> responses = mangaService.getMangasByGroupId(groupId);
+        PaginatedResponse<MangaSummaryResponse> responses = mangaService.getMangasByGroupId(groupId, page, size, sortBy);
 
-        return ApiResponse.<List<MangaSummaryResponse>>builder()
+        return ApiResponse.<PaginatedResponse<MangaSummaryResponse>>builder()
                 .result(responses)
                 .build();
     }
@@ -75,6 +77,20 @@ public class MangaController {
                 .build();
     }
 
+    // lấy tất manga public có pagination
+    @GetMapping("/mangas")
+    public ApiResponse<PaginatedResponse<MangaResponse>> getMangas(
+            @RequestParam(defaultValue = "0") int page, // số trang
+            @RequestParam(defaultValue = "24") int size, // số bản ghi mỗi trang
+            @RequestParam(defaultValue = "publishedDate") String sortBy // sxep theo field nào
+    ) {
+        PaginatedResponse<MangaResponse> responses = mangaService.getMangas(page, size, sortBy);
+
+        return ApiResponse.<PaginatedResponse<MangaResponse>>builder()
+                .result(responses)
+                .build();
+    }
+
     @GetMapping("/mangas/{id}")
     public ApiResponse<MangaResponse> getMangaById(
             @PathVariable @NonNull String id
@@ -88,12 +104,15 @@ public class MangaController {
 
     // admin only
     @GetMapping("/admin/mangas")
-    public ApiResponse<List<MangaResponse>> getMangas(
-            @RequestParam(required = false) MangaStatus status
+    public ApiResponse<PaginatedResponse<MangaResponse>> getMangas(
+            @RequestParam(required = false) MangaStatus status,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "24") int size,
+            @RequestParam(defaultValue = "publishedDate") String sortBy
             ) {
-        List<MangaResponse> responses = mangaService.getMangas(status);
+        PaginatedResponse<MangaResponse> responses = mangaService.getMangas(status, page, size, sortBy);
 
-        return ApiResponse.<List<MangaResponse>>builder()
+        return ApiResponse.<PaginatedResponse<MangaResponse>>builder()
                 .result(responses)
                 .build();
     }

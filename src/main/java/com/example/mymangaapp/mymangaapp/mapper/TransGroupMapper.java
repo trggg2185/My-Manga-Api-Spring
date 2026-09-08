@@ -14,7 +14,8 @@ public interface TransGroupMapper {
     @Mapping(target = "leader", ignore = true)
     @Mapping(target = "description", ignore = true)
     @Mapping(target = "status", ignore = true)
-    @Mapping(target = "mangas", ignore = true)
+    @Mapping(target = "translatedMangas", ignore = true)
+    @Mapping(target = "ownedMangas", ignore = true)
     @Mapping(target = "foundedDate", ignore = true)
     TransGroup toTransGroup(TransGroupCreationRequest request);
 

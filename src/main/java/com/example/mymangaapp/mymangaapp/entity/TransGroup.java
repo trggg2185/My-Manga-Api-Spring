@@ -1,6 +1,7 @@
 package com.example.mymangaapp.mymangaapp.entity;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Set;
 
 import com.example.mymangaapp.mymangaapp.enums.TransGroupStatus;
@@ -55,8 +56,13 @@ public class TransGroup {
     TransGroupStatus status = TransGroupStatus.PENDING;
 
     // QH: 1 trans group có thể dịch nhiều manga
+    // đây chỉ là ds manga mà nhóm dịch, chưa chắc đã sở hữu (tạo ra), có thể chỉ là dịch phụ
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "transGroups")
-    Set<Manga> mangas;
+    Set<Manga> translatedMangas;
+
+    // 1 transgroup sẽ sở hữu (tạo ra) nhiều manga
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "ownerTransGroup")
+    List<Manga> ownedMangas;
 
     @CreatedDate
     @Column(name = "founded_date", nullable = false, updatable = false)

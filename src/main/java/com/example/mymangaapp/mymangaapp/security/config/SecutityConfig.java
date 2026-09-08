@@ -40,6 +40,7 @@ public class SecutityConfig {
 
     static String[] GET_PUBLIC_ENDPOINTS = {
             "/transgroups", // lấy tất cả các nhóm dịch đang hoạt động (APPROVED)
+            "/mangas", // lấy tất cả các manga
             "/mangas/{id}", // lấy info manga theo id
             "/transgroups/{id}/mangas", // lấy các manga đang dịch của nhóm
             "/mangas/{id}/chapters", // lấy các chapter của 1 manga

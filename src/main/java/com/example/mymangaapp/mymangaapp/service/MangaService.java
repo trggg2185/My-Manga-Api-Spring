@@ -3,6 +3,7 @@ package com.example.mymangaapp.mymangaapp.service;
 import com.example.mymangaapp.mymangaapp.dto.request.MangaRequest;
 import com.example.mymangaapp.mymangaapp.dto.response.MangaResponse;
 import com.example.mymangaapp.mymangaapp.dto.response.MangaSummaryResponse;
+import com.example.mymangaapp.mymangaapp.dto.response.PaginatedResponse;
 import com.example.mymangaapp.mymangaapp.entity.Manga;
 import com.example.mymangaapp.mymangaapp.entity.TransGroup;
 import com.example.mymangaapp.mymangaapp.enums.MangaStatus;
@@ -17,6 +18,10 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.lang.NonNull;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -57,35 +62,59 @@ public class MangaService {
     }
 
     // chỉ dành cho admin
-    public List<MangaResponse> getMangas(MangaStatus status) {
+    public PaginatedResponse<MangaResponse> getMangas(
+            MangaStatus status, @NonNull int page,
+            @NonNull int size, @NonNull String sortBy
+    ) {
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy));
+
+        Page<MangaResponse> dtoPage;
 
         if (status != null) {
-            return mangaRepository
-                    .findAllByStatus(status)
-                    .stream()
-                    .map(mangaMapper::toMangaResponse)
-                    .toList();
+            dtoPage = mangaRepository
+                    .findAllByStatus(status, pageable)
+                    .map(mangaMapper::toMangaResponse);
+        } else {
+            dtoPage = mangaRepository
+                    .findAll(pageable)
+                    .map(mangaMapper::toMangaResponse);
         }
 
-        return mangaRepository
-                .findAll()
-                .stream()
-                .map(mangaMapper::toMangaResponse)
-                .toList();
+        return PaginatedResponse.of(dtoPage);
+    }
+
+    // lấy tất manga, public có pagination
+    public PaginatedResponse<MangaResponse> getMangas(int page, int size, String sortBy) {
+
+        log.info("page: {}, size: {}, sort by: {}", page, size, sortBy);
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy).descending());
+
+        Page<MangaResponse> dtoPage = mangaRepository
+                .findAll(pageable)
+                .map(mangaMapper::toMangaResponse);
+
+        return PaginatedResponse.of(dtoPage);
     }
 
     // public
-    public List<MangaSummaryResponse> getMangasByGroupId(@NonNull String groupId) {
+    public PaginatedResponse<MangaSummaryResponse> getMangasByGroupId(
+            @NonNull String groupId, @NonNull int page,
+            @NonNull int size, @NonNull String sortBy
+    ) {
 
         if (!transGroupRepository.existsById(groupId)) {
             throw new AppException(ResponseCode.TRANSGROUP_NOT_FOUND);
         }
 
-        return mangaRepository
-                .findAllByTransGroupsId(groupId)
-                .stream()
-                .map(mangaMapper::toMangaSummaryResponse)
-                .toList();
+        Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy));
+
+        Page<MangaSummaryResponse> dtoPage = mangaRepository
+                .findAllByTransGroupsId(groupId, pageable)
+                .map(mangaMapper::toMangaSummaryResponse);
+
+        return PaginatedResponse.of(dtoPage);
     }
 
     // public
