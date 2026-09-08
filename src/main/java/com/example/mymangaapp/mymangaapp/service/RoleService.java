@@ -33,6 +33,7 @@ public class RoleService {
 
     RoleMapper roleMapper;
 
+    // admin
     public RoleResponse createRole(@NonNull RoleRequest request) {
 
         if (roleRepository.existsById(request.getName())) {
@@ -57,6 +58,7 @@ public class RoleService {
         return roleMapper.toRoleResponse(roleRepository.save(role));
     }
 
+    // admin
     public List<RoleResponse> getAllRoles() {
 
         List<Role> roles = roleRepository.findAll();
@@ -66,6 +68,7 @@ public class RoleService {
                 .toList();
     }
 
+    // admin
     public void deleteRoleById(@NonNull String id) {
 
         if (!roleRepository.existsById(id)) {

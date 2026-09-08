@@ -26,6 +26,7 @@ public class PermissionService {
 
     PermissionMapper permissionMapper;
 
+    // admin
     public PermissionResponse createPermission(@NonNull PermissionRequest request) {
 
         if (permissionRepository.existsById(request.getName())) {
@@ -38,6 +39,7 @@ public class PermissionService {
 
     }
 
+    // admin
     public List<PermissionResponse> getAllPermissions() {
 
         List<Permission> permissions = permissionRepository.findAll();
@@ -48,6 +50,7 @@ public class PermissionService {
                 .toList();
     }
 
+    // admin
     public void deletePermissionById(@NonNull String id) {
 
         if (!permissionRepository.existsById(id)) {

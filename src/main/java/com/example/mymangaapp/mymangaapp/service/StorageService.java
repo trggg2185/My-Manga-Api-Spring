@@ -62,7 +62,7 @@ public class StorageService {
     static long MAX_BYPASS_SIZE = 1024 * 1024;
 
     // upload 1 file, yc có role translator
-    @PreAuthorize("hasRole('TRANSLATOR') or hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'TRANSLATOR')")
     public String uploadTmpFile(@NonNull MultipartFile file) {
 
         // Check file rỗng
@@ -128,7 +128,7 @@ public class StorageService {
     }
 
     // upload nhiều files
-    @PreAuthorize("hasRole('TRANSLATOR') or hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'TRANSLATOR'")
     public List<String> uploadMultiTmpFiles(@NonNull List<MultipartFile> files) {
 
         // Thay vì dùng foreach lặp tuần tự mất thời gian

@@ -80,6 +80,7 @@ public class TransGroupService {
         return transGroupMapper.toTransGroupResponse(transGroup);
     }
 
+    // admin
     @Transactional
     public TransGroupResponse approveCreateGroup(@NonNull String id) {
 
@@ -104,6 +105,7 @@ public class TransGroupService {
         return transGroupMapper.toTransGroupResponse(transGroupRepository.save(transGroup));
     }
 
+    // admin
     @Transactional
     public TransGroupResponse rejectCreateGroup(@NonNull String id) {
 

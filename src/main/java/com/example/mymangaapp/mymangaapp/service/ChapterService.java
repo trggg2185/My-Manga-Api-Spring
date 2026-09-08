@@ -43,7 +43,7 @@ public class ChapterService {
     PageService pageService;
 
     // Chỉ cần có role translator là tạo được chương
-    @PreAuthorize("hasRole('TRANSLATOR') or hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'TRANSLATOR')")
     @Transactional
     public ChapterResponse createChapter(@NonNull String mangaId, @NonNull ChapterRequest request) {
 
@@ -146,7 +146,7 @@ public class ChapterService {
                 .toList();
     }
 
-    @PreAuthorize("hasRole('TRANSLATOR') or hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'TRANSLATOR')")
     @Transactional
     public void deleteChapterById(@NonNull String mangaId, @NonNull String chapterId) {
 

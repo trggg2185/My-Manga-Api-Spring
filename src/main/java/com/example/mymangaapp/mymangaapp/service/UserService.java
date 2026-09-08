@@ -106,6 +106,7 @@ public class UserService {
     }
 
     // Cập nhật user bằng id
+    @Transactional
     public UserResponse updateUserById(@NonNull String id, @NonNull UserUpdateRequest request) {
         
         User user = userRepository
@@ -128,6 +129,7 @@ public class UserService {
     }
 
     // Xoá user bằng id
+    @Transactional
     @PreAuthorize("@userSec.isSelfOrAdmin(#id)")
     public void deleteUserById(@NonNull String id) {
 

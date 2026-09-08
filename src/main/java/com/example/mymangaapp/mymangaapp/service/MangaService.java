@@ -35,7 +35,7 @@ public class MangaService {
     MangaMapper mangaMapper;
 
     // cần role translator và user hiện tại phải là leader nhóm mới có quyền
-    @PreAuthorize("hasRole('TRANSLATOR') and @groupSec.isGroupLeader(#groupId)")
+    @PreAuthorize("hasAnyRole('ADMIN', 'TRANSLATOR') and @groupSec.isGroupLeader(#groupId)")
     @Transactional
     public MangaResponse createManga(@NonNull MangaRequest request, @NonNull String groupId) {
 
