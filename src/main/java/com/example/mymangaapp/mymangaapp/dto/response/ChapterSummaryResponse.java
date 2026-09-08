@@ -3,8 +3,6 @@ package com.example.mymangaapp.mymangaapp.dto.response;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.time.LocalDate;
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -17,6 +15,5 @@ public class ChapterSummaryResponse {
     Integer chapterIndex;
     String title;
     Long views;
-    LocalDate updatedDate;
 
 }

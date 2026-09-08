@@ -1,6 +1,6 @@
 package com.example.mymangaapp.mymangaapp.dto.response;
 
-import java.time.LocalDate;
+import java.time.Instant;
 import java.util.Set;
 
 import lombok.AccessLevel;
@@ -20,11 +20,11 @@ public class UserResponse {
     String id;
     String username;
     String email;
-    LocalDate memberSince;
     String facebook;
     String discord;
     String bio;
     Set<RoleResponse> roles;
     String transGroupId;
-
+    Instant createdAt;
+    Instant updatedAt;
 }

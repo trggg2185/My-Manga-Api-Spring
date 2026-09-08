@@ -14,9 +14,9 @@ public interface ChapterMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "manga", ignore = true)
     @Mapping(target = "views", ignore = true)
-    @Mapping(target = "publishedDate", ignore = true)
-    @Mapping(target = "updatedDate", ignore = true)
     @Mapping(target = "pages", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
     Chapter toChapter(ChapterRequest request);
 
     @Mapping(target = "mangaName", source = "manga.name")

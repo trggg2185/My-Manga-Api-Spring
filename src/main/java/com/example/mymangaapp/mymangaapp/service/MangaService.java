@@ -26,7 +26,7 @@ import org.springframework.lang.NonNull;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.util.Set;
 
 @Slf4j
 @Service
@@ -56,7 +56,7 @@ public class MangaService {
 
         Manga manga = mangaMapper.toManga(request);
         manga.setOwnerTransGroup(ownerTransGroup);
-        manga.setTransGroups(List.of(ownerTransGroup));
+        manga.setTransGroups(Set.of(ownerTransGroup));
 
         return mangaMapper.toMangaResponse(mangaRepository.save(manga));
     }

@@ -3,7 +3,7 @@ package com.example.mymangaapp.mymangaapp.dto.response;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.time.LocalDate;
+import java.time.Instant;
 import java.util.List;
 
 @Data
@@ -21,6 +21,6 @@ public class MangaResponse {
     String ownerTransGroupId;
     List<String> transGroupsId;
     String description;
-    LocalDate publishedDate;
+    Instant createdAt;
 
 }

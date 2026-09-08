@@ -3,7 +3,7 @@ package com.example.mymangaapp.mymangaapp.dto.response;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.time.LocalDate;
+import java.time.Instant;
 import java.util.List;
 
 @Data
@@ -18,8 +18,7 @@ public class ChapterResponse {
     Integer chapterIndex;
     String title;
     Long views;
-    LocalDate publishedDate;
-    LocalDate updatedDate;
     List<String> pageUrls;
+    Instant updatedAt;
 
 }

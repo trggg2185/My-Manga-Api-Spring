@@ -1,31 +1,23 @@
 package com.example.mymangaapp.mymangaapp.entity;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
 
 import com.example.mymangaapp.mymangaapp.enums.TransGroupStatus;
 import jakarta.persistence.*;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
+import lombok.experimental.SuperBuilder;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@Builder
-@EntityListeners(AuditingEntityListener.class)
+@SuperBuilder
 @Entity
-public class TransGroup {
+public class TransGroup extends BaseEntity {
     
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -63,9 +55,5 @@ public class TransGroup {
     // 1 transgroup sẽ sở hữu (tạo ra) nhiều manga
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "ownerTransGroup")
     List<Manga> ownedMangas;
-
-    @CreatedDate
-    @Column(name = "founded_date", nullable = false, updatable = false)
-    LocalDate foundedDate;
 
 }

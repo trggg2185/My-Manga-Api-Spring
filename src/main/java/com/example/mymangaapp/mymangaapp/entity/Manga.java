@@ -1,30 +1,23 @@
 package com.example.mymangaapp.mymangaapp.entity;
 
-import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 
 import com.example.mymangaapp.mymangaapp.enums.MangaStatus;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import lombok.experimental.SuperBuilder;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@Builder
-@EntityListeners(AuditingEntityListener.class)
+@SuperBuilder
 @Entity
-public class Manga {
+public class Manga extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -44,10 +37,6 @@ public class Manga {
 
     String description;
 
-    @CreatedDate
-    @Column(name = "published_date", nullable = false, updatable = false)
-    LocalDate publishedDate;
-
     // Manga này do nhóm transgroup này sỡ hữu
     // 1 nhóm dịch có thể sỡ hữu (tạo ra) nhiều manga
     @ManyToOne(fetch = FetchType.LAZY)
@@ -55,14 +44,14 @@ public class Manga {
     TransGroup ownerTransGroup;
 
     // QH: 1 manga có thể có nhiều trans group dịch
+
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
         name = "manga_transgroups",
         joinColumns = @JoinColumn(name = "manga_id"),
         inverseJoinColumns = @JoinColumn(name = "transgroup_id")
-    )
-    // Lưu dạng List chứ ko dùng Set
-    List<TransGroup> transGroups;
+    ) // luôn luôn nên dùng Set đặc biệt do ManyToMany
+    Set<TransGroup> transGroups;
 
     // QH: 1 manga có nhiều chapter
     // thêm orphanremoval = true giúp khi xoá manga sẽ đồng thời xoá các chapter của manga đó

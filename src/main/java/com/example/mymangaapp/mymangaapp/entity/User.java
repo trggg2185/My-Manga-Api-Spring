@@ -1,15 +1,12 @@
 package com.example.mymangaapp.mymangaapp.entity;
 
-import java.time.LocalDate;
 import java.util.Set;
 
 import jakarta.persistence.*;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import lombok.experimental.SuperBuilder;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -20,12 +17,13 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@Builder
-// Spring Data JPA gọi là Auditing giúp ghi lại: ngày tạo, ngày cập nhật, ai
-// tạo, ai cập nhật
-@EntityListeners(AuditingEntityListener.class)
 @Entity
-public class User {
+@SuperBuilder
+// khi bạn dùng @Builder trên class con (Manga), nó sẽ không nhận các field của class cha (createdAt).
+// Để giải quyết, nếu bạn cần build cả field của cha, hãy đổi @Builder thành @SuperBuilder
+// ở cả BaseEntity và Manga. (Tuy nhiên thực tế, ngày tạo và ngày sửa do DB tự động sinh
+// ra nên ta hiếm khi phải nhét vào Builder)
+public class User extends BaseEntity {
 
     /*
      * - Lazy fetch là mặc định trong các annotation sau: OneToMany, ManyToMany
@@ -45,10 +43,6 @@ public class User {
 
     @Column(name = "email", unique = true)
     String email;
-
-    @CreatedDate // JPA tự động gán ngày khởi tạo khi insert vào db
-    @Column(name = "member_since", nullable = false, updatable = false)
-    LocalDate memberSince;
 
     @Column(name = "password", nullable = false)
     String password;

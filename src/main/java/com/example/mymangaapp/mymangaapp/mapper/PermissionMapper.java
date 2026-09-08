@@ -11,6 +11,8 @@ import com.example.mymangaapp.mymangaapp.entity.Permission;
 public interface PermissionMapper {
     
     @Mapping(target = "roles", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
     Permission toPermission(PermissionRequest request);
 
     PermissionResponse toPermissionResponse(Permission permission);

@@ -4,13 +4,14 @@ import com.example.mymangaapp.mymangaapp.enums.GroupJoinRequestStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import lombok.experimental.SuperBuilder;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@Builder
+@SuperBuilder
 @Entity
 @Table(
         name = "group_join_request",
@@ -24,7 +25,7 @@ import lombok.experimental.FieldDefaults;
 // với trạng thái pending vì sẽ làm bẩn, thay vào đó
 // ta tạo 1 entity để quản lý trạng thái của từng
 // đơn gia nhập
-public class GroupJoinRequest {
+public class GroupJoinRequest extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

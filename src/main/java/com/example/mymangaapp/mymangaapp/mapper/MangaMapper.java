@@ -13,8 +13,9 @@ public interface MangaMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "ownerTransGroup", ignore = true)
     @Mapping(target = "transGroups", ignore = true)
-    @Mapping(target = "publishedDate", ignore = true)
     @Mapping(target = "chapters", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
     /*
     * NullValuePropertyMappingStrategy.IGNORE: Áp dụng cho TẤT CẢ các trường còn lại (những trường KHÔNG bị ignore),
     * có nghĩa là: Nếu trong MangaCreationRequest, trường nào đó có giá trị là null, thì ĐỪNG set null vào Manga,
@@ -37,8 +38,9 @@ public interface MangaMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "ownerTransGroup", ignore = true)
     @Mapping(target = "transGroups", ignore = true)
-    @Mapping(target = "publishedDate", ignore = true)
     @Mapping(target = "chapters", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     void updateMangaFromRequest(@MappingTarget Manga manga, MangaRequest request);
 

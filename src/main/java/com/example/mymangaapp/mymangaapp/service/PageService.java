@@ -51,7 +51,7 @@ public class PageService {
         // nên khi chapter service gọi hàm này rồi set cho nó
         // jpa auto save chapter và save cả các page này luôn
         return IntStream.range(0, pageUrls.size())
-                .mapToObj(i -> Page.builder()
+                .mapToObj(i -> (Page) Page.builder()
                         .pageNumber(i + 1)
                         .imageUrl(pageUrls.get(i))
                         .chapter(chapter)

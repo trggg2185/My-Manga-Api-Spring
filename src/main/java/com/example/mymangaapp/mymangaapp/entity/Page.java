@@ -3,18 +3,18 @@ package com.example.mymangaapp.mymangaapp.entity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
+import lombok.experimental.SuperBuilder;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@Builder
+@SuperBuilder
 @Table(
         name = "page",
         uniqueConstraints = {
@@ -23,7 +23,7 @@ import lombok.experimental.FieldDefaults;
         }
 )
 @Entity
-public class Page {
+public class Page extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

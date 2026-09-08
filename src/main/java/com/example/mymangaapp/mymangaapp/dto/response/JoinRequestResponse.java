@@ -3,6 +3,8 @@ package com.example.mymangaapp.mymangaapp.dto.response;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.time.Instant;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -14,5 +16,7 @@ public class JoinRequestResponse {
     String transGroupName;
     String username;
     String status;
+    Instant createdAt;
+    Instant updatedAt;
 
 }

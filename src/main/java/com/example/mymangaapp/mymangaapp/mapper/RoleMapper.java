@@ -13,6 +13,8 @@ public interface RoleMapper {
     @Mapping(target = "users", ignore = true)
     // Việc set các permission ta sẽ tự làm bên role service để chuyển set string thành set permission
     @Mapping(target = "permissions", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
     Role toRole(RoleRequest request);
 
     RoleResponse toRoleResponse(Role role);
