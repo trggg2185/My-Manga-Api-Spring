@@ -128,7 +128,7 @@ public class StorageService {
     }
 
     // upload nhiều files
-    @PreAuthorize("hasAnyRole('ADMIN', 'TRANSLATOR'")
+    @PreAuthorize("hasAnyRole('ADMIN', 'TRANSLATOR')")
     public List<String> uploadMultiTmpFiles(@NonNull List<MultipartFile> files) {
 
         // Thay vì dùng foreach lặp tuần tự mất thời gian
