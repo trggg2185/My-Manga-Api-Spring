@@ -3,6 +3,7 @@ package com.example.mymangaapp.mymangaapp.service;
 import com.example.mymangaapp.mymangaapp.dto.request.ChapterRequest;
 import com.example.mymangaapp.mymangaapp.dto.response.ChapterResponse;
 import com.example.mymangaapp.mymangaapp.dto.response.ChapterSummaryResponse;
+import com.example.mymangaapp.mymangaapp.dto.response.PaginatedResponse;
 import com.example.mymangaapp.mymangaapp.entity.Chapter;
 import com.example.mymangaapp.mymangaapp.entity.Manga;
 import com.example.mymangaapp.mymangaapp.entity.Page;
@@ -17,6 +18,9 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.lang.NonNull;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -135,15 +139,22 @@ public class ChapterService {
 
     // user thì ai cx vào manga bất kỳ và đều đọc đc các chapters
     // ==> để public method này
-    public List<ChapterSummaryResponse> getAllChaptersByMangaId(String mangaId) {
-        Manga manga = mangaRepository
-                .findWithChaptersById(mangaId)
-                .orElseThrow(() -> new AppException(ResponseCode.MANGA_NOT_FOUND));
+    public PaginatedResponse<ChapterSummaryResponse> getAllChaptersByMangaId(
+            @NonNull String mangaId, @NonNull int page,
+            @NonNull int size, @NonNull String sortBy
+    ) {
 
-        return manga.getChapters()
-                .stream()
-                .map(chapterMapper::toChapterSummaryResponse)
-                .toList();
+        if (!mangaRepository.existsById(mangaId)) {
+            throw new AppException(ResponseCode.MANGA_NOT_FOUND);
+        }
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, sortBy));
+
+        org.springframework.data.domain.Page<ChapterSummaryResponse> dtoPage = chapterRepository
+                .findByMangaId(mangaId, pageable)
+                .map(chapterMapper::toChapterSummaryResponse);
+
+        return PaginatedResponse.of(dtoPage);
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'TRANSLATOR')")

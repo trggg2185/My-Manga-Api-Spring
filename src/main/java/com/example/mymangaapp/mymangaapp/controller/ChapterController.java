@@ -4,6 +4,7 @@ import com.example.mymangaapp.mymangaapp.dto.request.ChapterRequest;
 import com.example.mymangaapp.mymangaapp.dto.response.ApiResponse;
 import com.example.mymangaapp.mymangaapp.dto.response.ChapterResponse;
 import com.example.mymangaapp.mymangaapp.dto.response.ChapterSummaryResponse;
+import com.example.mymangaapp.mymangaapp.dto.response.PaginatedResponse;
 import com.example.mymangaapp.mymangaapp.exception.ResponseCode;
 import com.example.mymangaapp.mymangaapp.service.ChapterService;
 import lombok.AccessLevel;
@@ -11,8 +12,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.lang.NonNull;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -35,11 +34,16 @@ public class ChapterController {
     }
 
     @GetMapping("/mangas/{mangaId}/chapters")
-    public ApiResponse<List<ChapterSummaryResponse>> getChaptersByMangaId(@PathVariable @NonNull String mangaId) {
+    public ApiResponse<PaginatedResponse<ChapterSummaryResponse>> getChaptersByMangaId(
+            @PathVariable @NonNull String mangaId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size,
+            @RequestParam(defaultValue = "createdAt") String sortBy
+    ) {
 
-        List<ChapterSummaryResponse> responses = chapterService.getAllChaptersByMangaId(mangaId);
+        PaginatedResponse<ChapterSummaryResponse> responses = chapterService.getAllChaptersByMangaId(mangaId, page, size, sortBy);
 
-        return ApiResponse.<List<ChapterSummaryResponse>>builder()
+        return ApiResponse.<PaginatedResponse<ChapterSummaryResponse>>builder()
                 .result(responses)
                 .build();
     }

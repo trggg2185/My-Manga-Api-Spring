@@ -2,11 +2,12 @@ package com.example.mymangaapp.mymangaapp.repository;
 
 import com.example.mymangaapp.mymangaapp.entity.TransGroup;
 import com.example.mymangaapp.mymangaapp.enums.TransGroupStatus;
-import org.jetbrains.annotations.NotNull;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.lang.NonNull;
 
-import java.util.List;
 import java.util.Optional;
 
 public interface TransGroupRepository extends JpaRepository<TransGroup, String> {
@@ -18,8 +19,8 @@ public interface TransGroupRepository extends JpaRepository<TransGroup, String> 
     // getLeader và getMembers, khi jpa sẽ sinh sql nhưng session đã đóng
     // từ khi gọi find all rồi nên bắn lazy ngay
     @EntityGraph(attributePaths = { "leader", "members" })
-    @NotNull
-    List<TransGroup> findAll();
+    @NonNull
+    Page<TransGroup> findAll(@NonNull Pageable pageable);
 
     // Hàm này để tìm group theo id đã đc fetch sẵn các dữ liệu như leader, roles, permissions và members
     // vì chúng là lazy và để tránh n + 1 query
@@ -27,7 +28,7 @@ public interface TransGroupRepository extends JpaRepository<TransGroup, String> 
     Optional<TransGroup> findWithDetailsById(String id);
 
     @EntityGraph(attributePaths = { "leader", "members" })
-    List<TransGroup> findAllByStatus(TransGroupStatus status);
+    Page<TransGroup> findAllByStatus(TransGroupStatus status, Pageable pageable);
 
     @EntityGraph(attributePaths = { "leader", "members" })
     Optional<TransGroup> findByIdAndStatus(String id, TransGroupStatus status);

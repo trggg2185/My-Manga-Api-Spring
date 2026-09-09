@@ -67,7 +67,7 @@ public class MangaService {
             @NonNull int size, @NonNull String sortBy
     ) {
 
-        Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy));
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, sortBy));
 
         Page<MangaResponse> dtoPage;
 
@@ -89,7 +89,7 @@ public class MangaService {
 
         log.info("page: {}, size: {}, sort by: {}", page, size, sortBy);
 
-        Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy).descending());
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, sortBy));
 
         Page<MangaResponse> dtoPage = mangaRepository
                 .findAll(pageable)
@@ -108,7 +108,7 @@ public class MangaService {
             throw new AppException(ResponseCode.TRANSGROUP_NOT_FOUND);
         }
 
-        Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy));
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, sortBy));
 
         Page<MangaSummaryResponse> dtoPage = mangaRepository
                 .findAllByTransGroupsId(groupId, pageable)

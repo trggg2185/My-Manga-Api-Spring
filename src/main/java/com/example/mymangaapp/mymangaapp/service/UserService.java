@@ -1,11 +1,15 @@
 package com.example.mymangaapp.mymangaapp.service;
 
-import java.util.List;
 import java.util.Set;
 
+import com.example.mymangaapp.mymangaapp.dto.response.PaginatedResponse;
 import com.example.mymangaapp.mymangaapp.security.component.SecurityUtils;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.lang.NonNull;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -74,12 +78,18 @@ public class UserService {
     }
 
     // Lấy tất cả user
-    public List<UserResponse> getAllUsers() {
-        List<User> users = userRepository.findAll();
+    public PaginatedResponse<UserResponse> getAllUsers(
+            @NonNull int page, @NonNull int size,
+            @NonNull String sortBy
+    ) {
 
-        return users.stream()
-                .map(userMapper::toUserResponse)
-                .toList();
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, sortBy));
+
+        Page<UserResponse> dtoPage = userRepository
+                .findAll(pageable)
+                .map(userMapper::toUserResponse);
+
+        return PaginatedResponse.of(dtoPage);
 
     }
 

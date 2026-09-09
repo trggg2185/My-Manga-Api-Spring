@@ -53,7 +53,7 @@ public class MangaController {
             @PathVariable @NonNull String groupId,
             @RequestParam(defaultValue = "0") int page, // số trang
             @RequestParam(defaultValue = "20") int size, // số bản ghi mỗi trang
-            @RequestParam(defaultValue = "publishedDate") String sortBy // sxep theo field nào
+            @RequestParam(defaultValue = "createdAt") String sortBy // sxep theo field nào
     ) {
         PaginatedResponse<MangaSummaryResponse> responses = mangaService.getMangasByGroupId(groupId, page, size, sortBy);
 
@@ -82,7 +82,7 @@ public class MangaController {
     public ApiResponse<PaginatedResponse<MangaResponse>> getMangas(
             @RequestParam(defaultValue = "0") int page, // số trang
             @RequestParam(defaultValue = "24") int size, // số bản ghi mỗi trang
-            @RequestParam(defaultValue = "publishedDate") String sortBy // sxep theo field nào
+            @RequestParam(defaultValue = "createdAt") String sortBy // sxep theo field nào
     ) {
         PaginatedResponse<MangaResponse> responses = mangaService.getMangas(page, size, sortBy);
 
@@ -108,7 +108,7 @@ public class MangaController {
             @RequestParam(required = false) MangaStatus status,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "24") int size,
-            @RequestParam(defaultValue = "publishedDate") String sortBy
+            @RequestParam(defaultValue = "createdAt") String sortBy
             ) {
         PaginatedResponse<MangaResponse> responses = mangaService.getMangas(status, page, size, sortBy);
 

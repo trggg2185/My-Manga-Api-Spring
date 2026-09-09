@@ -1,6 +1,7 @@
 package com.example.mymangaapp.mymangaapp.service;
 
 import com.example.mymangaapp.mymangaapp.dto.request.TransGroupCreationRequest;
+import com.example.mymangaapp.mymangaapp.dto.response.PaginatedResponse;
 import com.example.mymangaapp.mymangaapp.dto.response.TransGroupResponse;
 import com.example.mymangaapp.mymangaapp.entity.Role;
 import com.example.mymangaapp.mymangaapp.entity.TransGroup;
@@ -18,12 +19,15 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.lang.NonNull;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -124,33 +128,42 @@ public class TransGroupService {
     }
 
     // Lấy tất cả nhóm dịch đã được chấp thuận, public
-    public List<TransGroupResponse> getGroups() {
+    public PaginatedResponse<TransGroupResponse> getGroups(
+            @NonNull int page, @NonNull int size,
+            @NonNull String sortBy
+    ) {
 
-        return transGroupRepository
-                .findAllByStatus(TransGroupStatus.APPROVED)
-                .stream()
-                .map(transGroupMapper::toTransGroupResponse)
-                .toList();
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, sortBy));
+
+        Page<TransGroupResponse> dtoPage = transGroupRepository
+                .findAllByStatus(TransGroupStatus.APPROVED, pageable)
+                .map(transGroupMapper::toTransGroupResponse);
+
+        return PaginatedResponse.of(dtoPage);
     }
 
     // Đây cũng lấy nhóm nhưng chỉ dành cho admin
-    public List<TransGroupResponse> getGroups(TransGroupStatus status) {
+    public PaginatedResponse<TransGroupResponse> getGroups(
+            TransGroupStatus status, @NonNull int page,
+            @NonNull int size, @NonNull String sortBy
+    ) {
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, sortBy));
+
+        Page<TransGroupResponse> dtoPage;
 
         // Nếu cho query string status thì lấy nhóm dịch theo status
         if (status != null) {
-            return transGroupRepository
-                    .findAllByStatus(status)
-                    .stream()
-                    .map(transGroupMapper::toTransGroupResponse)
-                    .toList();
+            dtoPage = transGroupRepository
+                    .findAllByStatus(status, pageable)
+                    .map(transGroupMapper::toTransGroupResponse);
+        } else { // Nếu ko status thì mặc định lấy tất cả các nhóm
+            dtoPage = transGroupRepository
+                    .findAll(pageable)
+                    .map(transGroupMapper::toTransGroupResponse);
         }
 
-        // Nếu ko status thì mặc định lấy tất cả các nhóm
-        return transGroupRepository
-                .findAll()
-                .stream()
-                .map(transGroupMapper::toTransGroupResponse)
-                .toList();
+        return PaginatedResponse.of(dtoPage);
     }
 
     @Transactional // cho thêm vì có 1 câu query mình tự định nghĩa, để spring cho vào 1 transaction

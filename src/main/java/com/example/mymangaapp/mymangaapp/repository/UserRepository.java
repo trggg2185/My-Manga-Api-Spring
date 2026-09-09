@@ -1,8 +1,9 @@
 package com.example.mymangaapp.mymangaapp.repository;
 
-import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -28,7 +29,7 @@ public interface UserRepository extends JpaRepository<User, String> {
 
     @EntityGraph(attributePaths = { "roles", "roles.permissions", "transGroup" })
     @NonNull
-    List<User> findAll();
+    Page<User> findAll(@NonNull Pageable pageable);
 
     // Thao tác sẽ duyệt tất cả các user thuộc về nhóm dịch để set trường transgroup_id về null
     @Modifying // Cho truy vấn update/delete làm thay đổi dữ liệu trong db

@@ -2,18 +2,16 @@ package com.example.mymangaapp.mymangaapp.controller;
 
 import com.example.mymangaapp.mymangaapp.dto.request.TransGroupCreationRequest;
 import com.example.mymangaapp.mymangaapp.dto.response.ApiResponse;
+import com.example.mymangaapp.mymangaapp.dto.response.PaginatedResponse;
 import com.example.mymangaapp.mymangaapp.dto.response.TransGroupResponse;
 import com.example.mymangaapp.mymangaapp.enums.TransGroupStatus;
 import com.example.mymangaapp.mymangaapp.exception.ResponseCode;
-import com.example.mymangaapp.mymangaapp.service.MangaService;
 import com.example.mymangaapp.mymangaapp.service.TransGroupService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.lang.NonNull;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -33,10 +31,14 @@ public class TransGroupController {
 
     // Endpoint này dành cho user thông thường có thể thấy tất cả nhóm dịch đang hoạt động
     @GetMapping("/transgroups")
-    public ApiResponse<List<TransGroupResponse>> getGroups() {
-        List<TransGroupResponse> responses = transGroupService.getGroups();
+    public ApiResponse<PaginatedResponse<TransGroupResponse>> getGroups(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size,
+            @RequestParam(defaultValue = "createdAt") String sortBy
+    ) {
+        PaginatedResponse<TransGroupResponse> responses = transGroupService.getGroups(page, size, sortBy);
 
-        return ApiResponse.<List<TransGroupResponse>>builder()
+        return ApiResponse.<PaginatedResponse<TransGroupResponse>>builder()
                 .result(responses)
                 .build();
     }
@@ -53,12 +55,15 @@ public class TransGroupController {
     }
 
     @GetMapping("/admin/transgroups")
-    public ApiResponse<List<TransGroupResponse>> getGroups(
-            @RequestParam(required = false) TransGroupStatus status
+    public ApiResponse<PaginatedResponse<TransGroupResponse>> getGroups(
+            @RequestParam(required = false) TransGroupStatus status,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size,
+            @RequestParam(defaultValue = "createdAt") String sortBy
     ) {
-        List<TransGroupResponse> responses = transGroupService.getGroups(status);
+        PaginatedResponse<TransGroupResponse> responses = transGroupService.getGroups(status, page, size, sortBy);
 
-        return ApiResponse.<List<TransGroupResponse>>builder()
+        return ApiResponse.<PaginatedResponse<TransGroupResponse>>builder()
                 .result(responses)
                 .build();
     }
