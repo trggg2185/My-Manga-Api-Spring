@@ -1,9 +1,12 @@
 package com.example.mymangaapp.mymangaapp.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+
+import java.util.Set;
 
 @Data
 @AllArgsConstructor
@@ -18,8 +21,9 @@ public class MangaRequest {
     @NotBlank(message = "AUTHORS_NAME_REQUIRED")
     String authorsName;
 
-    @NotBlank(message = "GENRES_REQUIRED")
-    String genres;
+    // Not bland dùng cho string, còn notempty dùng cho collection, set, list
+    @NotEmpty(message = "CATEGORIES_REQUIRED")
+    Set<String> categoryIds;
 
     String status;
 

@@ -5,11 +5,14 @@ import java.util.Set;
 
 import com.example.mymangaapp.mymangaapp.enums.MangaStatus;
 
+import com.github.slugify.Slugify;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Getter
 @Setter
 @NoArgsConstructor
@@ -24,8 +27,29 @@ public class Manga extends BaseEntity {
     String id;
 
     String name;
+    String slug;
     String authorsName;
-    String genres;
+
+    // method này luôn chạy trc khi insert hoặc update manga, để tự động tạo slug từ name
+    @PrePersist
+    @PreUpdate
+    public void generateSlug() {
+        if (this.name == null || this.name.isBlank()) {
+            return;
+        }
+
+        this.slug = new Slugify().slugify(this.name);
+        log.info("Manga name: {} -> slug: {}", this.name, this.slug);
+    }
+
+    // Quan hệ với bảng thể loại, 1 manga có nhiều thể loại, 1 thể loại thuộc về nhiều manga
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+        name = "manga_categories",
+        joinColumns = @JoinColumn(name = "manga_id"),
+        inverseJoinColumns = @JoinColumn(name = "category_id")
+    )
+    Set<Category> categories;
 
     // Lưu enum dưới dạng chuỗi (varchar) thay vì số 0, 1, 2
     @Enumerated(EnumType.STRING)

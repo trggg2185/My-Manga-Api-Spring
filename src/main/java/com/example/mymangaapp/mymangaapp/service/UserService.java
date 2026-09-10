@@ -79,7 +79,7 @@ public class UserService {
 
     // Lấy tất cả user
     public PaginatedResponse<UserResponse> getAllUsers(
-            @NonNull int page, @NonNull int size,
+            int page, int size,
             @NonNull String sortBy
     ) {
 

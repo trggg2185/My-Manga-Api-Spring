@@ -7,13 +7,15 @@ import com.example.mymangaapp.mymangaapp.entity.Manga;
 import com.example.mymangaapp.mymangaapp.entity.TransGroup;
 import org.mapstruct.*;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = CategoryMapper.class)
 public interface MangaMapper {
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "ownerTransGroup", ignore = true)
     @Mapping(target = "transGroups", ignore = true)
+    @Mapping(target = "categories", ignore = true)
     @Mapping(target = "chapters", ignore = true)
+    @Mapping(target = "slug", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
     /*
@@ -26,6 +28,7 @@ public interface MangaMapper {
 
     @Mapping(target = "transGroupsId", source = "transGroups")
     @Mapping(target = "ownerTransGroupId", source = "ownerTransGroup.id")
+    @Mapping(target = "categories", source = "categories")
     MangaResponse toMangaResponse(Manga manga);
 
     // Để mapper tự map từng phần tử transGroup thành transGroupId
@@ -38,7 +41,9 @@ public interface MangaMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "ownerTransGroup", ignore = true)
     @Mapping(target = "transGroups", ignore = true)
+    @Mapping(target = "categories", ignore = true)
     @Mapping(target = "chapters", ignore = true)
+    @Mapping(target = "slug", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)

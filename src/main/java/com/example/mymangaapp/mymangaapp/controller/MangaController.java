@@ -48,11 +48,14 @@ public class MangaController {
     }
 
     // public
+    // đây là endpoint khi user vào trang của nhóm dịch
+    // thì lấy tất cả các bộ truyện mà nhóm đang tham gia dịch
+    // cả dịch chính lẫn phụ
     @GetMapping("/transgroups/{groupId}/mangas")
     public ApiResponse<PaginatedResponse<MangaSummaryResponse>> getMangasByGroupId(
             @PathVariable @NonNull String groupId,
             @RequestParam(defaultValue = "0") int page, // số trang
-            @RequestParam(defaultValue = "20") int size, // số bản ghi mỗi trang
+            @RequestParam(defaultValue = "15") int size, // số bản ghi mỗi trang
             @RequestParam(defaultValue = "createdAt") String sortBy // sxep theo field nào
     ) {
         PaginatedResponse<MangaSummaryResponse> responses = mangaService.getMangasByGroupId(groupId, page, size, sortBy);
@@ -78,15 +81,18 @@ public class MangaController {
     }
 
     // lấy tất manga public có pagination
+    // đây là khi họ vào trang home của web
+    // sẽ lấy tất cả các manga có phân trang, những chỉ lấy với
+    // chút thông tin của manga như: name, categories, description, transgroups
     @GetMapping("/mangas")
-    public ApiResponse<PaginatedResponse<MangaResponse>> getMangas(
+    public ApiResponse<PaginatedResponse<MangaSummaryResponse>> getMangas(
             @RequestParam(defaultValue = "0") int page, // số trang
             @RequestParam(defaultValue = "24") int size, // số bản ghi mỗi trang
             @RequestParam(defaultValue = "createdAt") String sortBy // sxep theo field nào
     ) {
-        PaginatedResponse<MangaResponse> responses = mangaService.getMangas(page, size, sortBy);
+        PaginatedResponse<MangaSummaryResponse> responses = mangaService.getMangas(page, size, sortBy);
 
-        return ApiResponse.<PaginatedResponse<MangaResponse>>builder()
+        return ApiResponse.<PaginatedResponse<MangaSummaryResponse>>builder()
                 .result(responses)
                 .build();
     }

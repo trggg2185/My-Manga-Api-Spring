@@ -129,7 +129,7 @@ public class TransGroupService {
 
     // Lấy tất cả nhóm dịch đã được chấp thuận, public
     public PaginatedResponse<TransGroupResponse> getGroups(
-            @NonNull int page, @NonNull int size,
+            int page, int size,
             @NonNull String sortBy
     ) {
 
@@ -144,8 +144,8 @@ public class TransGroupService {
 
     // Đây cũng lấy nhóm nhưng chỉ dành cho admin
     public PaginatedResponse<TransGroupResponse> getGroups(
-            TransGroupStatus status, @NonNull int page,
-            @NonNull int size, @NonNull String sortBy
+            TransGroupStatus status, int page,
+            int size, @NonNull String sortBy
     ) {
 
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, sortBy));

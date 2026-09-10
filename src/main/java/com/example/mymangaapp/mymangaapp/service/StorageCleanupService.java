@@ -23,7 +23,7 @@ public class StorageCleanupService {
 
     // Cron expression: second - minute - hour - day of month - month - day of week
     // 2 số 0 ở đầu nghĩa là chạy vào lúc 0 giây 0 phút của mọi giờ, mọi ngày
-    @Scheduled(cron = "0 43 * * * *")
+    @Scheduled(cron = "0 0 * * * *")
     public void cleanupTmpFiles() {
         log.info("Dọn dẹp tmp r2.................");
 

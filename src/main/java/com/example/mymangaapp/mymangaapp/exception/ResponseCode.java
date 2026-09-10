@@ -46,6 +46,9 @@ public enum ResponseCode {
     AUTHORS_NAME_REQUIRED("3009", "Tên tác giả không được để trống!", HttpStatus.BAD_REQUEST),
     GENRES_REQUIRED("3010", "Thể loại truyện không được để trống!", HttpStatus.BAD_REQUEST),
     FILE_REQUIRED("3011", "File không được để trống!", HttpStatus.BAD_REQUEST),
+    CATEGORY_NAME_REQUIRED("3012", "Tên thể loại không được để trống!", HttpStatus.BAD_REQUEST),
+    CATEGORY_NAME_INVALID("3013", "Tên thể loại phải có ít nhất {min} ký tự và tối đa {max} ký tự!", HttpStatus.BAD_REQUEST),
+    CATEGORIES_REQUIRED("3014", "Danh sách thể loại không được để trống!", HttpStatus.BAD_REQUEST),
 
     USER_NOT_FOUND("4001", "Người dùng không tồn tại!", HttpStatus.NOT_FOUND),
     ROLE_NOT_FOUND("4002", "Vai trò không tồn tại!", HttpStatus.NOT_FOUND),
@@ -54,6 +57,7 @@ public enum ResponseCode {
     TRANSGROUP_JOIN_REQUEST_NOT_FOUND("4005", "Yêu cầu vào nhóm không tồn tại!", HttpStatus.NOT_FOUND),
     MANGA_NOT_FOUND("4006", "Manga không tồn tại!", HttpStatus.NOT_FOUND),
     CHAPTER_NOT_FOUND("4007", "Chương này không tồn tại!", HttpStatus.NOT_FOUND),
+    CATEGORY_NOT_FOUND("4008", "Thể loại không tồn tại!", HttpStatus.NOT_FOUND),
 
     USERNAME_ALREADY_EXISTS("5001", "Tên người dùng đã tồn tại!", HttpStatus.BAD_REQUEST),
     EMAIL_ALREADY_EXISTS("5002", "Email đã tồn tại!", HttpStatus.BAD_REQUEST),
@@ -69,7 +73,8 @@ public enum ResponseCode {
     FILE_INVALID("5012", "File không hợp lệ!", HttpStatus.BAD_REQUEST),
     FILE_UPLOAD_FAILED("5013", "Upload file thất bại!", HttpStatus.BAD_REQUEST),
     FILE_COPY_FAILED("5014", "Copy file thất bại!", HttpStatus.BAD_REQUEST),
-    CHAPTER_INDEX_ALREADY_EXISTS("5015", "Chapter index đã tồn tại!", HttpStatus.BAD_REQUEST);
+    CHAPTER_INDEX_ALREADY_EXISTS("5015", "Chapter index đã tồn tại!", HttpStatus.BAD_REQUEST),
+    CATEGORY_NAME_ALREADY_EXISTS("5016", "Tên thể loại đã tồn tại!", HttpStatus.BAD_REQUEST);
 
     String code;
     String message;

@@ -3,10 +3,12 @@ package com.example.mymangaapp.mymangaapp.configuration;
 import java.util.List;
 import java.util.Set;
 
+import com.example.mymangaapp.mymangaapp.entity.Category;
 import com.example.mymangaapp.mymangaapp.entity.TransGroup;
 import com.example.mymangaapp.mymangaapp.enums.TransGroupStatus;
 import com.example.mymangaapp.mymangaapp.exception.AppException;
 import com.example.mymangaapp.mymangaapp.exception.ResponseCode;
+import com.example.mymangaapp.mymangaapp.repository.CategoryRepository;
 import com.example.mymangaapp.mymangaapp.repository.TransGroupRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationRunner;
@@ -31,7 +33,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class InitApplicationConfig {
-    
+
     final PasswordEncoder passwordEncoder;
 
     @Value("${app.init.admin.password}")
@@ -48,10 +50,11 @@ public class InitApplicationConfig {
 
     @Bean
     ApplicationRunner applicationRunner(
-                UserRepository userRepository,
-                RoleRepository roleRepository,
-                PermissionRepository permissionRepository,
-                TransGroupRepository transGroupRepository
+            UserRepository userRepository,
+            RoleRepository roleRepository,
+            PermissionRepository permissionRepository,
+            CategoryRepository categoryRepository,
+            TransGroupRepository transGroupRepository
     ) {
         return args -> {
             log.info("................Init application starts...............");
@@ -100,6 +103,18 @@ public class InitApplicationConfig {
                         .description("Role translator")
                         .permissions(Set.of(createManga, updateManga))
                         .build());
+            }
+
+            if (categoryRepository.count() == 0) {
+                List<Category> categories = List.of(
+                        Category.builder().name("Action").description("Hành động").build(),
+                        Category.builder().name("Fantasy").description("Huyễn tưởng").build(),
+                        Category.builder().name("Romance").description("Lãng mạn").build(),
+                        Category.builder().name("Comedy").description("Hài hước").build(),
+                        Category.builder().name("Drama").description("Drama đau tim").build()
+                );
+                categoryRepository.saveAll(categories);
+                log.info("Create default categories successfully!");
             }
 
             // Khởi tạo 1 admin và 3 user

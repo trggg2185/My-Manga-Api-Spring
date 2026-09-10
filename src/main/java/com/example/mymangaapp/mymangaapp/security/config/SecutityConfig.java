@@ -44,7 +44,9 @@ public class SecutityConfig {
             "/mangas/{id}", // lấy info manga theo id
             "/transgroups/{id}/mangas", // lấy các manga đang dịch của nhóm
             "/mangas/{id}/chapters", // lấy các chapter của 1 manga
-            "/chapters/{id}/pages" // lấy các ảnh của 1 chapter
+            "/chapters/{id}/pages", // lấy các ảnh của 1 chapter
+            "/categories", // lấy tất cả các thể loại
+            "/categories/{id}", // lấy thể loại theo id
     };
 
     static String ADMIN = "ADMIN";
