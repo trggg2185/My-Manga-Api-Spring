@@ -13,7 +13,6 @@ import com.example.mymangaapp.mymangaapp.mapper.ChapterMapper;
 import com.example.mymangaapp.mymangaapp.repository.ChapterRepository;
 import com.example.mymangaapp.mymangaapp.repository.MangaRepository;
 import com.example.mymangaapp.mymangaapp.security.component.SecurityUtils;
-import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -24,6 +23,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.lang.NonNull;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.net.URI;
@@ -140,8 +140,8 @@ public class ChapterService {
     // user thì ai cx vào manga bất kỳ và đều đọc đc các chapters
     // ==> để public method này
     public PaginatedResponse<ChapterSummaryResponse> getAllChaptersByMangaId(
-            @NonNull String mangaId, @NonNull int page,
-            @NonNull int size, @NonNull String sortBy
+            @NonNull String mangaId, int page,
+            int size, @NonNull String sortBy
     ) {
 
         if (!mangaRepository.existsById(mangaId)) {

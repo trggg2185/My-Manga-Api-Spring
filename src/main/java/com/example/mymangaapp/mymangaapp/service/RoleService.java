@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import com.example.mymangaapp.mymangaapp.dto.request.RoleRequest;
@@ -34,6 +35,7 @@ public class RoleService {
     RoleMapper roleMapper;
 
     // admin
+    @Transactional
     public RoleResponse createRole(@NonNull RoleRequest request) {
 
         if (roleRepository.existsById(request.getName())) {
@@ -69,6 +71,7 @@ public class RoleService {
     }
 
     // admin
+    @Transactional
     public void deleteRoleById(@NonNull String id) {
 
         if (!roleRepository.existsById(id)) {

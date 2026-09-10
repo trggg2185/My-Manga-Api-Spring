@@ -14,7 +14,6 @@ import com.example.mymangaapp.mymangaapp.repository.RoleRepository;
 import com.example.mymangaapp.mymangaapp.repository.TransGroupRepository;
 import com.example.mymangaapp.mymangaapp.repository.UserRepository;
 import com.example.mymangaapp.mymangaapp.security.component.SecurityUtils;
-import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -26,6 +25,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.lang.NonNull;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
 

@@ -16,6 +16,7 @@ import com.example.mymangaapp.mymangaapp.repository.PermissionRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -27,6 +28,7 @@ public class PermissionService {
     PermissionMapper permissionMapper;
 
     // admin
+    @Transactional
     public PermissionResponse createPermission(@NonNull PermissionRequest request) {
 
         if (permissionRepository.existsById(request.getName())) {
@@ -51,6 +53,7 @@ public class PermissionService {
     }
 
     // admin
+    @Transactional
     public void deletePermissionById(@NonNull String id) {
 
         if (!permissionRepository.existsById(id)) {

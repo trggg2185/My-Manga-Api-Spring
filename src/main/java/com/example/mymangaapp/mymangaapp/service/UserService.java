@@ -4,7 +4,6 @@ import java.util.Set;
 
 import com.example.mymangaapp.mymangaapp.dto.response.PaginatedResponse;
 import com.example.mymangaapp.mymangaapp.security.component.SecurityUtils;
-import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -29,6 +28,7 @@ import com.example.mymangaapp.mymangaapp.repository.UserRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service

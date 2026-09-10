@@ -24,6 +24,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -74,6 +75,7 @@ public class AuthenticationService {
     }
 
     // Đăng xuất (vô hiệu hoá token)
+    @Transactional
     public void logout(@NonNull LogoutRequest request) {
 
         String jwtId = jwtUtils.extractJwtId(request.getToken());
@@ -94,6 +96,7 @@ public class AuthenticationService {
     }
 
     // Refresh token mới
+    @Transactional
     public AuthenticationResponse refresh(@NonNull RefreshRequest request) {
 
         // Xác thực token cũ ổn không
