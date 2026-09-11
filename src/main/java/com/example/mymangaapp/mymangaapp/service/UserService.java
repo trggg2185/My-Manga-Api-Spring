@@ -2,7 +2,9 @@ package com.example.mymangaapp.mymangaapp.service;
 
 import java.util.Set;
 
+import com.example.mymangaapp.mymangaapp.dto.request.UserPasswordRequest;
 import com.example.mymangaapp.mymangaapp.dto.response.PaginatedResponse;
+import com.example.mymangaapp.mymangaapp.dto.response.UserSummaryResponse;
 import com.example.mymangaapp.mymangaapp.security.component.SecurityUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -93,16 +95,44 @@ public class UserService {
 
     }
 
-    public UserResponse getMyInfo() {
+    public UserSummaryResponse getMyInfo() {
         String username = SecurityUtils.getCurrentUsername();
 
-        log.info("username: {}", username);
-
         User user = userRepository
-                .findWithDetailsByUsername(username)
+                .findByUsername(username)
                 .orElseThrow(() -> new AppException(ResponseCode.USER_NOT_FOUND));
 
-        return userMapper.toUserResponse(user);
+        return userMapper.toUserSummaryResponse(user);
+    }
+
+    @Transactional
+    public UserSummaryResponse updateMyInfo(UserUpdateRequest request) {
+        String username = SecurityUtils.getCurrentUsername();
+
+        User user = userRepository
+                .findByUsername(username)
+                .orElseThrow(() -> new AppException(ResponseCode.USER_NOT_FOUND));
+
+        userMapper.updateUserFromRequest(user, request);
+
+        return userMapper.toUserSummaryResponse(userRepository.save(user));
+    }
+
+    @Transactional
+    public void updateMyPassword(UserPasswordRequest request) {
+        String username = SecurityUtils.getCurrentUsername();
+
+        User user = userRepository
+                .findByUsername(username)
+                .orElseThrow(() -> new AppException(ResponseCode.USER_NOT_FOUND));
+
+        if (!passwordEncoder.matches(request.getOldPassword(), user.getPassword())) {
+            throw new AppException(ResponseCode.PASSWORD_NOT_EXACTS);
+        }
+
+        user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+
+        userRepository.save(user);
     }
 
     // Lấy user bằng id

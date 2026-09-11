@@ -38,7 +38,7 @@ public class MangaController {
     public ApiResponse<MangaResponse> updateMangaById(
             @PathVariable @NonNull String groupId,
             @PathVariable @NonNull String mangaId,
-            @RequestBody MangaRequest request
+            @Valid @RequestBody MangaRequest request
     ) {
         MangaResponse response = mangaService.updateMangaById(groupId, mangaId, request);
 

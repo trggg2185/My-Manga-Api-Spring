@@ -60,6 +60,11 @@ public class User extends BaseEntity {
 
     // QH: 1 user có thể có nhiểu role
     @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "user_roles",
+            joinColumns = @JoinColumn(name = "users_id"),
+            inverseJoinColumns = @JoinColumn(name = "roles_name")
+    )
     Set<Role> roles;
 
 }

@@ -7,6 +7,7 @@ import com.example.mymangaapp.mymangaapp.dto.response.TransGroupResponse;
 import com.example.mymangaapp.mymangaapp.enums.TransGroupStatus;
 import com.example.mymangaapp.mymangaapp.exception.ResponseCode;
 import com.example.mymangaapp.mymangaapp.service.TransGroupService;
+import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -21,7 +22,7 @@ public class TransGroupController {
     TransGroupService transGroupService;
 
     @PostMapping("/transgroups")
-    public ApiResponse<TransGroupResponse> requestCreateGroup(@RequestBody TransGroupCreationRequest request) {
+    public ApiResponse<TransGroupResponse> requestCreateGroup(@Valid @RequestBody TransGroupCreationRequest request) {
         TransGroupResponse response = transGroupService.requestCreateGroup(request);
 
         return ApiResponse.<TransGroupResponse>builder()

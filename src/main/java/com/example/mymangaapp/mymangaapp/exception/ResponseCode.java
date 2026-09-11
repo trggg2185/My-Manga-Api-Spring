@@ -74,7 +74,8 @@ public enum ResponseCode {
     FILE_UPLOAD_FAILED("5013", "Upload file thất bại!", HttpStatus.BAD_REQUEST),
     FILE_COPY_FAILED("5014", "Copy file thất bại!", HttpStatus.BAD_REQUEST),
     CHAPTER_INDEX_ALREADY_EXISTS("5015", "Chapter index đã tồn tại!", HttpStatus.BAD_REQUEST),
-    CATEGORY_NAME_ALREADY_EXISTS("5016", "Tên thể loại đã tồn tại!", HttpStatus.BAD_REQUEST);
+    CATEGORY_NAME_ALREADY_EXISTS("5016", "Tên thể loại đã tồn tại!", HttpStatus.BAD_REQUEST),
+    PASSWORD_NOT_EXACTS("5017", "Mật khẩu không chính xác!", HttpStatus.BAD_REQUEST);
 
     String code;
     String message;

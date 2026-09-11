@@ -1,6 +1,5 @@
 package com.example.mymangaapp.mymangaapp.dto.response;
 
-import java.time.Instant;
 import java.util.Set;
 
 import lombok.AccessLevel;
@@ -20,7 +19,5 @@ public class RoleResponse {
     String name;
     String description;
     Set<PermissionResponse> permissions;
-    Instant createdAt;
-    Instant updatedAt;
 
 }

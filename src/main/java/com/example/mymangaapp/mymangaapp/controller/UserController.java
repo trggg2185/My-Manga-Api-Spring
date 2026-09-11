@@ -1,6 +1,8 @@
 package com.example.mymangaapp.mymangaapp.controller;
 
+import com.example.mymangaapp.mymangaapp.dto.request.UserPasswordRequest;
 import com.example.mymangaapp.mymangaapp.dto.response.PaginatedResponse;
+import com.example.mymangaapp.mymangaapp.dto.response.UserSummaryResponse;
 import org.springframework.lang.NonNull;
 import org.springframework.web.bind.annotation.*;
 
@@ -41,17 +43,46 @@ public class UserController {
     }
 
     @GetMapping("/users/me")
-    public ApiResponse<UserResponse> getMyInfo() {
+    public ApiResponse<UserSummaryResponse> getMyInfo() {
 
-        UserResponse response = userService.getMyInfo();
+        UserSummaryResponse response = userService.getMyInfo();
 
-        return ApiResponse.<UserResponse>builder()
+        return ApiResponse.<UserSummaryResponse>builder()
                 .result(response)
                 .build();
 
     }
 
-    @GetMapping("/users/{id}")
+    @PatchMapping("/users/me")
+    public ApiResponse<UserSummaryResponse> updateMyInfo(
+            @Valid @RequestBody UserUpdateRequest request
+    ) {
+
+        UserSummaryResponse response = userService.updateMyInfo(request);
+
+        return ApiResponse.<UserSummaryResponse>builder()
+                .result(response)
+                .build();
+
+    }
+
+    // update password của user hiện tại
+    @PatchMapping("/users/me/password")
+    public ApiResponse<Void> updateMyPassword(
+            @Valid @RequestBody UserPasswordRequest request
+    ) {
+
+        userService.updateMyPassword(request);
+
+        return ApiResponse.<Void>builder()
+                .code(ResponseCode.SUCCESS.getCode())
+                .message(ResponseCode.SUCCESS.getMessage())
+                .build();
+
+    }
+
+    // fix lại chỉ có admin lấy đc user băng id
+    @GetMapping("/admin/users/{id}")
     public ApiResponse<UserResponse> getUserById(@PathVariable @NonNull String id) {
 
         UserResponse response = userService.getUserById(id);
@@ -62,7 +93,8 @@ public class UserController {
 
     }
 
-    @PutMapping("/users/{id}")
+    // fix lại chỉ có adminmới đc update user
+    @PatchMapping("/admin/users/{id}")
     public ApiResponse<UserResponse> updateUserById(@PathVariable @NonNull String id,
             @Valid @RequestBody UserUpdateRequest request) {
 
