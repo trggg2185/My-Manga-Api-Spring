@@ -20,6 +20,9 @@ public class ChapterController {
 
     ChapterService chapterService;
 
+
+    // ------------------endpoints dành cho translator hoặc admin nhưng vẫn phải là thành viên của nhóm mới được------------------------//
+
     @PostMapping("/mangas/{mangaId}/chapters")
     public ApiResponse<ChapterResponse> createChapter(
             @PathVariable @NonNull String mangaId,
@@ -30,21 +33,6 @@ public class ChapterController {
 
         return ApiResponse.<ChapterResponse>builder()
                 .result(response)
-                .build();
-    }
-
-    @GetMapping("/mangas/{mangaId}/chapters")
-    public ApiResponse<PaginatedResponse<ChapterSummaryResponse>> getChaptersByMangaId(
-            @PathVariable @NonNull String mangaId,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size,
-            @RequestParam(defaultValue = "createdAt") String sortBy
-    ) {
-
-        PaginatedResponse<ChapterSummaryResponse> responses = chapterService.getAllChaptersByMangaId(mangaId, page, size, sortBy);
-
-        return ApiResponse.<PaginatedResponse<ChapterSummaryResponse>>builder()
-                .result(responses)
                 .build();
     }
 
@@ -64,6 +52,24 @@ public class ChapterController {
                 .result("Chapter id: " + chapterId + ", manga id: " + mangaId)
                 .build();
 
+    }
+
+
+    // ----------------------------------endpoints public ---------------------------------------------//
+
+    @GetMapping("/mangas/{mangaId}/chapters")
+    public ApiResponse<PaginatedResponse<ChapterSummaryResponse>> getChaptersByMangaId(
+            @PathVariable @NonNull String mangaId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size,
+            @RequestParam(defaultValue = "createdAt") String sortBy
+    ) {
+
+        PaginatedResponse<ChapterSummaryResponse> responses = chapterService.getAllChaptersByMangaId(mangaId, page, size, sortBy);
+
+        return ApiResponse.<PaginatedResponse<ChapterSummaryResponse>>builder()
+                .result(responses)
+                .build();
     }
 
 }

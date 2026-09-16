@@ -19,6 +19,9 @@ public class GroupJoinRequestController {
 
     GroupJoinRequestService groupJoinRequestService;
 
+
+    // ----------------------------------------endpoints cho user đã đăng nhập ----------------------------------------//
+
     // 1 user xin vào làm thành viên của 1 nhóm dịch
     @PostMapping("/transgroups/{groupId}/join-requests")
     public ApiResponse<JoinRequestResponse> requestJoinGroup(@PathVariable @NonNull String groupId) {
@@ -28,6 +31,21 @@ public class GroupJoinRequestController {
                 .result(response)
                 .build();
     }
+
+    @GetMapping("/users/me/join-requests")
+    public ApiResponse<List<JoinRequestResponse>> getMyJoinRequests(
+            @RequestParam(required = false) GroupJoinRequestStatus status
+    ) {
+
+        List<JoinRequestResponse> responses = groupJoinRequestService.getMyJoinRequests(status);
+
+        return ApiResponse.<List<JoinRequestResponse>>builder()
+                .result(responses)
+                .build();
+    }
+
+
+    // ----------------------------------------endpoints cho leader của nhóm dịch ----------------------------------------//
 
     // Lấy danh sách các yêu cầu xin vào nhóm (leader only)
     @GetMapping("/transgroups/{groupId}/join-requests")
@@ -65,18 +83,6 @@ public class GroupJoinRequestController {
 
         return ApiResponse.<JoinRequestResponse>builder()
                 .result(response)
-                .build();
-    }
-
-    @GetMapping("/users/me/join-requests")
-    public ApiResponse<List<JoinRequestResponse>> getMyJoinRequests(
-            @RequestParam(required = false) GroupJoinRequestStatus status
-    ) {
-
-        List<JoinRequestResponse> responses = groupJoinRequestService.getMyJoinRequests(status);
-
-        return ApiResponse.<List<JoinRequestResponse>>builder()
-                .result(responses)
                 .build();
     }
 

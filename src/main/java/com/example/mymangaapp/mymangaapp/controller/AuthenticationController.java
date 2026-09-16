@@ -27,6 +27,9 @@ public class AuthenticationController {
     
     AuthenticationService authenticationService;
 
+
+    // ----------------------------endpoint public (cho khách) ----------------------------------//
+
     @PostMapping("/login")
     public ApiResponse<AuthenticationResponse> login(@RequestBody AuthenticationRequest request) {
 

@@ -27,6 +27,9 @@ public class PermissionService {
 
     PermissionMapper permissionMapper;
 
+
+    // -------------------------- chức năng của admin -------------------------- //
+
     // admin
     @Transactional
     public PermissionResponse createPermission(@NonNull PermissionRequest request) {

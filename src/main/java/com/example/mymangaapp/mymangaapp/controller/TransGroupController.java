@@ -21,14 +21,8 @@ public class TransGroupController {
 
     TransGroupService transGroupService;
 
-    @PostMapping("/transgroups")
-    public ApiResponse<TransGroupResponse> requestCreateGroup(@Valid @RequestBody TransGroupCreationRequest request) {
-        TransGroupResponse response = transGroupService.requestCreateGroup(request);
 
-        return ApiResponse.<TransGroupResponse>builder()
-                .result(response)
-                .build();
-    }
+    // ----------------------------------- endpoint public (cho khách) -----------------------------------//
 
     // Endpoint này dành cho user thông thường có thể thấy tất cả nhóm dịch đang hoạt động
     @GetMapping("/transgroups")
@@ -44,14 +38,36 @@ public class TransGroupController {
                 .build();
     }
 
-    @DeleteMapping("/transgroups/{id}")
-    public ApiResponse<String> softDeleteGroupById(@PathVariable @NonNull String id) {
-        transGroupService.softDeleteGroupById(id);
 
-        return ApiResponse.<String>builder()
-                .code(ResponseCode.SUCCESS.getCode())
-                .message(ResponseCode.SUCCESS.getMessage())
-                .result("Group id: " + id)
+    // -------------------------------- endpoint cho user đã đăng nhập -----------------------------------//
+
+    @PostMapping("/transgroups")
+    public ApiResponse<TransGroupResponse> requestCreateGroup(@Valid @RequestBody TransGroupCreationRequest request) {
+        TransGroupResponse response = transGroupService.requestCreateGroup(request);
+
+        return ApiResponse.<TransGroupResponse>builder()
+                .result(response)
+                .build();
+    }
+
+
+    // ----------------------------------- endpoint cho admin -----------------------------------//
+
+    @PatchMapping("/admin/transgroups/{id}/approve")
+    public ApiResponse<TransGroupResponse> approveCreateGroup(@PathVariable @NonNull String id) {
+        TransGroupResponse response = transGroupService.approveCreateGroup(id);
+
+        return ApiResponse.<TransGroupResponse>builder()
+                .result(response)
+                .build();
+    }
+
+    @PatchMapping("/admin/transgroups/{id}/reject")
+    public ApiResponse<TransGroupResponse> rejectCreateGroup(@PathVariable @NonNull String id) {
+        TransGroupResponse response = transGroupService.rejectCreateGroup(id);
+
+        return ApiResponse.<TransGroupResponse>builder()
+                .result(response)
                 .build();
     }
 
@@ -69,21 +85,17 @@ public class TransGroupController {
                 .build();
     }
 
-    @PatchMapping("/admin/transgroups/{id}/approve")
-    public ApiResponse<TransGroupResponse> approveCreateGroup(@PathVariable @NonNull String id) {
-        TransGroupResponse response = transGroupService.approveCreateGroup(id);
 
-        return ApiResponse.<TransGroupResponse>builder()
-                .result(response)
-                .build();
-    }
+    // ----------------------------------- endpoint cho leaer và admin -----------------------------//
 
-    @PatchMapping("/admin/transgroups/{id}/reject")
-    public ApiResponse<TransGroupResponse> rejectCreateGroup(@PathVariable @NonNull String id) {
-        TransGroupResponse response = transGroupService.rejectCreateGroup(id);
+    @DeleteMapping("/transgroups/{id}")
+    public ApiResponse<String> softDeleteGroupById(@PathVariable @NonNull String id) {
+        transGroupService.softDeleteGroupById(id);
 
-        return ApiResponse.<TransGroupResponse>builder()
-                .result(response)
+        return ApiResponse.<String>builder()
+                .code(ResponseCode.SUCCESS.getCode())
+                .message(ResponseCode.SUCCESS.getMessage())
+                .result("Group id: " + id)
                 .build();
     }
 

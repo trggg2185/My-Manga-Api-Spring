@@ -30,6 +30,9 @@ public class UserController {
 
     UserService userService;
 
+
+    // ---------------------- endpoint public đây (dành cho khách) -------------------------- //
+
     @PostMapping("/users")
     // Nhớ có annotation @Valid để validate các fields trong request
     public ApiResponse<UserResponse> createUser(@Valid @RequestBody UserCreationRequest request) {
@@ -41,6 +44,9 @@ public class UserController {
                 .build();
 
     }
+
+
+    // --------------------------------- endpoint cho user đã đăng nhập -----------------------//
 
     @GetMapping("/users/me")
     public ApiResponse<UserSummaryResponse> getMyInfo() {
@@ -81,6 +87,24 @@ public class UserController {
 
     }
 
+
+    // ---------------------------- endpoints cho admin --------------------------------- //
+
+    @GetMapping("/admin/users")
+    public ApiResponse<PaginatedResponse<UserResponse>> getAllUsers(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size,
+            @RequestParam(defaultValue = "createdAt") String sortBy
+    ) {
+
+        PaginatedResponse<UserResponse> responses = userService.getAllUsers(page, size, sortBy);
+
+        return ApiResponse.<PaginatedResponse<UserResponse>>builder()
+                .result(responses)
+                .build();
+
+    }
+
     // fix lại chỉ có admin lấy đc user băng id
     @GetMapping("/admin/users/{id}")
     public ApiResponse<UserResponse> getUserById(@PathVariable @NonNull String id) {
@@ -105,6 +129,10 @@ public class UserController {
                 .build();
     }
 
+
+    // ---------------------------endpoint cho admin hoặc user --------------------------- //
+
+    // xoá user bằng id
     @DeleteMapping("/admin/users/{id}")
     public ApiResponse<String> deleteUserById(@PathVariable @NonNull String id) {
 
@@ -115,21 +143,6 @@ public class UserController {
                 .message(ResponseCode.SUCCESS.getMessage())
                 .result("User id: " + id)
                 .build();
-    }
-
-    @GetMapping("/admin/users")
-    public ApiResponse<PaginatedResponse<UserResponse>> getAllUsers(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size,
-            @RequestParam(defaultValue = "createdAt") String sortBy
-    ) {
-
-        PaginatedResponse<UserResponse> responses = userService.getAllUsers(page, size, sortBy);
-
-        return ApiResponse.<PaginatedResponse<UserResponse>>builder()
-                .result(responses)
-                .build();
-
     }
 
 }

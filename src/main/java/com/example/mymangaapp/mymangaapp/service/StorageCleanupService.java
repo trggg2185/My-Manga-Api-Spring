@@ -21,6 +21,9 @@ public class StorageCleanupService {
 
     StorageService storageService;
 
+
+    // -----------------------------------chức năng của hệ thống----------------------------------- //
+
     // Cron expression: second - minute - hour - day of month - month - day of week
     // 2 số 0 ở đầu nghĩa là chạy vào lúc 0 giây 0 phút của mọi giờ, mọi ngày
     @Scheduled(cron = "0 0 * * * *")

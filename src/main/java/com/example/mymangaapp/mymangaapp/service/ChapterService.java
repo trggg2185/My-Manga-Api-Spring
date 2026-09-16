@@ -46,7 +46,9 @@ public class ChapterService {
     StorageService storageService;
     PageService pageService;
 
-    // Chỉ cần có role translator là tạo được chương
+
+    // ------------------chức năng dành cho translator hoặc admin nhưng vẫn phải là thành viên của nhóm mới được------------------------//
+
     @PreAuthorize("hasAnyRole('ADMIN', 'TRANSLATOR')")
     @Transactional
     public ChapterResponse createChapter(@NonNull String mangaId, @NonNull ChapterRequest request) {
@@ -137,26 +139,6 @@ public class ChapterService {
         );
     }
 
-    // user thì ai cx vào manga bất kỳ và đều đọc đc các chapters
-    // ==> để public method này
-    public PaginatedResponse<ChapterSummaryResponse> getAllChaptersByMangaId(
-            @NonNull String mangaId, int page,
-            int size, @NonNull String sortBy
-    ) {
-
-        if (!mangaRepository.existsById(mangaId)) {
-            throw new AppException(ResponseCode.MANGA_NOT_FOUND);
-        }
-
-        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, sortBy));
-
-        org.springframework.data.domain.Page<ChapterSummaryResponse> dtoPage = chapterRepository
-                .findByMangaId(mangaId, pageable)
-                .map(chapterMapper::toChapterSummaryResponse);
-
-        return PaginatedResponse.of(dtoPage);
-    }
-
     @PreAuthorize("hasAnyRole('ADMIN', 'TRANSLATOR')")
     @Transactional
     public void deleteChapterById(@NonNull String mangaId, @NonNull String chapterId) {
@@ -190,6 +172,29 @@ public class ChapterService {
         // gọi xoá tất cả files trong prefix
         storageService.deleteFilesWithPrefix(prefix, Instant.now());
 
+    }
+
+
+    // ------------------------------chức năng public (cho khách)---------------------------------//
+
+    // user thì ai cx vào manga bất kỳ và đều đọc đc các chapters
+    // ==> để public method này
+    public PaginatedResponse<ChapterSummaryResponse> getAllChaptersByMangaId(
+            @NonNull String mangaId, int page,
+            int size, @NonNull String sortBy
+    ) {
+
+        if (!mangaRepository.existsById(mangaId)) {
+            throw new AppException(ResponseCode.MANGA_NOT_FOUND);
+        }
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, sortBy));
+
+        org.springframework.data.domain.Page<ChapterSummaryResponse> dtoPage = chapterRepository
+                .findByMangaId(mangaId, pageable)
+                .map(chapterMapper::toChapterSummaryResponse);
+
+        return PaginatedResponse.of(dtoPage);
     }
 
 }

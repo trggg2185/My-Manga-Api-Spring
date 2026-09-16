@@ -12,11 +12,9 @@ import com.example.mymangaapp.mymangaapp.dto.request.LogoutRequest;
 import com.example.mymangaapp.mymangaapp.dto.request.RefreshRequest;
 import com.example.mymangaapp.mymangaapp.dto.response.AuthenticationResponse;
 import com.example.mymangaapp.mymangaapp.dto.response.IntrospectResponse;
-import com.example.mymangaapp.mymangaapp.entity.InvalidatedToken;
 import com.example.mymangaapp.mymangaapp.entity.User;
 import com.example.mymangaapp.mymangaapp.exception.AppException;
 import com.example.mymangaapp.mymangaapp.exception.ResponseCode;
-import com.example.mymangaapp.mymangaapp.repository.InvalidatedTokenRepository;
 import com.example.mymangaapp.mymangaapp.repository.UserRepository;
 import com.example.mymangaapp.mymangaapp.security.utils.JwtUtils;
 
@@ -33,11 +31,15 @@ import org.springframework.transaction.annotation.Transactional;
 public class AuthenticationService {
 
     UserRepository userRepository;
-    InvalidatedTokenRepository invalidatedTokenRepository;
+
+    InvalidatedTokenService invalidatedTokenService;
 
     PasswordEncoder passwordEncoder;
 
     JwtUtils jwtUtils;
+
+
+    // ---------------------------- chức năng public (cho khách) ----------------------------------//
 
     // Đôi với những hàm khác ngoài introspect sẽ coi việc xác thưc token trả về false
     // là 1 lỗi ứng dụng nên khi false sẽ ném ra ngoại lệ luôn
@@ -80,18 +82,18 @@ public class AuthenticationService {
 
         String jwtId = jwtUtils.extractJwtId(request.getToken());
 
-        if (invalidatedTokenRepository.existsById(jwtId)) {
+        // Kiểm tra trong redis đã tồn tại key là jwtId này chưa
+        if (invalidatedTokenService.isTokenInvalidated(jwtId)) {
             throw new AppException(ResponseCode.UNAUTHENTICATED);
         }
 
         Date expirationTime = jwtUtils.extractExpirationTime(request.getToken());
 
-        InvalidatedToken invalidatedToken = InvalidatedToken.builder()
-                .id(jwtId)
-                .expirationTime(expirationTime.toInstant())
-                .build();
+        // tính tg sống còn lại của token bằng cách lấy tg hết hạn trừ đi tg hiện tại
+        long ttlInSeconds = (expirationTime.getTime() - System.currentTimeMillis()) / 1000;
 
-        invalidatedTokenRepository.save(invalidatedToken);
+        // Lưu token vào redis vs ttl là tg sống còn lại của token
+        invalidatedTokenService.invalidateToken(jwtId, ttlInSeconds);
 
     }
 
@@ -108,10 +110,11 @@ public class AuthenticationService {
         String jwtId = jwtUtils.extractJwtId(request.getToken());
         Date expirationTime = jwtUtils.extractExpirationTime(request.getToken());
 
-        invalidatedTokenRepository.save(InvalidatedToken.builder()
-                .id(jwtId)
-                .expirationTime(expirationTime.toInstant())
-                .build());
+        // tính tg sống còn lại của token bằng cách lấy tg hết hạn trừ đi tg hiện tại
+        long ttlInSeconds = (expirationTime.getTime() - System.currentTimeMillis()) / 1000;
+
+        // Lưu token vào redis vs ttl là tg sống còn lại của token
+        invalidatedTokenService.invalidateToken(jwtId, ttlInSeconds);
 
         String username = jwtUtils.extractUsername(request.getToken());
 

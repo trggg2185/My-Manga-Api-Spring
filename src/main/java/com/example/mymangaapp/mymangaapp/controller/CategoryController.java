@@ -21,6 +21,9 @@ public class CategoryController {
 
     CategoryService categoryService;
 
+
+    // ------------------------------------ endpoints public (cho khách) ------------------------------------ //
+
     // public để khi vào trang họ có thể biết được có bn thể loại rồi lọc truyện theo đó
     @GetMapping("/categories")
     public ApiResponse<List<CategoryResponse>> getAllCategories() {
@@ -36,6 +39,8 @@ public class CategoryController {
                 .build();
     }
 
+
+    // ------------------------------------ endpoints của admin ------------------------------------ //
 
     @PostMapping("/admin/categories")
     public ApiResponse<CategoryResponse> createCategory(@Valid @RequestBody CategoryRequest request) {

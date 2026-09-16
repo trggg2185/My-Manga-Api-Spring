@@ -22,6 +22,9 @@ public class MangaController {
 
     MangaService mangaService;
 
+
+    // ---------------------------------endpoints dành cho leader nhóm hoặc admin ------------------------------//
+
     @PostMapping("/transgroups/{groupId}/mangas")
     public ApiResponse<MangaResponse> createManga(
             @Valid @RequestBody MangaRequest request,
@@ -47,24 +50,6 @@ public class MangaController {
                 .build();
     }
 
-    // public
-    // đây là endpoint khi user vào trang của nhóm dịch
-    // thì lấy tất cả các bộ truyện mà nhóm đang tham gia dịch
-    // cả dịch chính lẫn phụ
-    @GetMapping("/transgroups/{groupId}/mangas")
-    public ApiResponse<PaginatedResponse<MangaSummaryResponse>> getMangasByGroupId(
-            @PathVariable @NonNull String groupId,
-            @RequestParam(defaultValue = "0") int page, // số trang
-            @RequestParam(defaultValue = "15") int size, // số bản ghi mỗi trang
-            @RequestParam(defaultValue = "createdAt") String sortBy // sxep theo field nào
-    ) {
-        PaginatedResponse<MangaSummaryResponse> responses = mangaService.getMangasByGroupId(groupId, page, size, sortBy);
-
-        return ApiResponse.<PaginatedResponse<MangaSummaryResponse>>builder()
-                .result(responses)
-                .build();
-    }
-
     @DeleteMapping("/transgroups/{groupId}/mangas/{mangaId}")
     public ApiResponse<String> deleteMangaById(
             @PathVariable @NonNull String groupId,
@@ -79,6 +64,27 @@ public class MangaController {
                 .result("Transgroup id: " + groupId + ", manga id: " + mangaId)
                 .build();
     }
+
+
+    // ---------------------------------endpoints chỉ cho admin ------------------------------//
+
+    // admin only
+    @GetMapping("/admin/mangas")
+    public ApiResponse<PaginatedResponse<MangaResponse>> getMangas(
+            @RequestParam(required = false) MangaStatus status,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "24") int size,
+            @RequestParam(defaultValue = "createdAt") String sortBy
+    ) {
+        PaginatedResponse<MangaResponse> responses = mangaService.getMangas(status, page, size, sortBy);
+
+        return ApiResponse.<PaginatedResponse<MangaResponse>>builder()
+                .result(responses)
+                .build();
+    }
+
+
+    // ---------------------------------endpoints public (cho khách) ---------------------------//
 
     // lấy tất manga public có pagination
     // đây là khi họ vào trang home của web
@@ -97,6 +103,24 @@ public class MangaController {
                 .build();
     }
 
+    // public
+    // đây là endpoint khi user vào trang của nhóm dịch
+    // thì lấy tất cả các bộ truyện mà nhóm đang tham gia dịch
+    // cả dịch chính lẫn phụ
+    @GetMapping("/transgroups/{groupId}/mangas")
+    public ApiResponse<PaginatedResponse<MangaSummaryResponse>> getMangasByGroupId(
+            @PathVariable @NonNull String groupId,
+            @RequestParam(defaultValue = "0") int page, // số trang
+            @RequestParam(defaultValue = "15") int size, // số bản ghi mỗi trang
+            @RequestParam(defaultValue = "createdAt") String sortBy // sxep theo field nào
+    ) {
+        PaginatedResponse<MangaSummaryResponse> responses = mangaService.getMangasByGroupId(groupId, page, size, sortBy);
+
+        return ApiResponse.<PaginatedResponse<MangaSummaryResponse>>builder()
+                .result(responses)
+                .build();
+    }
+
     @GetMapping("/mangas/{id}")
     public ApiResponse<MangaResponse> getMangaById(
             @PathVariable @NonNull String id
@@ -105,21 +129,6 @@ public class MangaController {
 
         return ApiResponse.<MangaResponse>builder()
                 .result(response)
-                .build();
-    }
-
-    // admin only
-    @GetMapping("/admin/mangas")
-    public ApiResponse<PaginatedResponse<MangaResponse>> getMangas(
-            @RequestParam(required = false) MangaStatus status,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "24") int size,
-            @RequestParam(defaultValue = "createdAt") String sortBy
-            ) {
-        PaginatedResponse<MangaResponse> responses = mangaService.getMangas(status, page, size, sortBy);
-
-        return ApiResponse.<PaginatedResponse<MangaResponse>>builder()
-                .result(responses)
                 .build();
     }
 

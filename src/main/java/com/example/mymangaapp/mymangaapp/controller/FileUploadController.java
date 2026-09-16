@@ -21,6 +21,9 @@ public class FileUploadController {
 
     StorageService storageService;
 
+
+    // -------------------------------endpoints cho admin và translaor ----------------------------//
+
     @PostMapping("/files/upload")
     public ApiResponse<String> uploadTmpFile(@RequestPart("file") MultipartFile file) {
 

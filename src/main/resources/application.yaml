@@ -20,7 +20,14 @@ spring:
         multipart:
             max-file-size: 5MB
             max-request-size: 150MB
-
+    data:
+        redis:
+            host: ${REDIS_HOST:localhost}
+            port: ${REDIS_PORT:6379}
+            password: ${REDIS_PASSWORD:}
+            database: ${REDIS_DATABASE:0}
+            timeout: 5000ms #thời gian tối đa chờ phản hồi lệnh
+            connect-timeout: 3000ms #thời gian tối đa chờ kết nối
 jwt:
     signer-key: ${SIGNER_KEY}
     access-token-validity-in-seconds: ${ACCESS_TOKEN_VALIDITY_IN_SECONDS}

@@ -27,6 +27,9 @@ public class PageService {
 
     PageMapper pageMapper;
 
+
+    // --------------------------------chức năng public --------------------------------//
+
     // lấy tất cả các files ảnh của chapter theo id
     // ==> cx public luôn
     public List<PageResponse> getAllPagesByChapterId(@NonNull String chapterId) {
@@ -41,6 +44,8 @@ public class PageService {
                 .toList();
     }
 
+
+    // --------------------------------method cấp cho service khác dùng ----------------------------------//
 
     public List<Page> createPages(Chapter chapter, List<String> pageUrls) {
 

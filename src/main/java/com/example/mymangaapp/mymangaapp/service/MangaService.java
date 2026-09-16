@@ -44,8 +44,11 @@ public class MangaService {
 
     MangaMapper mangaMapper;
 
-    // cần role translator và user hiện tại phải là leader nhóm mới có quyền
-    @PreAuthorize("hasAnyRole('ADMIN', 'TRANSLATOR') and @groupSec.isGroupLeader(#groupId)")
+
+    // ----------------------------chức năng dành cho leader nhóm hoặc admin ---------------------------------//
+
+    // tạo mới 1 truyện
+    @PreAuthorize("hasRole('ADMIN') or @groupSec.isGroupLeader(#groupId)")
     @Transactional
     public MangaResponse createManga(@NonNull MangaRequest request, @NonNull String groupId) {
 
@@ -76,6 +79,59 @@ public class MangaService {
         return mangaMapper.toMangaResponse(mangaRepository.save(manga));
     }
 
+    // cập nhật info truyện
+    @PreAuthorize("hasRole('ADMIN') or @groupSec.isGroupLeader(#groupId)")
+    @Transactional
+    public MangaResponse updateMangaById(@NonNull String groupId, @NonNull String mangaId, @NonNull MangaRequest request) {
+
+        Manga manga = mangaRepository
+                .findWithDetailsById(mangaId)
+                .orElseThrow(() -> new AppException(ResponseCode.MANGA_NOT_FOUND));
+
+        // Những nhóm khác cùng dịch 1 bộ thì ko có quyền sửa thông tin manga đâu
+        // chỉ có nhóm chủ sở hữu bộ này thôi
+
+        // Check xem manga này đúng sở hữu bởi nhóm không
+        // nhỡ manga của nhóm khác mà update thì toi
+        if (!manga.getOwnerTransGroup().getId().equals(groupId)) {
+            throw new AppException(ResponseCode.UNAUTHORIZED);
+        }
+
+        if (request.getCategoryIds() != null) {
+            if (CollectionUtils.isEmpty(request.getCategoryIds())) {
+                throw new AppException(ResponseCode.CATEGORIES_REQUIRED);
+            }
+
+            Set<Category> categories = new HashSet<>(categoryRepository.findAllById(request.getCategoryIds()));
+            if (categories.isEmpty()) {
+                throw new AppException(ResponseCode.CATEGORY_NOT_FOUND);
+            }
+            manga.setCategories(categories);
+        }
+
+        mangaMapper.updateMangaFromRequest(manga, request);
+
+        return mangaMapper.toMangaResponse(mangaRepository.save(manga));
+    }
+
+    // xoá truyện theo id
+    @Transactional
+    @PreAuthorize("@groupSec.isGroupLeader(#groupId)")
+    public void deleteMangaById(@NonNull String groupId, @NonNull String mangaId) {
+        Manga manga = mangaRepository
+                .findById(mangaId)
+                .orElseThrow(() -> new AppException(ResponseCode.MANGA_NOT_FOUND));
+
+        if (!manga.getOwnerTransGroup().getId().equals(groupId)) {
+            throw new AppException(ResponseCode.UNAUTHORIZED);
+        }
+
+        mangaRepository.delete(manga);
+    }
+
+
+    // -------------------------chức năng chỉ dành cho admin --------------------------------//
+
     // chỉ dành cho admin
     @Transactional(readOnly = true)
     public PaginatedResponse<MangaResponse> getMangas(
@@ -99,6 +155,9 @@ public class MangaService {
 
         return PaginatedResponse.of(dtoPage);
     }
+
+
+    // -----------------------------chức năng public (cho khách) --------------------------------//
 
     // lấy tất manga, public có pagination
     // đây là khi họ vào trang home của web
@@ -150,55 +209,6 @@ public class MangaService {
                 .orElseThrow(() -> new AppException(ResponseCode.MANGA_NOT_FOUND));
 
         return mangaMapper.toMangaResponse(manga);
-    }
-
-    // chỉ dành cho leader
-    @PreAuthorize("@groupSec.isGroupLeader(#groupId)")
-    @Transactional
-    public MangaResponse updateMangaById(@NonNull String groupId, @NonNull String mangaId, @NonNull MangaRequest request) {
-
-        Manga manga = mangaRepository
-                .findWithDetailsById(mangaId)
-                .orElseThrow(() -> new AppException(ResponseCode.MANGA_NOT_FOUND));
-
-        // Những nhóm khác cùng dịch 1 bộ thì ko có quyền sửa thông tin manga đâu
-        // chỉ có nhóm chủ sở hữu bộ này thôi
-
-        // Check xem manga này đúng sở hữu bởi nhóm không
-        // nhỡ manga của nhóm khác mà update thì toi
-        if (!manga.getOwnerTransGroup().getId().equals(groupId)) {
-            throw new AppException(ResponseCode.UNAUTHORIZED);
-        }
-
-        if (request.getCategoryIds() != null) {
-            if (CollectionUtils.isEmpty(request.getCategoryIds())) {
-                throw new AppException(ResponseCode.CATEGORIES_REQUIRED);
-            }
-
-            Set<Category> categories = new HashSet<>(categoryRepository.findAllById(request.getCategoryIds()));
-            if (categories.isEmpty()) {
-                throw new AppException(ResponseCode.CATEGORY_NOT_FOUND);
-            }
-            manga.setCategories(categories);
-        }
-
-        mangaMapper.updateMangaFromRequest(manga, request);
-
-        return mangaMapper.toMangaResponse(mangaRepository.save(manga));
-    }
-
-    @Transactional
-    @PreAuthorize("@groupSec.isGroupLeader(#groupId)")
-    public void deleteMangaById(@NonNull String groupId, @NonNull String mangaId) {
-        Manga manga = mangaRepository
-                .findById(mangaId)
-                .orElseThrow(() -> new AppException(ResponseCode.MANGA_NOT_FOUND));
-
-        if (!manga.getOwnerTransGroup().getId().equals(groupId)) {
-            throw new AppException(ResponseCode.UNAUTHORIZED);
-        }
-
-        mangaRepository.delete(manga);
     }
 
 }

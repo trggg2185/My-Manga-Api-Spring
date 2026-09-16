@@ -7,7 +7,7 @@ import java.util.Date;
 import java.util.StringJoiner;
 import java.util.UUID;
 
-import com.example.mymangaapp.mymangaapp.repository.InvalidatedTokenRepository;
+import com.example.mymangaapp.mymangaapp.service.InvalidatedTokenService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -48,8 +48,8 @@ public class JwtUtils {
     @Value("${jwt.refreshable-duration-in-seconds}")
     long refreshableDurationInSeconds;
 
-    final InvalidatedTokenRepository invalidatedTokenRepository;
-    
+    final InvalidatedTokenService invalidatedTokenService;
+
     // tạo access token
     public String generateAccessToken(User user) {
 
@@ -113,7 +113,8 @@ public class JwtUtils {
         
             SignedJWT signedJWT = SignedJWT.parse(token);
 
-            if (invalidatedTokenRepository.existsById(signedJWT.getJWTClaimsSet().getJWTID())) {
+            // Check token bị vô hiệu hoá trong redis không
+            if (invalidatedTokenService.isTokenInvalidated(signedJWT.getJWTClaimsSet().getJWTID())) {
                 log.error("Token đã bị vô hiệu hoá!");
                 return false;
             }

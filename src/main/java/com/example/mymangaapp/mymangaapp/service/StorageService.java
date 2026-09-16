@@ -61,6 +61,9 @@ public class StorageService {
     // đây là kích thước tối đa của file sau khi optimize (1MB)
     static long MAX_BYPASS_SIZE = 1024 * 1024;
 
+
+    // ---------------------------chức năng dành cho admin và translator--------------------------- //
+
     // upload 1 file, yc có role translator
     @PreAuthorize("hasAnyRole('ADMIN', 'TRANSLATOR')")
     public String uploadTmpFile(@NonNull MultipartFile file) {
@@ -138,6 +141,9 @@ public class StorageService {
                 .toList();
 
     }
+
+
+    // ---------------------------các method cho service khác dùng --------------------------- //
 
     public String copyFile(String sourceKey, String destinationKey, boolean deleteSource) {
 

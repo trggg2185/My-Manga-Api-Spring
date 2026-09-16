@@ -20,6 +20,9 @@ public class PageController {
 
     PageService pageService;
 
+
+    // -------------------------------endpoints public ----------------------------------//
+
     @GetMapping("/chapters/{chapterId}/pages")
     public ApiResponse<List<PageResponse>> getChaptersByMangaId(@PathVariable @NonNull String chapterId) {
 

@@ -41,6 +41,27 @@ public class TransGroupService {
 
     TransGroupMapper transGroupMapper;
 
+
+    // ----------------------------------- chức năng public (cho khách) -----------------------------------//
+
+    // Lấy tất cả nhóm dịch đã được chấp thuận, public
+    public PaginatedResponse<TransGroupResponse> getGroups(
+            int page, int size,
+            @NonNull String sortBy
+    ) {
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, sortBy));
+
+        Page<TransGroupResponse> dtoPage = transGroupRepository
+                .findAllByStatus(TransGroupStatus.APPROVED, pageable)
+                .map(transGroupMapper::toTransGroupResponse);
+
+        return PaginatedResponse.of(dtoPage);
+    }
+
+
+    // -------------------------- chức năng của user đã đăng nhập -------------------------- //
+
     @Transactional
     public TransGroupResponse requestCreateGroup(@NonNull TransGroupCreationRequest request) {
 
@@ -83,6 +104,9 @@ public class TransGroupService {
         // thay vào đó ta dùng user summary response cho gọn nhẹ
         return transGroupMapper.toTransGroupResponse(transGroup);
     }
+
+
+    // -------------------------------- chức năng của admin -------------------------------- //
 
     // admin
     @Transactional
@@ -127,21 +151,6 @@ public class TransGroupService {
         return transGroupMapper.toTransGroupResponse(transGroupRepository.save(transGroup));
     }
 
-    // Lấy tất cả nhóm dịch đã được chấp thuận, public
-    public PaginatedResponse<TransGroupResponse> getGroups(
-            int page, int size,
-            @NonNull String sortBy
-    ) {
-
-        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, sortBy));
-
-        Page<TransGroupResponse> dtoPage = transGroupRepository
-                .findAllByStatus(TransGroupStatus.APPROVED, pageable)
-                .map(transGroupMapper::toTransGroupResponse);
-
-        return PaginatedResponse.of(dtoPage);
-    }
-
     // Đây cũng lấy nhóm nhưng chỉ dành cho admin
     public PaginatedResponse<TransGroupResponse> getGroups(
             TransGroupStatus status, int page,
@@ -166,6 +175,10 @@ public class TransGroupService {
         return PaginatedResponse.of(dtoPage);
     }
 
+
+    // ------------------------ chức năng dành cho leader nhóm dịch hoặc admin ------------------------ //
+
+    // xoá nhóm dịch, admin cho đc tất, leader chỉ xoá đc nhóm của mình
     @Transactional // cho thêm vì có 1 câu query mình tự định nghĩa, để spring cho vào 1 transaction
     @PreAuthorize("@groupSec.isGroupLeaderOrAdmin(#id)")
     public void softDeleteGroupById(@NonNull String id) {

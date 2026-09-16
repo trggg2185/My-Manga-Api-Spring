@@ -46,6 +46,9 @@ public class UserService {
     // Map từ đối tượng này sang đối tượng khác nhanh chóng
     UserMapper userMapper;
 
+
+    // --------------------------------- chức năng public đây (dành cho khách) ----------------------------------------- //
+
     // Tạo user mới
     @Transactional
     public UserResponse createUser(@NonNull UserCreationRequest request) {
@@ -79,21 +82,8 @@ public class UserService {
 
     }
 
-    // Lấy tất cả user
-    public PaginatedResponse<UserResponse> getAllUsers(
-            int page, int size,
-            @NonNull String sortBy
-    ) {
 
-        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, sortBy));
-
-        Page<UserResponse> dtoPage = userRepository
-                .findAll(pageable)
-                .map(userMapper::toUserResponse);
-
-        return PaginatedResponse.of(dtoPage);
-
-    }
+    // --------------------------------- chức năng cho user đã đăng nhập đây -----------------------------------------  //
 
     public UserSummaryResponse getMyInfo() {
         String username = SecurityUtils.getCurrentUsername();
@@ -135,6 +125,25 @@ public class UserService {
         userRepository.save(user);
     }
 
+
+    // --------------------------------- chức năng admin đây ----------------------------------------- //
+
+    // Lấy tất cả user
+    public PaginatedResponse<UserResponse> getAllUsers(
+            int page, int size,
+            @NonNull String sortBy
+    ) {
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, sortBy));
+
+        Page<UserResponse> dtoPage = userRepository
+                .findAll(pageable)
+                .map(userMapper::toUserResponse);
+
+        return PaginatedResponse.of(dtoPage);
+
+    }
+
     // Lấy user bằng id
     public UserResponse getUserById(@NonNull String id) {
         User user = userRepository
@@ -168,7 +177,10 @@ public class UserService {
         return userMapper.toUserResponse(userRepository.save(user));
     }
 
-    // Xoá user bằng id
+
+    // --------------------------- chức năng cho admin hoặc user -------------------------- //
+
+    // Xoá user bằng id, admin xoá đc mọi user, user chỉ xoá đc chính mình
     @Transactional
     @PreAuthorize("@userSec.isSelfOrAdmin(#id)")
     public void deleteUserById(@NonNull String id) {

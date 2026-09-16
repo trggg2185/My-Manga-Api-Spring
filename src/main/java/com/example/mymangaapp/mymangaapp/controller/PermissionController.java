@@ -29,6 +29,9 @@ public class PermissionController {
 
     PermissionService permissionService;
 
+
+    // -------------------------- chức năng của admin -------------------------- //
+
     @PostMapping
     public ApiResponse<PermissionResponse> createPermission(@RequestBody PermissionRequest request) {
 

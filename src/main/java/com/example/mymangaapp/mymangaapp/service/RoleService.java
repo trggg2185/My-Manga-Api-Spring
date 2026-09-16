@@ -34,6 +34,9 @@ public class RoleService {
 
     RoleMapper roleMapper;
 
+
+    // ----------------------- chức năng cho admin ---------------------------- //
+
     // admin
     @Transactional
     public RoleResponse createRole(@NonNull RoleRequest request) {

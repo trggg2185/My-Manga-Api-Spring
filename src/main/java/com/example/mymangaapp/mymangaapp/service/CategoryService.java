@@ -26,18 +26,8 @@ public class CategoryService {
     CategoryRepository categoryRepository;
     CategoryMapper categoryMapper;
 
-    // admin
-    @Transactional
-    public CategoryResponse createCategory(@NonNull CategoryRequest request) {
-        if (categoryRepository.existsByName(request.getName().trim())) {
-            throw new AppException(ResponseCode.CATEGORY_NAME_ALREADY_EXISTS);
-        }
 
-        Category category = categoryMapper.toCategory(request);
-        category.setName(request.getName().trim());
-
-        return categoryMapper.toCategoryResponse(categoryRepository.save(category));
-    }
+    // ---------------------------------chức năng public (cho khách) --------------------------------- //
 
     // public endpoint
     public List<CategoryResponse> getAllCategories() {
@@ -52,6 +42,22 @@ public class CategoryService {
                 .orElseThrow(() -> new AppException(ResponseCode.CATEGORY_NOT_FOUND));
 
         return categoryMapper.toCategoryResponse(category);
+    }
+
+
+    // ---------------------------------chức năng của admin ---------------------------------
+
+    // admin
+    @Transactional
+    public CategoryResponse createCategory(@NonNull CategoryRequest request) {
+        if (categoryRepository.existsByName(request.getName().trim())) {
+            throw new AppException(ResponseCode.CATEGORY_NAME_ALREADY_EXISTS);
+        }
+
+        Category category = categoryMapper.toCategory(request);
+        category.setName(request.getName().trim());
+
+        return categoryMapper.toCategoryResponse(categoryRepository.save(category));
     }
 
     // admin

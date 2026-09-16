@@ -29,6 +29,9 @@ public class RoleController {
 
     RoleService roleService;
 
+
+    // ----------------------- endpoints cho admin ---------------------------- //
+
     @PostMapping
     public ApiResponse<RoleResponse> createRole(@RequestBody RoleRequest request) {
 

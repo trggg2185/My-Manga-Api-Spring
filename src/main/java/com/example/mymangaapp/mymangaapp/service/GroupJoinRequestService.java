@@ -39,6 +39,9 @@ public class GroupJoinRequestService {
 
     GroupJoinRequestMapper groupJoinRequestMapper;
 
+
+    // ---------------------------------------chức năng cho user đã đăng nhập ---------------------------------------//
+
     @Transactional
     public JoinRequestResponse requestJoinGroup(@NonNull String groupId) {
 
@@ -67,6 +70,29 @@ public class GroupJoinRequestService {
         return groupJoinRequestMapper.toJoinRequestResponse(groupJoinRequestRepository.save(groupJoinRequest));
 
     }
+
+    // Hàm lấy những yêu cầu tham gia nhóm từ chính user hiện tại đang đăng nhập
+    public List<JoinRequestResponse> getMyJoinRequests(GroupJoinRequestStatus status) {
+
+        String currentUserId = SecurityUtils.getCurrentUserId();
+
+        if (status != null) {
+            return groupJoinRequestRepository
+                    .findAllByUserIdAndStatus(currentUserId, status)
+                    .stream()
+                    .map(groupJoinRequestMapper::toJoinRequestResponse)
+                    .toList();
+        }
+
+        return groupJoinRequestRepository
+                .findAllByUserId(currentUserId)
+                .stream()
+                .map(groupJoinRequestMapper::toJoinRequestResponse)
+                .toList();
+    }
+
+
+    // ---------------------------------------chức năng cho leader nhóm dịch ---------------------------------------//
 
     // Lấy các yêu cầu xin vào nhóm (chỉ leader của nhóm mới được phép)
     @PreAuthorize("@groupSec.isGroupLeader(#groupId)")
@@ -165,26 +191,6 @@ public class GroupJoinRequestService {
         return groupJoinRequestMapper.toJoinRequestResponse(
                 groupJoinRequestRepository.save(groupJoinRequest)
         );
-    }
-
-    // Hàm lấy những yêu cầu tham gia nhóm từ chính user hiện tại đang đăng nhập
-    public List<JoinRequestResponse> getMyJoinRequests(GroupJoinRequestStatus status) {
-
-        String currentUserId = SecurityUtils.getCurrentUserId();
-
-        if (status != null) {
-            return groupJoinRequestRepository
-                    .findAllByUserIdAndStatus(currentUserId, status)
-                    .stream()
-                    .map(groupJoinRequestMapper::toJoinRequestResponse)
-                    .toList();
-        }
-
-        return groupJoinRequestRepository
-                .findAllByUserId(currentUserId)
-                .stream()
-                .map(groupJoinRequestMapper::toJoinRequestResponse)
-                .toList();
     }
 
 }
