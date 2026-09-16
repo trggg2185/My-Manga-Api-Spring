@@ -36,7 +36,7 @@ public class TransGroup extends BaseEntity {
     Set<User> members;
 
     // name của trans group cũng ko pb hoa thường
-    @Column(name = "name", unique = true, columnDefinition = "VARCHAR(255) COLLATE utf8mb4_unicode_ci")
+    @Column(name = "name", unique = true, columnDefinition = "VARCHAR(50) COLLATE utf8mb4_unicode_ci")
     String name;
 
     @Column(name = "description", length = 300)

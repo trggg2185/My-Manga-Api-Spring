@@ -25,7 +25,7 @@ public class Category extends BaseEntity {
     @Column(name = "name", unique = true, nullable = false, length = 100)
     String name;
 
-    @Column(length = 500)
+    @Column(length = 200)
     String description;
 
     @ManyToMany(mappedBy = "categories", fetch = FetchType.LAZY)

@@ -1,7 +1,7 @@
 package com.example.mymangaapp.mymangaapp.dto.request;
 
-import org.springframework.lang.NonNull;
-
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,10 +15,12 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Builder
 public class PermissionRequest {
-    
-    @NonNull
+
+    @NotBlank(message = "PERMISSION_NAME_REQUIRED")
+    @Size(max = 50, message = "PERMISSION_NAME_INVALID")
     String name;
-    
+
+    @Size(max = 100, message = "PERMISSION_DESCRIPTION_INVALID")
     String description;
 
 }

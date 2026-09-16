@@ -44,7 +44,7 @@ public class User extends BaseEntity {
     @Column(name = "email", unique = true)
     String email;
 
-    @Column(name = "password", nullable = false)
+    @Column(name = "password", nullable = false, length = 30)
     String password;
 
     String facebook;

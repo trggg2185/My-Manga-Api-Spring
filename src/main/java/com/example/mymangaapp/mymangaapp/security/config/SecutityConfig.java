@@ -49,6 +49,8 @@ public class SecutityConfig {
             "/categories/{id}", // lấy thể loại theo id
     };
 
+    static String ADMIN_ENDPOINTS = "/admin/**";
+
     static String ADMIN = "ADMIN";
 
     @Bean
@@ -61,7 +63,7 @@ public class SecutityConfig {
                 .authorizeHttpRequests(request -> request
                         .requestMatchers(HttpMethod.POST, POST_PUBLIC_ENDPOINTS).permitAll()
                         .requestMatchers(HttpMethod.GET, GET_PUBLIC_ENDPOINTS).permitAll()
-                        .requestMatchers("/admin/**").hasRole(ADMIN)
+                        .requestMatchers(ADMIN_ENDPOINTS).hasRole(ADMIN)
                         .anyRequest().authenticated())
                 .exceptionHandling(exception -> exception
                         .authenticationEntryPoint(jwtAuthenticationEntryPoint))

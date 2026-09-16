@@ -20,6 +20,6 @@ public class CategoryRequest {
     @Size(min = 2, max = 100, message = "CATEGORY_NAME_INVALID")
     String name;
 
-    @Size(max = 500)
+    @Size(max = 200)
     String description;
 }

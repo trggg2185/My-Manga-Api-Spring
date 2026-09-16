@@ -1,5 +1,7 @@
 package com.example.mymangaapp.mymangaapp.dto.request;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,6 +15,12 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Builder
 public class AuthenticationRequest {
+
+    @NotBlank(message = "USERNAME_REQUIRED")
+    @Size(min = 3, max = 50, message = "USERNAME_INVALID")
     String username;
+
+    @NotBlank(message = "PASSWORD_REQUIRED")
+    @Size(min = 5, max = 30, message = "PASSWORD_INVALID")
     String password;
 }

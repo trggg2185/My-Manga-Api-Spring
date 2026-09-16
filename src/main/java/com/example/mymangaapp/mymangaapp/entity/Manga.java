@@ -26,8 +26,12 @@ public class Manga extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.UUID)
     String id;
 
+    @Column(nullable = false, length = 200)
     String name;
+
+    @Column(nullable = false, length = 300)
     String slug;
+
     String authorsName;
 
     // method này luôn chạy trc khi insert hoặc update manga, để tự động tạo slug từ name
@@ -59,6 +63,7 @@ public class Manga extends BaseEntity {
     @Builder.Default
     MangaStatus status = MangaStatus.ONGOING;
 
+    @Column(name = "description", length = 500)
     String description;
 
     // Manga này do nhóm transgroup này sỡ hữu

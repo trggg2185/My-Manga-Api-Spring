@@ -2,10 +2,7 @@ package com.example.mymangaapp.mymangaapp.entity;
 
 import java.util.Set;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToMany;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -24,8 +21,10 @@ import lombok.experimental.SuperBuilder;
 public class Permission extends BaseEntity {
 
     @Id
+    @Column(length = 50, nullable = false)
     String name;
-    
+
+    @Column(length = 100)
     String description;
 
     // QH: 1 permission có thể thuộc về nhiều role

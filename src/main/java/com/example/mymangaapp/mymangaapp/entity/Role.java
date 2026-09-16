@@ -21,8 +21,10 @@ import lombok.experimental.SuperBuilder;
 public class Role extends BaseEntity {
 
     @Id
+    @Column(name = "name", length = 20)
     String name; // name chính là id của role table
 
+    @Column(name = "description", length = 100)
     String description;
 
     // QH: 1 role có thể thuộc về nhiều user

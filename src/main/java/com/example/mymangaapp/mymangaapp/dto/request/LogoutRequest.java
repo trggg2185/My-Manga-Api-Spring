@@ -1,5 +1,6 @@
 package com.example.mymangaapp.mymangaapp.dto.request;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,5 +14,7 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Builder
 public class LogoutRequest {
+
+    @NotBlank(message = "TOKEN_REQUIRED")
     String token;
 }

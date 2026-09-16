@@ -2,8 +2,9 @@ package com.example.mymangaapp.mymangaapp.dto.request;
 
 import java.util.Set;
 
-import org.springframework.lang.NonNull;
-
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Size;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,13 +18,15 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Builder
 public class RoleRequest {
-    
-    @NonNull
+
+    @NotBlank(message = "ROLE_NAME_REQUIRED")
+    @Size(max = 20, message = "ROLE_NAME_INVALID")
     String name;
-    
+
+    @Size(max = 100, message = "ROLE_DESCRIPTION_INVALID")
     String description;
 
-    @NonNull
+    @NotEmpty(message = "PERMISSIONS_REQUIRED")
     Set<String> permissions;
 
 }

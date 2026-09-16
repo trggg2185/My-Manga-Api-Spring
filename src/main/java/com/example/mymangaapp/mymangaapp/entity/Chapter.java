@@ -44,6 +44,7 @@ public class Chapter extends BaseEntity {
     Integer chapterIndex;
 
     // title là tiêu đề của chương này ví dụ "Sự khởi đầu"
+    @Column(name = "title", length = 200)
     String title;
 
     // QH: 1 chapter chứa nhiều page (ảnh)

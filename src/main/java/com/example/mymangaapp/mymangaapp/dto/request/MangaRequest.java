@@ -15,18 +15,22 @@ import java.util.Set;
 @Builder
 public class MangaRequest {
 
-    @Size(min = 3, message = "MANGA_NAME_INVALID")
+    @NotBlank
+    @Size(max = 200, message = "MANGA_NAME_INVALID")
     String name;
 
-    @NotBlank(message = "AUTHORS_NAME_REQUIRED")
+    @Size(max = 255, message = "AUTHORS_NAME_INVALID")
     String authorsName;
 
-    // Not bland dùng cho string, còn notempty dùng cho collection, set, list
+    // Not blank dùng cho string, còn notempty dùng cho collection, set, list
     @NotEmpty(message = "CATEGORIES_REQUIRED")
     Set<String> categoryIds;
 
+    @NotBlank(message = "MANGA_STATUS_REQUIRED")
+    @Size(max = 20, message = "MANGA_STATUS_INVALID")
     String status;
 
+    @Size(max = 500, message = "MANGA_DESCRIPTION_INVALID")
     String description;
 
 }

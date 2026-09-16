@@ -13,10 +13,11 @@ import lombok.experimental.FieldDefaults;
 public class UserPasswordRequest {
 
     @NotBlank(message = "PASSWORD_REQUIRED")
+    @Size(min = 5, max = 50, message = "PASSWORD_INVALID")
     String oldPassword;
 
     @NotBlank(message = "PASSWORD_REQUIRED")
-    @Size(min = 5, message = "PASSWORD_INVALID")
+    @Size(min = 5, max = 50, message = "PASSWORD_INVALID")
     String newPassword;
 
 }
