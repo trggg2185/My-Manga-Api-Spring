@@ -29,6 +29,7 @@ public interface UserMapper {
     @Mapping(target = "facebook", ignore = true)
     @Mapping(target = "discord", ignore = true)
     @Mapping(target = "bio", ignore = true)
+    @Mapping(target = "avatar", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
     User toUser(UserCreationRequest request);
@@ -38,6 +39,7 @@ public interface UserMapper {
     @Mapping(target = "password", ignore = true) // Sửa password ở endpoint riêng, ko ở update
     @Mapping(target = "transGroup", ignore = true) // tạmthời lờ đi transGroup
     @Mapping(target = "roles", ignore = true) // roles ta tự giải quyết bên user service
+    @Mapping(target = "avatar", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
     // Dùng NullValuePropertyMappingStrategy.IGNORE để nếu request field = null thì BỎ QUA không ghi đè

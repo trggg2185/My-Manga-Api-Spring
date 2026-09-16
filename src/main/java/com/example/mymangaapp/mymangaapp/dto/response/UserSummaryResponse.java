@@ -18,6 +18,7 @@ public class UserSummaryResponse {
     String facebook;
     String discord;
     String bio;
+    String avatar;
     Instant createdAt;
 
 }

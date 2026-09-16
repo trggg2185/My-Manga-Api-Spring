@@ -1,5 +1,6 @@
 package com.example.mymangaapp.mymangaapp.service;
 
+import java.time.Instant;
 import java.util.Set;
 
 import com.example.mymangaapp.mymangaapp.dto.request.UserPasswordRequest;
@@ -45,6 +46,8 @@ public class UserService {
 
     // Map từ đối tượng này sang đối tượng khác nhanh chóng
     UserMapper userMapper;
+
+    StorageService storageService;
 
 
     // --------------------------------- chức năng public đây (dành cho khách) ----------------------------------------- //
@@ -104,6 +107,21 @@ public class UserService {
                 .orElseThrow(() -> new AppException(ResponseCode.USER_NOT_FOUND));
 
         userMapper.updateUserFromRequest(user, request);
+
+        // nếu có cập nhật avatar cập nhật
+        if (request.getAvatar() != null && !request.getAvatar().isEmpty()) {
+
+            // nếu user có avatar cũ thì xoá trc đã, nếu ko có thì thôi upload avatar mới luôn rồi set
+            if (user.getAvatar() != null && !user.getAvatar().isEmpty()) {
+                String prefix = "avatars/" + user.getId() + "/";
+                storageService.deleteFilesWithPrefix(prefix, Instant.now());
+            }
+
+            // sau mới upload avatar mới
+            String avatarUrl = storageService.uploadAvatar(user.getId(), request.getAvatar());
+            user.setAvatar(avatarUrl);
+
+        }
 
         return userMapper.toUserSummaryResponse(userRepository.save(user));
     }
@@ -173,6 +191,21 @@ public class UserService {
 
         // Mapstruct tự động map từ UserUpdateRequest -> User
         userMapper.updateUserFromRequest(user, request);
+
+        // nếu có cập nhật avatar cập nhật
+        if (request.getAvatar() != null && !request.getAvatar().isEmpty()) {
+
+            // nếu user có avatar cũ thì xoá trc đã, nếu ko có thì thôi upload avatar mới luôn rồi set
+            if (user.getAvatar() != null && !user.getAvatar().isEmpty()) {
+                String prefix = "avatars/" + user.getId() + "/";
+                storageService.deleteFilesWithPrefix(prefix, Instant.now());
+            }
+
+            // sau mới upload avatar mới
+            String avatarUrl = storageService.uploadAvatar(user.getId(), request.getAvatar());
+            user.setAvatar(avatarUrl);
+
+        }
 
         return userMapper.toUserResponse(userRepository.save(user));
     }

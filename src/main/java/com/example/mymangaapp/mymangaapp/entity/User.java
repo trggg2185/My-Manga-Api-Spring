@@ -53,6 +53,8 @@ public class User extends BaseEntity {
     @Column(name = "bio", length = 300)
     String bio;
 
+    String avatar; // url của avatar
+
     // QH: Nhiều user có thể thuộc về 1 trans group
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "transgroup_id") // chỉ định tên cột khoá ngoại sẽ sinh dưới db

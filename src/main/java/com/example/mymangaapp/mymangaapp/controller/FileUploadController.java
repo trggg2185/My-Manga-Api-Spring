@@ -6,6 +6,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
+import org.springframework.http.MediaType;
 import org.springframework.lang.NonNull;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestPart;
@@ -24,7 +25,8 @@ public class FileUploadController {
 
     // -------------------------------endpoints cho admin và translaor ----------------------------//
 
-    @PostMapping("/files/upload")
+    // request part là lấy data từ form-data trong request
+    @PostMapping(value = "/files/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ApiResponse<String> uploadTmpFile(@RequestPart("file") MultipartFile file) {
 
         String response = storageService.uploadTmpFile(file);
@@ -34,7 +36,7 @@ public class FileUploadController {
                 .build();
     }
 
-    @PostMapping("/files/upload-multi")
+    @PostMapping(value = "/files/upload-multi", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ApiResponse<List<String>> uploadMultiTmpFiles(@RequestPart("files") @NonNull List<MultipartFile> files) {
 
         List<String> responses = storageService.uploadMultiTmpFiles(files);

@@ -3,6 +3,7 @@ package com.example.mymangaapp.mymangaapp.controller;
 import com.example.mymangaapp.mymangaapp.dto.request.UserPasswordRequest;
 import com.example.mymangaapp.mymangaapp.dto.response.PaginatedResponse;
 import com.example.mymangaapp.mymangaapp.dto.response.UserSummaryResponse;
+import org.springframework.http.MediaType;
 import org.springframework.lang.NonNull;
 import org.springframework.web.bind.annotation.*;
 
@@ -59,9 +60,13 @@ public class UserController {
 
     }
 
-    @PatchMapping("/users/me")
+    // chỉ định endpoint nhận multipart/form-data
+    // @ModelAttribute sẽ bind các field trong form-data vào các field trong request object
+    // khi đó trong postman ta làm việc bên form-data chứ ko bên raw json nữa
+    @PatchMapping(value = "/users/me", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ApiResponse<UserSummaryResponse> updateMyInfo(
-            @Valid @RequestBody UserUpdateRequest request
+            @Valid @ModelAttribute("userUpdateRequest") UserUpdateRequest request
+
     ) {
 
         UserSummaryResponse response = userService.updateMyInfo(request);

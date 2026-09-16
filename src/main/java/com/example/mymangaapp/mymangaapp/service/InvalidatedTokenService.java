@@ -24,13 +24,12 @@ public class InvalidatedTokenService {
         if (ttlInSeconds > 0) {
             String key = PREFIX + token;
             redisTemplate.opsForValue().set(key, "invalidated", ttlInSeconds, TimeUnit.SECONDS);
+            log.info("Token bị vô hiệu hoá: {}", key);
         }
     }
 
     public boolean isTokenInvalidated(String token) {
-
         String key = PREFIX + token;
-
         return redisTemplate.hasKey(key);
     }
 

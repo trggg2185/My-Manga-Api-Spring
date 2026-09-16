@@ -8,6 +8,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.web.multipart.MultipartFile;
 
 @Data
 @AllArgsConstructor
@@ -27,5 +28,8 @@ public class UserUpdateRequest {
 
     @Size(max = 300, message = "BIO_INVALID")
     String bio;
+
+    // ta sẽ bind file từ form-data trong request vào field này
+    MultipartFile avatar;
 
 }

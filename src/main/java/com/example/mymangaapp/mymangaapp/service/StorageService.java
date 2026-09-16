@@ -5,9 +5,9 @@ import com.example.mymangaapp.mymangaapp.exception.ResponseCode;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
 import net.coobird.thumbnailator.Thumbnails;
+import net.coobird.thumbnailator.geometry.Positions;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.lang.NonNull;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -21,6 +21,8 @@ import software.amazon.awssdk.services.s3.paginators.ListObjectsV2Iterable;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.awt.image.BufferedImage;
+import javax.imageio.ImageIO;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -35,31 +37,31 @@ import java.util.UUID;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class StorageService {
 
-    S3Client s3Client;
+    final S3Client s3Client;
 
     @Value("${cloud.r2.bucket}")
-    @NonFinal
     String bucketName;
 
     @Value("${cloud.r2.s3.public-url}")
-    @NonFinal
     String publicUrl;
 
     // Các đuôi file chấp nhận cho upload
-    static List<String> VALID_EXTENSIONS = List.of("jpg", "jpeg", "png", "webp");
+    static final List<String> VALID_EXTENSIONS = List.of("jpg", "jpeg", "png", "webp");
     // đuôi các file sẽ upload lên r2
-    static String FIXED_EXTENSION = "webp";
+    static final String DEFAULT_EXTENSION = "webp";
     // content type
-    static String FIXED_CONTENT_TYPE = "image/webp";
+    static final String DEFAULT_CONTENT_TYPE = "image/webp";
     // width các file khi up lên r2 (1200px)
-    static int FIXED_TARGET_WIDTH = 1200;
+    static final int DEFAULT_TARGET_WIDTH = 1200;
+    // kích thước avatar (vuông)
+    static final int DEFAULT_AVATAR_SIZE = 256;
     // chất lg các file khi up lên r2 (mức 80% là tiêu chuẩn)
-    static float FIXED_QUALITY = 0.8f;
+    static final float DEFAULT_QUALITY = 0.8f;
     // đây là kích thước tối đa của file sau khi optimize (1MB)
-    static long MAX_BYPASS_SIZE = 1024 * 1024;
+    static final long MAX_BYPASS_SIZE = 1024 * 1024;
 
 
     // ---------------------------chức năng dành cho admin và translator--------------------------- //
@@ -67,62 +69,13 @@ public class StorageService {
     // upload 1 file, yc có role translator
     @PreAuthorize("hasAnyRole('ADMIN', 'TRANSLATOR')")
     public String uploadTmpFile(@NonNull MultipartFile file) {
-
-        // Check file rỗng
-        if (file.isEmpty()) {
-            throw new AppException(ResponseCode.FILE_REQUIRED);
-        }
-
         try {
-            // lấy tên file
-            String originalFileName = file.getOriginalFilename();
-            // lấy đuôi file (jpg, png, ...)
-            String rawExtension = StringUtils.getFilenameExtension(originalFileName);
-            if (rawExtension == null) {
-                throw new AppException(ResponseCode.FILE_INVALID);
-            }
-
-            // đưa hết về chuỗi viếtthường
-            String extension = rawExtension.toLowerCase();
-            // Chỉ cho phép 3 loại file jpg, png, webp
-            if (!VALID_EXTENSIONS.contains(extension)) {
-                throw new AppException(ResponseCode.FILE_INVALID);
-            }
-
-            String filename = UUID.randomUUID() + "." + FIXED_EXTENSION;
-            // tạo url folder theo ngày
             String dateFolder = LocalDate.now(ZoneId.systemDefault()).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-            String prefix = "tmp/" + dateFolder + "/";
+            String objectKey = buildObjectKey("tmp/" + dateFolder);
+            byte[] optimizedImageBytes = prepareTmpUploadBytes(file);
 
-            // key chính là url folder của ảnh được upload có dạng: /tmp/2026-08-21/image.jpg
-            String objectKey = prefix + filename;
-            log.info("Object key: {}", objectKey);
-
-            byte[] optimizedImageBytes;
-
-            // nếu mà file đã là webp và có kích thước <= 1MB
-            // thì ta sẽ lấy luôn file đó up lên r2 luôn mà ko optimize nữa (tránh optimize kép)
-            if (extension.equals(FIXED_EXTENSION) && file.getSize() <= MAX_BYPASS_SIZE) {
-                optimizedImageBytes = file.getBytes();
-            } else {
-                optimizedImageBytes = optimizeImage(file, FIXED_TARGET_WIDTH, FIXED_QUALITY, FIXED_EXTENSION);
-            }
-
-            // upload request
-            PutObjectRequest putObjRequest = PutObjectRequest.builder()
-                    .bucket(bucketName)
-                    .key(objectKey)
-                    .contentType(FIXED_CONTENT_TYPE)
-                    .build();
-
-            // upload lên r2 bằng mảng các bytes
-            s3Client.putObject(
-                    putObjRequest,
-                    RequestBody.fromBytes(optimizedImageBytes)
-            );
-
-            // trả về url cho frontend truy cập để hiển thị
-            return generatePublicUrl(objectKey);
+            // upload lên và trả về url cho frontend truy cập để hiển thị
+            return upload(objectKey, optimizedImageBytes);
         }
         catch (IOException exception) {
             throw new AppException(ResponseCode.FILE_UPLOAD_FAILED);
@@ -143,7 +96,38 @@ public class StorageService {
     }
 
 
-    // ---------------------------các method cho service khác dùng --------------------------- //
+    // ----------------------------- các method cho service khác dùng ----------------------------- //
+
+    public String uploadAvatar(String userId, MultipartFile avatarFile) {
+        try {
+            String objectKey = buildObjectKey("avatars/" + userId);
+            byte[] optimizedImageBytes = prepareAvatarUploadBytes(avatarFile);
+
+            return upload(objectKey, optimizedImageBytes);
+        }
+        catch (IOException exception) {
+            throw new AppException(ResponseCode.FILE_UPLOAD_FAILED);
+        }
+    }
+
+    public String upload(String objectKey, byte[] optimizedImageBytes) {
+        // upload request
+        PutObjectRequest putObjRequest = PutObjectRequest.builder()
+                .bucket(bucketName)
+                .key(objectKey)
+                .contentType(DEFAULT_CONTENT_TYPE)
+                .build();
+
+        // upload lên r2 bằng mảng các bytes
+        s3Client.putObject(
+                putObjRequest,
+                RequestBody.fromBytes(optimizedImageBytes)
+        );
+
+        log.info("Object key: {}", objectKey);
+
+        return generatePublicUrl(objectKey);
+    }
 
     public String copyFile(String sourceKey, String destinationKey, boolean deleteSource) {
 
@@ -215,7 +199,7 @@ public class StorageService {
 
                 // Nếu gom được 1000 files thì xoá xoá hàng loạt luôn
                 // vì aws cho phép max là xoá 1000 files mỗi lượt
-                if (deletedCount == 1000) {
+                if (keysToDelete.size() == 1000) {
                     executeBatchDelete(keysToDelete); // gửi request xoá hàng loạt
                     keysToDelete.clear(); // clear ds keys đi
                 }
@@ -231,8 +215,11 @@ public class StorageService {
         log.info("Đã xoá {} files, tổng kích thước là {} bytes", deletedCount, totalSize);
     }
 
+
+    // -------------------------------------- method tiện ích ----------------------------------------//
+
     // Hàm giúp gửi request delete hàng loạt
-    public void executeBatchDelete(List<ObjectIdentifier> keysToDelete) {
+    private void executeBatchDelete(List<ObjectIdentifier> keysToDelete) {
 
         DeleteObjectsRequest deleteObjsRequest = DeleteObjectsRequest.builder()
                 .bucket(bucketName)
@@ -243,7 +230,7 @@ public class StorageService {
     }
 
     // Hàm giúp optimize ảnh (width, height, quality, extension)
-    public byte[] optimizeImage(MultipartFile file, int targetWidth, float quality, String extension) throws IOException {
+    private byte[] optimizeImage(MultipartFile file) throws IOException {
 
         // hứng data sau khi nén
         ByteArrayOutputStream os = new ByteArrayOutputStream();
@@ -251,18 +238,88 @@ public class StorageService {
         // xử lý file ảnh (trong qtrình này các thứ như metadata auto fall giúp giảm size)
         Thumbnails.of(file.getInputStream())
                 // chỉ cần set width, height sẽ tự scale theo tỷ lệ để ảnh ko bóp
-                .width(targetWidth)
+                .width(DEFAULT_TARGET_WIDTH)
                 // chất lg
-                .outputQuality(quality)
+                .outputQuality(DEFAULT_QUALITY)
                 // ép đầu ra thành định dạng file nào đó
-                .outputFormat(extension)
+                .outputFormat(DEFAULT_EXTENSION)
                 // đổ vào cái hứng data
                 .toOutputStream(os);
 
         return os.toByteArray();
     }
 
-    public String generatePublicUrl(String key) {
+    private byte[] optimizeAvatarImage(MultipartFile file) throws IOException {
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        BufferedImage sourceImage = readImage(file);
+        int square = Math.min(sourceImage.getWidth(), sourceImage.getHeight());
+
+        Thumbnails.of(file.getInputStream())
+                .sourceRegion(Positions.CENTER, square, square)
+                .size(DEFAULT_AVATAR_SIZE, DEFAULT_AVATAR_SIZE)
+                .outputQuality(DEFAULT_QUALITY)
+                .outputFormat(DEFAULT_EXTENSION)
+                .toOutputStream(os);
+
+        return os.toByteArray();
+    }
+
+    private byte[] prepareTmpUploadBytes(@NonNull MultipartFile file) throws IOException {
+        String extension = extractAndValidateExtension(file);
+
+        if (shouldBypassOptimization(file, extension)) {
+            return file.getBytes();
+        }
+
+        return optimizeImage(file);
+    }
+
+    private byte[] prepareAvatarUploadBytes(@NonNull MultipartFile file) throws IOException {
+        extractAndValidateExtension(file);
+        return optimizeAvatarImage(file);
+    }
+
+    private BufferedImage readImage(MultipartFile file) throws IOException {
+        BufferedImage bufferedImage = ImageIO.read(file.getInputStream());
+        if (bufferedImage == null) {
+            throw new AppException(ResponseCode.FILE_INVALID);
+        }
+        return bufferedImage;
+    }
+
+    private String extractAndValidateExtension(@NonNull MultipartFile file) {
+        if (file.isEmpty()) {
+            throw new AppException(ResponseCode.FILE_REQUIRED);
+        }
+
+        String originalFileName = file.getOriginalFilename();
+        String rawExtension = StringUtils.getFilenameExtension(originalFileName);
+
+        if (rawExtension == null) {
+            throw new AppException(ResponseCode.FILE_INVALID);
+        }
+
+        String extension = rawExtension.toLowerCase();
+        if (!VALID_EXTENSIONS.contains(extension)) {
+            throw new AppException(ResponseCode.FILE_INVALID);
+        }
+
+        return extension;
+    }
+
+    // check nên optimize cho file này ko
+    // vd đã là file webp thì ko optimize thành file webp nữa, tránh duplicate
+    private boolean shouldBypassOptimization(MultipartFile file, String extension) {
+        return extension.equals(DEFAULT_EXTENSION) && file.getSize() <= MAX_BYPASS_SIZE;
+    }
+
+    private String buildObjectKey(String folderPath) {
+        String filename = UUID.randomUUID() + "." + DEFAULT_EXTENSION;
+        return folderPath + "/" + filename;
+    }
+
+    // tạo nhanh publicurl từ object key
+    private String generatePublicUrl(String key) {
         return publicUrl + "/" + key;
     }
 
