@@ -76,6 +76,8 @@ public class TransGroupService {
             throw new AppException(ResponseCode.USER_ALREADY_IN_GROUP);
         }
 
+        // dù nhóm đã bị xoá nhưng nhóm vẫn tồn tại trong db
+        // nên khi lập nhóm khác trùng tên thì ko cho (bản quyền tuyệt đối)
         if (transGroupRepository.existsByName(request.getName())) {
             throw new AppException(ResponseCode.TRANSGROUP_NAME_ALREADY_EXISTS);
         }

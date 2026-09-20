@@ -51,9 +51,10 @@ public class AuthenticationService {
                 .findWithDetailsByUsername(request.getUsername())
                 .orElseThrow(() -> new AppException(ResponseCode.USER_NOT_FOUND));
 
-        boolean authenticated = passwordEncoder.matches(request.getPassword(), user.getPassword());
+        boolean passwordMatched = passwordEncoder.matches(request.getPassword(), user.getPassword());
 
-        if (!authenticated) throw new AppException(ResponseCode.UNAUTHENTICATED);
+        if (!passwordMatched)
+            throw new AppException(ResponseCode.PASSWORD_INCORRECT);
 
         String token = jwtUtils.generateAccessToken(user);
 

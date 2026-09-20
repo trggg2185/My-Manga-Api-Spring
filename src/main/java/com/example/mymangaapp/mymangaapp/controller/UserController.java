@@ -36,11 +36,11 @@ public class UserController {
 
     @PostMapping("/users")
     // Nhớ có annotation @Valid để validate các fields trong request
-    public ApiResponse<UserResponse> createUser(@Valid @RequestBody UserCreationRequest request) {
+    public ApiResponse<UserSummaryResponse> createUser(@Valid @RequestBody UserCreationRequest request) {
 
-        UserResponse response = userService.createUser(request);
+        UserSummaryResponse response = userService.createUser(request);
 
-        return ApiResponse.<UserResponse>builder()
+        return ApiResponse.<UserSummaryResponse>builder()
                 .result(response)
                 .build();
 

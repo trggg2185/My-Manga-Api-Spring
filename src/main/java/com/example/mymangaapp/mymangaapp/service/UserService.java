@@ -54,7 +54,7 @@ public class UserService {
 
     // Tạo user mới
     @Transactional
-    public UserResponse createUser(@NonNull UserCreationRequest request) {
+    public UserSummaryResponse createUser(@NonNull UserCreationRequest request) {
 
         log.info("Create user here!------------------------------");
 
@@ -81,7 +81,7 @@ public class UserService {
         // Set role mặc định cho user mới tạo
         user.setRoles(Set.of(role));
 
-        return userMapper.toUserResponse(userRepository.save(user));
+        return userMapper.toUserSummaryResponse(userRepository.save(user));
 
     }
 
@@ -135,7 +135,7 @@ public class UserService {
                 .orElseThrow(() -> new AppException(ResponseCode.USER_NOT_FOUND));
 
         if (!passwordEncoder.matches(request.getOldPassword(), user.getPassword())) {
-            throw new AppException(ResponseCode.PASSWORD_NOT_EXACTS);
+            throw new AppException(ResponseCode.PASSWORD_INCORRECT);
         }
 
         user.setPassword(passwordEncoder.encode(request.getNewPassword()));

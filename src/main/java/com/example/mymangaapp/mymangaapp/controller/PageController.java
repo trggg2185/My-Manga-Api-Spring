@@ -24,7 +24,7 @@ public class PageController {
     // -------------------------------endpoints public ----------------------------------//
 
     @GetMapping("/chapters/{chapterId}/pages")
-    public ApiResponse<List<PageResponse>> getChaptersByMangaId(@PathVariable @NonNull String chapterId) {
+    public ApiResponse<List<PageResponse>> getChaptersByChapterId(@PathVariable @NonNull String chapterId) {
 
         List<PageResponse> responses = pageService.getAllPagesByChapterId(chapterId);
 
