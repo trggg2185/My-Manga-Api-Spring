@@ -1,5 +1,7 @@
 package com.example.mymangaapp.mymangaapp.controller;
 
+import com.example.mymangaapp.mymangaapp.annotation.RateLimit;
+import com.example.mymangaapp.mymangaapp.enums.LimitType;
 import com.example.mymangaapp.mymangaapp.dto.request.CategoryRequest;
 import com.example.mymangaapp.mymangaapp.dto.response.ApiResponse;
 import com.example.mymangaapp.mymangaapp.dto.response.CategoryResponse;
@@ -26,6 +28,7 @@ public class CategoryController {
 
     // public để khi vào trang họ có thể biết được có bn thể loại rồi lọc truyện theo đó
     @GetMapping("/categories")
+    @RateLimit(capacity = 120)
     public ApiResponse<List<CategoryResponse>> getAllCategories() {
         return ApiResponse.<List<CategoryResponse>>builder()
                 .result(categoryService.getAllCategories())
@@ -33,6 +36,7 @@ public class CategoryController {
     }
 
     @GetMapping("/categories/{id}")
+    @RateLimit(capacity = 120)
     public ApiResponse<CategoryResponse> getCategoryById(@PathVariable @NonNull String id) {
         return ApiResponse.<CategoryResponse>builder()
                 .result(categoryService.getCategoryById(id))
@@ -43,6 +47,7 @@ public class CategoryController {
     // ------------------------------------ endpoints của admin ------------------------------------ //
 
     @PostMapping("/admin/categories")
+    @RateLimit(capacity = 10, limitType = LimitType.USER_ID)
     public ApiResponse<CategoryResponse> createCategory(@Valid @RequestBody CategoryRequest request) {
         return ApiResponse.<CategoryResponse>builder()
                 .result(categoryService.createCategory(request))
@@ -50,6 +55,7 @@ public class CategoryController {
     }
 
     @PatchMapping("/admin/categories/{id}")
+    @RateLimit(capacity = 10, limitType = LimitType.USER_ID)
     public ApiResponse<CategoryResponse> updateCategoryById(
             @PathVariable @NonNull String id,
             @Valid @RequestBody CategoryRequest request) {
@@ -59,6 +65,7 @@ public class CategoryController {
     }
 
     @DeleteMapping("/admin/categories/{id}")
+    @RateLimit(limitType = LimitType.USER_ID)
     public ApiResponse<String> deleteCategoryById(@PathVariable @NonNull String id) {
         categoryService.deleteCategoryById(id);
 

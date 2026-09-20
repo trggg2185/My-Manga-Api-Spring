@@ -1,5 +1,6 @@
 package com.example.mymangaapp.mymangaapp.controller;
 
+import com.example.mymangaapp.mymangaapp.annotation.RateLimit;
 import com.example.mymangaapp.mymangaapp.dto.request.RefreshRequest;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -31,6 +32,7 @@ public class AuthenticationController {
     // ----------------------------endpoint public (cho khách) ----------------------------------//
 
     @PostMapping("/login")
+    @RateLimit
     public ApiResponse<AuthenticationResponse> login(@RequestBody AuthenticationRequest request) {
 
         AuthenticationResponse response = authenticationService.login(request);
@@ -42,6 +44,7 @@ public class AuthenticationController {
     }
 
     @PostMapping("/introspect")
+    @RateLimit(capacity = 30)
     public ApiResponse<IntrospectResponse> introspect(@RequestBody IntrospectRequest request) {
 
         IntrospectResponse response = authenticationService.introspect(request);
@@ -53,6 +56,7 @@ public class AuthenticationController {
     }
 
     @PostMapping("/logout")
+    @RateLimit(capacity = 10)
     public ApiResponse<Void> logout(@RequestBody LogoutRequest request) {
 
         authenticationService.logout(request);
@@ -64,6 +68,7 @@ public class AuthenticationController {
     }
 
     @PostMapping("/refresh")
+    @RateLimit(capacity = 10)
     public ApiResponse<AuthenticationResponse> refresh(@RequestBody RefreshRequest request) {
 
         AuthenticationResponse response = authenticationService.refresh(request);

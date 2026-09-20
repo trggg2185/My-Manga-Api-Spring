@@ -18,18 +18,18 @@ public class InvalidatedTokenService {
 
     StringRedisTemplate redisTemplate;
 
-    static String PREFIX = "invalidated-token:jti:";
+    static String REDIS_KEY_PREFIX = "mymangaapp:invalidated-token:jti:";
 
     public void invalidateToken(String token, long ttlInSeconds) {
         if (ttlInSeconds > 0) {
-            String key = PREFIX + token;
+            String key = REDIS_KEY_PREFIX + token;
             redisTemplate.opsForValue().set(key, "invalidated", ttlInSeconds, TimeUnit.SECONDS);
             log.info("Token bị vô hiệu hoá: {}", key);
         }
     }
 
     public boolean isTokenInvalidated(String token) {
-        String key = PREFIX + token;
+        String key = REDIS_KEY_PREFIX + token;
         return redisTemplate.hasKey(key);
     }
 

@@ -1,5 +1,7 @@
 package com.example.mymangaapp.mymangaapp.controller;
 
+import com.example.mymangaapp.mymangaapp.annotation.RateLimit;
+import com.example.mymangaapp.mymangaapp.enums.LimitType;
 import com.example.mymangaapp.mymangaapp.dto.request.ChapterRequest;
 import com.example.mymangaapp.mymangaapp.dto.response.ApiResponse;
 import com.example.mymangaapp.mymangaapp.dto.response.ChapterResponse;
@@ -24,6 +26,7 @@ public class ChapterController {
     // ------------------endpoints dành cho translator hoặc admin nhưng vẫn phải là thành viên của nhóm mới được------------------------//
 
     @PostMapping("/mangas/{mangaId}/chapters")
+    @RateLimit(capacity = 10, limitType = LimitType.USER_ID)
     public ApiResponse<ChapterResponse> createChapter(
             @PathVariable @NonNull String mangaId,
             @RequestBody ChapterRequest request
@@ -39,6 +42,7 @@ public class ChapterController {
     // Mặc dù tên hàm là xoá theo id chapter nhưng ko phải nhóm nào cũng xoá đc
     // chỉ có chapter thuộc về manga của nhóm đó mới xoá đc nhé
     @DeleteMapping("/mangas/{mangaId}/chapters/{chapterId}")
+    @RateLimit(limitType = LimitType.USER_ID)
     public ApiResponse<String> deleteChapterById(
             @PathVariable @NonNull String mangaId,
             @PathVariable @NonNull String chapterId
@@ -58,6 +62,7 @@ public class ChapterController {
     // ----------------------------------endpoints public ---------------------------------------------//
 
     @GetMapping("/mangas/{mangaId}/chapters")
+    @RateLimit(capacity = 120)
     public ApiResponse<PaginatedResponse<ChapterSummaryResponse>> getChaptersByMangaId(
             @PathVariable @NonNull String mangaId,
             @RequestParam(defaultValue = "0") int page,

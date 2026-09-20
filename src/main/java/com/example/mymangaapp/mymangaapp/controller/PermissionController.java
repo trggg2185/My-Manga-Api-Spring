@@ -1,5 +1,7 @@
 package com.example.mymangaapp.mymangaapp.controller;
 
+import com.example.mymangaapp.mymangaapp.annotation.RateLimit;
+import com.example.mymangaapp.mymangaapp.enums.LimitType;
 import java.util.List;
 
 import org.springframework.lang.NonNull;
@@ -33,6 +35,7 @@ public class PermissionController {
     // -------------------------- chức năng của admin -------------------------- //
 
     @PostMapping
+    @RateLimit(capacity = 10, limitType = LimitType.USER_ID)
     public ApiResponse<PermissionResponse> createPermission(@RequestBody PermissionRequest request) {
 
         PermissionResponse response = permissionService.createPermission(request);
@@ -44,6 +47,7 @@ public class PermissionController {
     }
 
     @GetMapping
+    @RateLimit(capacity = 30, limitType = LimitType.USER_ID)
     public ApiResponse<List<PermissionResponse>> getAllPermissions() {
 
         List<PermissionResponse> responses = permissionService.getAllPermissions();
@@ -55,6 +59,7 @@ public class PermissionController {
     }
 
     @DeleteMapping("/{id}")
+    @RateLimit(limitType = LimitType.USER_ID)
     public ApiResponse<String> deletePermissionById(@PathVariable @NonNull String id) {
 
         permissionService.deletePermissionById(id);

@@ -1,5 +1,7 @@
 package com.example.mymangaapp.mymangaapp.controller;
 
+import com.example.mymangaapp.mymangaapp.annotation.RateLimit;
+import com.example.mymangaapp.mymangaapp.enums.LimitType;
 import com.example.mymangaapp.mymangaapp.dto.response.ApiResponse;
 import com.example.mymangaapp.mymangaapp.dto.response.JoinRequestResponse;
 import com.example.mymangaapp.mymangaapp.enums.GroupJoinRequestStatus;
@@ -24,6 +26,7 @@ public class GroupJoinRequestController {
 
     // 1 user xin vào làm thành viên của 1 nhóm dịch
     @PostMapping("/transgroups/{groupId}/join-requests")
+    @RateLimit(capacity = 3, resetTimeInSeconds = 3600, limitType = LimitType.USER_ID)
     public ApiResponse<JoinRequestResponse> requestJoinGroup(@PathVariable @NonNull String groupId) {
         JoinRequestResponse response = groupJoinRequestService.requestJoinGroup(groupId);
 
@@ -33,6 +36,7 @@ public class GroupJoinRequestController {
     }
 
     @GetMapping("/users/me/join-requests")
+    @RateLimit(capacity = 30, limitType = LimitType.USER_ID)
     public ApiResponse<List<JoinRequestResponse>> getMyJoinRequests(
             @RequestParam(required = false) GroupJoinRequestStatus status
     ) {
@@ -49,6 +53,7 @@ public class GroupJoinRequestController {
 
     // Lấy danh sách các yêu cầu xin vào nhóm (leader only)
     @GetMapping("/transgroups/{groupId}/join-requests")
+    @RateLimit(capacity = 30, limitType = LimitType.USER_ID)
     public ApiResponse<List<JoinRequestResponse>> getJoinRequests(
             @RequestParam(required = false) GroupJoinRequestStatus status,
             @PathVariable @NonNull String groupId
@@ -61,6 +66,7 @@ public class GroupJoinRequestController {
     }
 
     @PatchMapping("/transgroups/{groupId}/join-requests/{requestId}/approve")
+    @RateLimit(capacity = 20, limitType = LimitType.USER_ID)
     public ApiResponse<JoinRequestResponse> approveJoinGroup(
             @PathVariable @NonNull String groupId,
             @PathVariable @NonNull String requestId
@@ -74,6 +80,7 @@ public class GroupJoinRequestController {
     }
 
     @PatchMapping("/transgroups/{groupId}/join-requests/{requestId}/reject")
+    @RateLimit(capacity = 20, limitType = LimitType.USER_ID)
     public ApiResponse<JoinRequestResponse> rejectJoinGroup(
             @PathVariable @NonNull String groupId,
             @PathVariable @NonNull String requestId

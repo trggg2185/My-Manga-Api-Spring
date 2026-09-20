@@ -10,7 +10,7 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 @Configuration
 public class RedisConfig {
 
-    /**
+    /*
      * Bean này dùng để lưu trữ các Object phức tạp (ví dụ: User, Manga) dưới dạng JSON
      * Spring Boot sẽ tự động tiêm (inject) cái RedisConnectionFactory từ application.yaml vào đây.
      */

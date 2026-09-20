@@ -27,9 +27,12 @@ public class SecurityUtils {
     }
 
     public static String getCurrentUserId() {
-        CustomUserDetails customUserDetails = (CustomUserDetails) getAuthentication().getPrincipal();
-
-        return customUserDetails.getId();
+        try {
+            CustomUserDetails customUserDetails = (CustomUserDetails) getAuthentication().getPrincipal();
+            return customUserDetails.getId();
+        } catch (RuntimeException e) {
+            return null;
+        }
     }
 
     // check nhanh user hiện tại là admin không

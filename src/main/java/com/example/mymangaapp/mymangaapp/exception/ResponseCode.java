@@ -92,7 +92,8 @@ public enum ResponseCode {
     FILE_COPY_FAILED("5014", "Copy file thất bại!", HttpStatus.BAD_REQUEST),
     CHAPTER_INDEX_ALREADY_EXISTS("5015", "Chapter index đã tồn tại!", HttpStatus.BAD_REQUEST),
     CATEGORY_NAME_ALREADY_EXISTS("5016", "Tên thể loại đã tồn tại!", HttpStatus.BAD_REQUEST),
-    PASSWORD_INCORRECT("5017", "Mật khẩu không chính xác!", HttpStatus.BAD_REQUEST);
+    PASSWORD_INCORRECT("5017", "Mật khẩu không chính xác!", HttpStatus.BAD_REQUEST),
+    RATE_LIMIT_EXCEEDED("5050", "Đạt giới hạn thao tác, vui lòng thử lại sau!", HttpStatus.TOO_MANY_REQUESTS);
 
     String code;
     String message;

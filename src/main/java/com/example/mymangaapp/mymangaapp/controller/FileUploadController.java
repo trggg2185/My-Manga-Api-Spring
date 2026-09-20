@@ -1,5 +1,7 @@
 package com.example.mymangaapp.mymangaapp.controller;
 
+import com.example.mymangaapp.mymangaapp.annotation.RateLimit;
+import com.example.mymangaapp.mymangaapp.enums.LimitType;
 import com.example.mymangaapp.mymangaapp.dto.response.ApiResponse;
 import com.example.mymangaapp.mymangaapp.service.StorageService;
 import lombok.AccessLevel;
@@ -27,6 +29,7 @@ public class FileUploadController {
 
     // request part là lấy data từ form-data trong request
     @PostMapping(value = "/files/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @RateLimit(capacity = 10, limitType = LimitType.USER_ID)
     public ApiResponse<String> uploadTmpFile(@RequestPart("file") MultipartFile file) {
 
         String response = storageService.uploadTmpFile(file);
@@ -37,6 +40,7 @@ public class FileUploadController {
     }
 
     @PostMapping(value = "/files/upload-multi", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @RateLimit(capacity = 3, limitType = LimitType.USER_ID)
     public ApiResponse<List<String>> uploadMultiTmpFiles(@RequestPart("files") @NonNull List<MultipartFile> files) {
 
         List<String> responses = storageService.uploadMultiTmpFiles(files);

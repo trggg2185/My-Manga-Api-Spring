@@ -1,5 +1,6 @@
 package com.example.mymangaapp.mymangaapp.controller;
 
+import com.example.mymangaapp.mymangaapp.annotation.RateLimit;
 import com.example.mymangaapp.mymangaapp.dto.response.ApiResponse;
 import com.example.mymangaapp.mymangaapp.dto.response.PageResponse;
 import com.example.mymangaapp.mymangaapp.service.PageService;
@@ -24,6 +25,7 @@ public class PageController {
     // -------------------------------endpoints public ----------------------------------//
 
     @GetMapping("/chapters/{chapterId}/pages")
+    @RateLimit(capacity = 120)
     public ApiResponse<List<PageResponse>> getChaptersByChapterId(@PathVariable @NonNull String chapterId) {
 
         List<PageResponse> responses = pageService.getAllPagesByChapterId(chapterId);

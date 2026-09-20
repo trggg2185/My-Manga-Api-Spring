@@ -1,5 +1,7 @@
 package com.example.mymangaapp.mymangaapp.controller;
 
+import com.example.mymangaapp.mymangaapp.annotation.RateLimit;
+import com.example.mymangaapp.mymangaapp.enums.LimitType;
 import com.example.mymangaapp.mymangaapp.dto.request.UserPasswordRequest;
 import com.example.mymangaapp.mymangaapp.dto.response.PaginatedResponse;
 import com.example.mymangaapp.mymangaapp.dto.response.UserSummaryResponse;
@@ -35,6 +37,7 @@ public class UserController {
     // ---------------------- endpoint public đây (dành cho khách) -------------------------- //
 
     @PostMapping("/users")
+    @RateLimit(capacity = 3, resetTimeInSeconds = 3600)
     // Nhớ có annotation @Valid để validate các fields trong request
     public ApiResponse<UserSummaryResponse> createUser(@Valid @RequestBody UserCreationRequest request) {
 
@@ -50,6 +53,7 @@ public class UserController {
     // --------------------------------- endpoint cho user đã đăng nhập -----------------------//
 
     @GetMapping("/users/me")
+    @RateLimit(capacity = 60, limitType = LimitType.USER_ID)
     public ApiResponse<UserSummaryResponse> getMyInfo() {
 
         UserSummaryResponse response = userService.getMyInfo();
@@ -64,6 +68,7 @@ public class UserController {
     // @ModelAttribute sẽ bind các field trong form-data vào các field trong request object
     // khi đó trong postman ta làm việc bên form-data chứ ko bên raw json nữa
     @PatchMapping(value = "/users/me", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @RateLimit(capacity = 10, limitType = LimitType.USER_ID)
     public ApiResponse<UserSummaryResponse> updateMyInfo(
             @Valid @ModelAttribute("userUpdateRequest") UserUpdateRequest request
 
@@ -79,6 +84,7 @@ public class UserController {
 
     // update password của user hiện tại
     @PatchMapping("/users/me/password")
+    @RateLimit(resetTimeInSeconds = 900, limitType = LimitType.USER_ID)
     public ApiResponse<Void> updateMyPassword(
             @Valid @RequestBody UserPasswordRequest request
     ) {
@@ -96,6 +102,7 @@ public class UserController {
     // ---------------------------- endpoints cho admin --------------------------------- //
 
     @GetMapping("/admin/users")
+    @RateLimit(capacity = 30, limitType = LimitType.USER_ID)
     public ApiResponse<PaginatedResponse<UserResponse>> getAllUsers(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size,
@@ -112,6 +119,7 @@ public class UserController {
 
     // fix lại chỉ có admin lấy đc user băng id
     @GetMapping("/admin/users/{id}")
+    @RateLimit(capacity = 60, limitType = LimitType.USER_ID)
     public ApiResponse<UserResponse> getUserById(@PathVariable @NonNull String id) {
 
         UserResponse response = userService.getUserById(id);
@@ -124,6 +132,7 @@ public class UserController {
 
     // fix lại chỉ có adminmới đc update user
     @PatchMapping("/admin/users/{id}")
+    @RateLimit(capacity = 10, limitType = LimitType.USER_ID)
     public ApiResponse<UserResponse> updateUserById(@PathVariable @NonNull String id,
             @Valid @RequestBody UserUpdateRequest request) {
 
@@ -139,6 +148,7 @@ public class UserController {
 
     // xoá user bằng id
     @DeleteMapping("/admin/users/{id}")
+    @RateLimit(limitType = LimitType.USER_ID)
     public ApiResponse<String> deleteUserById(@PathVariable @NonNull String id) {
 
         userService.deleteUserById(id);

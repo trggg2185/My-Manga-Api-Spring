@@ -1,5 +1,7 @@
 package com.example.mymangaapp.mymangaapp.controller;
 
+import com.example.mymangaapp.mymangaapp.annotation.RateLimit;
+import com.example.mymangaapp.mymangaapp.enums.LimitType;
 import com.example.mymangaapp.mymangaapp.dto.request.TransGroupCreationRequest;
 import com.example.mymangaapp.mymangaapp.dto.response.ApiResponse;
 import com.example.mymangaapp.mymangaapp.dto.response.PaginatedResponse;
@@ -25,6 +27,7 @@ public class TransGroupController {
     // ----------------------------------- endpoint public (cho khách) -----------------------------------//
 
     // Endpoint này dành cho user thông thường có thể thấy tất cả nhóm dịch đang hoạt động
+    @RateLimit(capacity = 4, resetTimeInSeconds = 20)
     @GetMapping("/transgroups")
     public ApiResponse<PaginatedResponse<TransGroupResponse>> getGroups(
             @RequestParam(defaultValue = "0") int page,
@@ -42,6 +45,7 @@ public class TransGroupController {
     // -------------------------------- endpoint cho user đã đăng nhập -----------------------------------//
 
     @PostMapping("/transgroups")
+    @RateLimit(capacity = 3, resetTimeInSeconds = 3600, limitType = LimitType.USER_ID)
     public ApiResponse<TransGroupResponse> requestCreateGroup(@Valid @RequestBody TransGroupCreationRequest request) {
         TransGroupResponse response = transGroupService.requestCreateGroup(request);
 
@@ -54,6 +58,7 @@ public class TransGroupController {
     // ----------------------------------- endpoint cho admin -----------------------------------//
 
     @PatchMapping("/admin/transgroups/{id}/approve")
+    @RateLimit(capacity = 10, limitType = LimitType.USER_ID)
     public ApiResponse<TransGroupResponse> approveCreateGroup(@PathVariable @NonNull String id) {
         TransGroupResponse response = transGroupService.approveCreateGroup(id);
 
@@ -63,6 +68,7 @@ public class TransGroupController {
     }
 
     @PatchMapping("/admin/transgroups/{id}/reject")
+    @RateLimit(capacity = 10, limitType = LimitType.USER_ID)
     public ApiResponse<TransGroupResponse> rejectCreateGroup(@PathVariable @NonNull String id) {
         TransGroupResponse response = transGroupService.rejectCreateGroup(id);
 
@@ -72,6 +78,7 @@ public class TransGroupController {
     }
 
     @GetMapping("/admin/transgroups")
+    @RateLimit(capacity = 30, limitType = LimitType.USER_ID)
     public ApiResponse<PaginatedResponse<TransGroupResponse>> getGroups(
             @RequestParam(required = false) TransGroupStatus status,
             @RequestParam(defaultValue = "0") int page,
@@ -89,6 +96,7 @@ public class TransGroupController {
     // ----------------------------------- endpoint cho leaer và admin -----------------------------//
 
     @DeleteMapping("/transgroups/{id}")
+    @RateLimit(limitType = LimitType.USER_ID)
     public ApiResponse<String> softDeleteGroupById(@PathVariable @NonNull String id) {
         transGroupService.softDeleteGroupById(id);
 
