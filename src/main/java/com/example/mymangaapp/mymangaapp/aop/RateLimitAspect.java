@@ -4,7 +4,8 @@ import com.example.mymangaapp.mymangaapp.annotation.RateLimit;
 import com.example.mymangaapp.mymangaapp.enums.LimitType;
 import com.example.mymangaapp.mymangaapp.exception.AppException;
 import com.example.mymangaapp.mymangaapp.exception.ResponseCode;
-import com.example.mymangaapp.mymangaapp.security.component.SecurityUtils;
+import com.example.mymangaapp.mymangaapp.security.utils.SecurityUtils;
+import com.example.mymangaapp.mymangaapp.utils.HttpUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -58,7 +59,7 @@ public class RateLimitAspect {
         String actionScope = httpMethod + ":" + endpoint;
 
         // Chỉ lấy userId nếu yêu cầu LimitType là USER_ID
-        String userId = (rateLimitAnnotation.limitType() == LimitType.USER_ID)
+        String userId = rateLimitAnnotation.limitType().equals(LimitType.USER_ID)
                 ? SecurityUtils.getCurrentUserId()
                 : null;
 
@@ -66,7 +67,7 @@ public class RateLimitAspect {
         if (userId != null) {
             redisKey = REDIS_KEY_PREFIX + "user:" + userId + ":" + actionScope;
         } else { // ko thì limit theo ip
-            String clientIp = getClientIp(request);
+            String clientIp = HttpUtils.getClientIp(request);
             redisKey = REDIS_KEY_PREFIX + "ip:" + clientIp + ":" + actionScope;
         }
 
@@ -79,7 +80,7 @@ public class RateLimitAspect {
                     String.valueOf(rateLimitAnnotation.capacity()) // ARGV[2]
             );
 
-            log.info("Cho qua: {}, redis key: {}", result, redisKey);
+            log.info("Cho truy cập endpoint không: {}, redis key: {}", result, redisKey);
 
             if (result == 0L) {
                 throw new AppException(ResponseCode.RATE_LIMIT_EXCEEDED);
@@ -92,30 +93,6 @@ public class RateLimitAspect {
 
         // cho phép request đi qua
         return joinPoint.proceed();
-    }
-
-    // Lấy client ip thật, do lên production thì thường app chạy sau nginx, load balancer hoặc cloudflare
-    // nên nếu dùng request.getRemoteAddr() thì chỉ lấy đc ip của proxy và tất cả user đều trả về
-    // ip proxy đó thế là limit tất cả user luôn
-    private String getClientIp(HttpServletRequest request) {
-
-        String[] headers = {
-                "X-Forwarded-For",
-                "X-Real-IP",
-                "Proxy-Client-IP",
-                "WL-Proxy-Client-IP",
-        };
-
-        for (String header : headers) {
-            String ip = request.getHeader(header);
-
-            if (ip != null && !ip.isBlank() && "unknown".equalsIgnoreCase(ip)) {
-                // trả về split vì X-Forward-For có thể chứa nhiều ip
-                return ip.split(",")[0].trim();
-            }
-        }
-
-        return request.getRemoteAddr();
     }
 
 }

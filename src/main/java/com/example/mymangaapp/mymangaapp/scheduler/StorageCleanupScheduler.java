@@ -1,11 +1,12 @@
-package com.example.mymangaapp.mymangaapp.service;
+package com.example.mymangaapp.mymangaapp.scheduler;
 
+import com.example.mymangaapp.mymangaapp.service.StorageService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import java.time.Instant;
 import java.time.LocalDate;
@@ -13,11 +14,11 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 
-@Service
+@Component
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Slf4j
-public class StorageCleanupService {
+public class StorageCleanupScheduler {
 
     StorageService storageService;
 

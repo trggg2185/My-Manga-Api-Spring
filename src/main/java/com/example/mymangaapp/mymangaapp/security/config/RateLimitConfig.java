@@ -10,13 +10,15 @@ import org.springframework.scripting.support.ResourceScriptSource;
 @Configuration
 public class RateLimitConfig {
 
+    private static final String PATH = "rate_limit.lua";
+
     // Long là giá trị trả về của file lua
     @Bean
-    public DefaultRedisScript<Long> rateLimitingScript() {
+    DefaultRedisScript<Long> rateLimitingScript() {
         DefaultRedisScript<Long> redisScript = new DefaultRedisScript<>();
 
         // trỏ tới file lua trong resource
-        redisScript.setScriptSource(new ResourceScriptSource(new ClassPathResource("rate_limit.lua")));
+        redisScript.setScriptSource(new ResourceScriptSource(new ClassPathResource(PATH)));
         // set kiểu trả về của file lua
         redisScript.setResultType(Long.class);
 

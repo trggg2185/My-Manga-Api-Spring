@@ -1,4 +1,4 @@
-package com.example.mymangaapp.mymangaapp.security.component;
+package com.example.mymangaapp.mymangaapp.security.utils;
 
 import com.example.mymangaapp.mymangaapp.exception.AppException;
 import com.example.mymangaapp.mymangaapp.exception.ResponseCode;

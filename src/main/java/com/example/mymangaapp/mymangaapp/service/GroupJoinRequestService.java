@@ -14,7 +14,7 @@ import com.example.mymangaapp.mymangaapp.repository.GroupJoinRequestRepository;
 import com.example.mymangaapp.mymangaapp.repository.RoleRepository;
 import com.example.mymangaapp.mymangaapp.repository.TransGroupRepository;
 import com.example.mymangaapp.mymangaapp.repository.UserRepository;
-import com.example.mymangaapp.mymangaapp.security.component.SecurityUtils;
+import com.example.mymangaapp.mymangaapp.security.utils.SecurityUtils;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;

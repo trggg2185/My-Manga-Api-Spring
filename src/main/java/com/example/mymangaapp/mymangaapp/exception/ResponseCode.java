@@ -21,6 +21,7 @@ public enum ResponseCode {
             3000 - Validation
             4000 - Resource
             5000 - Business
+            6000 -
             9000 - Internal
     */
 
@@ -32,6 +33,7 @@ public enum ResponseCode {
     SUCCESS("0000", "Thành công!", HttpStatus.OK),
 
     UNAUTHENTICATED("1001", "Chưa được xác thực!", HttpStatus.UNAUTHORIZED),
+    PASSWORD_INCORRECT("1002", "Mật khẩu không chính xác!", HttpStatus.UNAUTHORIZED),
 
     UNAUTHORIZED("2001", "Không có quyền!", HttpStatus.FORBIDDEN),
 
@@ -66,7 +68,6 @@ public enum ResponseCode {
     PERMISSION_NAME_INVALID("3029", "Tên quyền có tối đa {max} ký tự!", HttpStatus.BAD_REQUEST),
     PERMISSION_DESCRIPTION_INVALID("3030", "Mô tả quyền có tối đa {max} ký tự!", HttpStatus.BAD_REQUEST),
 
-
     USER_NOT_FOUND("4001", "Người dùng không tồn tại!", HttpStatus.NOT_FOUND),
     ROLE_NOT_FOUND("4002", "Vai trò không tồn tại!", HttpStatus.NOT_FOUND),
     PERMISSION_NOT_FOUND("4003", "Quyền không tồn tại!", HttpStatus.NOT_FOUND),
@@ -92,8 +93,8 @@ public enum ResponseCode {
     FILE_COPY_FAILED("5014", "Copy file thất bại!", HttpStatus.BAD_REQUEST),
     CHAPTER_INDEX_ALREADY_EXISTS("5015", "Chapter index đã tồn tại!", HttpStatus.BAD_REQUEST),
     CATEGORY_NAME_ALREADY_EXISTS("5016", "Tên thể loại đã tồn tại!", HttpStatus.BAD_REQUEST),
-    PASSWORD_INCORRECT("5017", "Mật khẩu không chính xác!", HttpStatus.BAD_REQUEST),
-    RATE_LIMIT_EXCEEDED("5050", "Đạt giới hạn thao tác, vui lòng thử lại sau!", HttpStatus.TOO_MANY_REQUESTS);
+
+    RATE_LIMIT_EXCEEDED("6001", "Đạt giới hạn thao tác, vui lòng thử lại sau!", HttpStatus.TOO_MANY_REQUESTS);
 
     String code;
     String message;

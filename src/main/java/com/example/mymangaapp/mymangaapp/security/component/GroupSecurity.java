@@ -1,6 +1,7 @@
 package com.example.mymangaapp.mymangaapp.security.component;
 
 import com.example.mymangaapp.mymangaapp.repository.TransGroupRepository;
+import com.example.mymangaapp.mymangaapp.security.utils.SecurityUtils;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;

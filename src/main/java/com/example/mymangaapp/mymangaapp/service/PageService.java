@@ -30,7 +30,7 @@ public class PageService {
 
     // --------------------------------chức năng public --------------------------------//
 
-    // lấy tất cả các files ảnh của chapter theo id
+    // lấy tất cả các files ảnh của chapter theo id (tức là user đọc 1 chương truyện)
     // ==> cx public luôn
     public List<PageResponse> getAllPagesByChapterId(@NonNull String chapterId) {
 

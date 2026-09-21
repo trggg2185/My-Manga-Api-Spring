@@ -15,7 +15,7 @@ public class RedisConfig {
      * Spring Boot sẽ tự động tiêm (inject) cái RedisConnectionFactory từ application.yaml vào đây.
      */
     @Bean
-    public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory connectionFactory) {
+    RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory connectionFactory) {
         RedisTemplate<String, Object> template = new RedisTemplate<>();
         template.setConnectionFactory(connectionFactory);
 

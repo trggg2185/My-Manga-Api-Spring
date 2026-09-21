@@ -12,7 +12,7 @@ import com.example.mymangaapp.mymangaapp.exception.ResponseCode;
 import com.example.mymangaapp.mymangaapp.mapper.ChapterMapper;
 import com.example.mymangaapp.mymangaapp.repository.ChapterRepository;
 import com.example.mymangaapp.mymangaapp.repository.MangaRepository;
-import com.example.mymangaapp.mymangaapp.security.component.SecurityUtils;
+import com.example.mymangaapp.mymangaapp.security.utils.SecurityUtils;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;

@@ -6,7 +6,7 @@ import java.util.Set;
 import com.example.mymangaapp.mymangaapp.dto.request.UserPasswordRequest;
 import com.example.mymangaapp.mymangaapp.dto.response.PaginatedResponse;
 import com.example.mymangaapp.mymangaapp.dto.response.UserSummaryResponse;
-import com.example.mymangaapp.mymangaapp.security.component.SecurityUtils;
+import com.example.mymangaapp.mymangaapp.security.utils.SecurityUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
