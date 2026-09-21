@@ -12,12 +12,12 @@ MỘT HỆ THỐNG BACKEND MANGA
     - user_roles(user_id, role_id)
     - role_permissions(role_id, permission_id)
     - manga_transgroups(manga_id, transgroup_id)
-    - invalidated_token(id, expiration_time, created_at, updated_at)
     - group_join_request(id, status, transgroup_id, user_id, created_at, updated_at)
 
 * Công nghệ sử dụng
     - Spring Boot
     - Spring JPA
     - Spring Security
-    - Redis
+    - Spring AOP
+    - Redis Cache
     - Amazon Web Service SDK S3 (R2 Object Storage)
