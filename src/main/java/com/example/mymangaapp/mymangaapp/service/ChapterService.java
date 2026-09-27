@@ -25,8 +25,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
+import software.amazon.awssdk.core.exception.SdkClientException;
+import software.amazon.awssdk.services.s3.model.S3Exception;
 
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -97,9 +98,8 @@ public class ChapterService {
             for (int i = 0; i < tmpPageUrls.size(); i++) {
 
                 String tmpUrl = tmpPageUrls.get(i);
-
                 // chỉ lấy phần path của url để làm key
-                String tmpKey = new URI(tmpUrl).getPath().substring(1);
+                String tmpKey = storageService.parseObbjectKeyFromUrl(tmpUrl);
 
                 // tránh user đoán đc key của các truyện khác trong folder mangas/
                 // rồi sửa page url, phải check xem là up từ tmp/ lên
@@ -123,11 +123,15 @@ public class ChapterService {
             isSuccess = true; // copy thành công
         } catch (URISyntaxException e) {
             throw new AppException(ResponseCode.URL_INVALID);
-        } catch (Exception e) { // Cover hết các exception trong qtrình copy files
-            throw new AppException(ResponseCode.FILE_COPY_FAILED);
+        } catch (SdkClientException e) { // lỗi phía client
+            throw new AppException(ResponseCode.STORAGE_SERVICE_UNAVAILABLE);
+        } catch (S3Exception e) { // lỗi phía dịch vụ
+            throw new AppException(ResponseCode.STORAGE_SERVICE_ERROR);
         } finally {
             if (!isSuccess) {
                 log.error("Lỗi trong quá trình copy files!");
+                // Lỗi thì xoá luôn những files đã copy thành công trc đó
+                storageService.deleteFilesWithPrefix(prefix, Instant.now());
             }
         }
 

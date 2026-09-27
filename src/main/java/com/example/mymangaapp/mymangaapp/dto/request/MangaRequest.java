@@ -1,7 +1,9 @@
 package com.example.mymangaapp.mymangaapp.dto.request;
 
+import com.example.mymangaapp.mymangaapp.enums.MangaStatus;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -15,6 +17,14 @@ import java.util.Set;
 @Builder
 public class MangaRequest {
 
+    /*
+    * - Not Blank: cho string
+    * - Not Empty: cho collection, set, list
+    * - Not Null: cho object
+    * */
+
+
+
     @NotBlank
     @Size(max = 200, message = "MANGA_NAME_INVALID")
     String name;
@@ -26,9 +36,8 @@ public class MangaRequest {
     @NotEmpty(message = "CATEGORIES_REQUIRED")
     Set<String> categoryIds;
 
-    @NotBlank(message = "MANGA_STATUS_REQUIRED")
-    @Size(max = 20, message = "MANGA_STATUS_INVALID")
-    String status;
+    @NotNull(message = "MANGA_STATUS_REQUIRED")
+    MangaStatus status;
 
     @Size(max = 500, message = "MANGA_DESCRIPTION_INVALID")
     String description;

@@ -30,6 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Slf4j
@@ -62,17 +63,15 @@ public class MangaService {
             throw new AppException(ResponseCode.TRANSGROUP_NOT_APPROVED);
         }
 
-        if (CollectionUtils.isEmpty(request.getCategoryIds())) {
-            throw new AppException(ResponseCode.CATEGORIES_REQUIRED);
-        }
+        List<Category> categories = categoryRepository.findAllById(request.getCategoryIds());
 
-        Set<Category> categories = new HashSet<>(categoryRepository.findAllById(request.getCategoryIds()));
-        if (categories.isEmpty()) {
+        // check 1 là ko thấy category nào, 2 là có vài category ko tồn tại thì bắn exception
+        if (categories.isEmpty() || categories.size() != request.getCategoryIds().size()) {
             throw new AppException(ResponseCode.CATEGORY_NOT_FOUND);
         }
 
         Manga manga = mangaMapper.toManga(request);
-        manga.setCategories(categories);
+        manga.setCategories(new HashSet<>(categories));
         manga.setOwnerTransGroup(ownerTransGroup);
         manga.setTransGroups(Set.of(ownerTransGroup));
 

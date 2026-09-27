@@ -4,6 +4,7 @@ import com.example.mymangaapp.mymangaapp.annotation.RateLimit;
 import com.example.mymangaapp.mymangaapp.enums.LimitType;
 import java.util.List;
 
+import jakarta.validation.Valid;
 import org.springframework.lang.NonNull;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -36,7 +37,7 @@ public class RoleController {
 
     @PostMapping
     @RateLimit(capacity = 10, limitType = LimitType.USER_ID)
-    public ApiResponse<RoleResponse> createRole(@RequestBody RoleRequest request) {
+    public ApiResponse<RoleResponse> createRole(@Valid @RequestBody RoleRequest request) {
 
         RoleResponse response = roleService.createRole(request);
 

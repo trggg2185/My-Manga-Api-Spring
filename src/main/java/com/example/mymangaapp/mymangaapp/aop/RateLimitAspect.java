@@ -53,10 +53,10 @@ public class RateLimitAspect {
 
         // http method
         String httpMethod = request.getMethod();
-        // endpoint
-        String endpoint = request.getRequestURI();
+        // path
+        String path = request.getRequestURI();
 
-        String actionScope = httpMethod + ":" + endpoint;
+        String actionScope = httpMethod + ":" + path;
 
         // Chỉ lấy userId nếu yêu cầu LimitType là USER_ID
         String userId = rateLimitAnnotation.limitType().equals(LimitType.USER_ID)
@@ -80,7 +80,7 @@ public class RateLimitAspect {
                     String.valueOf(rateLimitAnnotation.capacity()) // ARGV[2]
             );
 
-            log.info("Cho truy cập endpoint không: {}, redis key: {}", result, redisKey);
+            log.info("Cho truy cập path không: {}, redis key: {}", result, redisKey);
 
             if (result == 0L) {
                 throw new AppException(ResponseCode.RATE_LIMIT_EXCEEDED);

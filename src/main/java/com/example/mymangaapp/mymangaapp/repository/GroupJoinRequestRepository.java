@@ -15,8 +15,12 @@ public interface GroupJoinRequestRepository extends JpaRepository<GroupJoinReque
     @NonNull
     List<GroupJoinRequest> findAll();
 
+    // Lấy ds các yc của 1 nhóm dịch theo trạng thái yc đó
     @EntityGraph(attributePaths = { "transGroup", "user" })
-    List<GroupJoinRequest> findAllByStatus(GroupJoinRequestStatus status);
+    List<GroupJoinRequest> findAllByTransGroupIdAndStatus(String groupId, GroupJoinRequestStatus status);
+
+    @EntityGraph(attributePaths = { "transGroup", "user" })
+    List<GroupJoinRequest> findAllByTransGroupId(String groupId);
 
     @EntityGraph(attributePaths = { "transGroup", "user" })
     @NonNull
@@ -27,5 +31,7 @@ public interface GroupJoinRequestRepository extends JpaRepository<GroupJoinReque
 
     @EntityGraph(attributePaths = { "transGroup", "user" })
     List<GroupJoinRequest> findAllByUserIdAndStatus(String userId, GroupJoinRequestStatus status);
+
+    boolean existsByTransGroupIdAndUserIdAndStatus(String groupId, String userId, GroupJoinRequestStatus status);
 
 }

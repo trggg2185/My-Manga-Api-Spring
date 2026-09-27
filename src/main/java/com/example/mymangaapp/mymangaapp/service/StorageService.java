@@ -14,6 +14,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
+import software.amazon.awssdk.core.exception.SdkException;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.*;
@@ -23,6 +24,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -77,7 +80,9 @@ public class StorageService {
             // upload lên và trả về url cho frontend truy cập để hiển thị
             return upload(objectKey, optimizedImageBytes);
         }
-        catch (IOException exception) {
+        catch (AppException exception) {
+            throw exception;
+        } catch (IOException | SdkException exception) {
             throw new AppException(ResponseCode.FILE_UPLOAD_FAILED);
         }
 
@@ -105,7 +110,7 @@ public class StorageService {
 
             return upload(objectKey, optimizedImageBytes);
         }
-        catch (IOException exception) {
+        catch (IOException | SdkException exception) {
             throw new AppException(ResponseCode.FILE_UPLOAD_FAILED);
         }
     }
@@ -215,6 +220,11 @@ public class StorageService {
         log.info("Đã xoá {} files, tổng kích thước là {} bytes", deletedCount, totalSize);
     }
 
+    // method này giúp parse object key từ public url
+    public String parseObbjectKeyFromUrl(String url) throws URISyntaxException {
+        return new URI(url).getPath().substring(1);
+    }
+
 
     // -------------------------------------- method tiện ích ----------------------------------------//
 
@@ -288,7 +298,7 @@ public class StorageService {
     }
 
     private String extractAndValidateExtension(@NonNull MultipartFile file) {
-        if (file.isEmpty()) {
+        if (file.isEmpty() || file.getSize() == 0) {
             throw new AppException(ResponseCode.FILE_REQUIRED);
         }
 

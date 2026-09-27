@@ -3,7 +3,10 @@ package com.example.mymangaapp.mymangaapp.exception;
 import java.util.Map;
 import java.util.Objects;
 
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -14,6 +17,7 @@ import com.example.mymangaapp.mymangaapp.dto.response.ApiResponse;
 
 import jakarta.validation.ConstraintViolation;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
 @RestControllerAdvice // chuyển sang rest controller advice vì dự án dùng rest controller
 @Slf4j
@@ -83,6 +87,69 @@ public class GlobalExceptionHandler {
         log.error("Vi phạm phân quyền", exception);
 
         ResponseCode responseCode = ResponseCode.UNAUTHORIZED;
+
+        ApiResponse<?> apiResponse = ApiResponse.builder()
+                .code(responseCode.getCode())
+                .message(responseCode.getMessage())
+                .build();
+
+        return ResponseEntity
+                .status(responseCode.getHttpStatusCode())
+                .body(apiResponse);
+    }
+
+    // Handle exception xảy ra khi upload file có kích thước quá lớn
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    private ResponseEntity<ApiResponse<?>> handlingMaxUploadSize(MaxUploadSizeExceededException exception) {
+
+        log.error("Kích thước file quá lớn!", exception);
+
+        ResponseCode responseCode = ResponseCode.FILE_SIZE_INVALID;
+
+        ApiResponse<?> apiResponse = ApiResponse.builder()
+                .code(responseCode.getCode())
+                .message(responseCode.getMessage())
+                .build();
+
+        return ResponseEntity
+                .status(responseCode.getHttpStatusCode())
+                .body(apiResponse);
+    }
+
+    // Handle exception xảy ra khi duplicate key trong table db
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    private ResponseEntity<ApiResponse<?>> handlingDataIntegrity(DataIntegrityViolationException exception) {
+
+        log.error("Vi phạm ràng buộc dữ liệu!", exception);
+
+        ResponseCode responseCode = ResponseCode.DATA_INTEGRITY_VIOLATION;
+
+        ApiResponse<?> apiResponse = ApiResponse.builder()
+                .code(responseCode.getCode())
+                .message(responseCode.getMessage())
+                .build();
+
+        return ResponseEntity
+                .status(responseCode.getHttpStatusCode())
+                .body(apiResponse);
+    }
+
+    // Handle exception xảy ra khi ko thể parse từ json trong body request sang object
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    private ResponseEntity<ApiResponse<?>> handlingHttpMessageNotReadable(HttpMessageNotReadableException exception) {
+
+        log.error("Lỗi không thể đọc được message http", exception);
+
+        // Mặc định bắn lỗi http message not readable
+        ResponseCode responseCode = ResponseCode.HTTP_MESSAGE_NOT_READABLE;
+
+        if (exception.getCause() instanceof InvalidFormatException invalidFormatException) {
+            responseCode = ResponseCode.FIELD_VALUE_INVALID;
+
+            String fieldName = invalidFormatException.getPath().getFirst().getFieldName();
+
+            log.error("Trường bị lỗi: {}", fieldName);
+        }
 
         ApiResponse<?> apiResponse = ApiResponse.builder()
                 .code(responseCode.getCode())

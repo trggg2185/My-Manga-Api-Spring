@@ -9,6 +9,7 @@ import com.example.mymangaapp.mymangaapp.dto.response.ChapterSummaryResponse;
 import com.example.mymangaapp.mymangaapp.dto.response.PaginatedResponse;
 import com.example.mymangaapp.mymangaapp.exception.ResponseCode;
 import com.example.mymangaapp.mymangaapp.service.ChapterService;
+import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -29,7 +30,7 @@ public class ChapterController {
     @RateLimit(capacity = 10, limitType = LimitType.USER_ID)
     public ApiResponse<ChapterResponse> createChapter(
             @PathVariable @NonNull String mangaId,
-            @RequestBody ChapterRequest request
+            @RequestBody @Valid ChapterRequest request
     ) {
 
         ChapterResponse response = chapterService.createChapter(mangaId, request);

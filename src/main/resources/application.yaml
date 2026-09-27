@@ -28,6 +28,9 @@ spring:
             database: ${REDIS_DATABASE:0}
             timeout: 5000ms #thời gian tối đa chờ phản hồi lệnh
             connect-timeout: 3000ms #thời gian tối đa chờ kết nối
+    jackson:
+        mapper:
+            accept-case-insensitive-enums: true #cho phép field của body request nhận vào gtrị enum ko pb hoa thường
 jwt:
     signer-key: ${SIGNER_KEY}
     access-token-validity-in-seconds: ${ACCESS_TOKEN_VALIDITY_IN_SECONDS}

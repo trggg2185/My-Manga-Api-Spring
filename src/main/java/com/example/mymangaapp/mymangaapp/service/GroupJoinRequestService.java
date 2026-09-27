@@ -51,7 +51,12 @@ public class GroupJoinRequestService {
                 .findWithDetailsByUsername(username)
                 .orElseThrow(() -> new AppException(ResponseCode.USER_NOT_FOUND));
 
-        // Check xem user này đã vào nhóm dịch nào chưa
+        // Check xem user này đã gửi yêu cầu đang chờ duyệt vào nhóm dịch này chưa, gửi lại thì báo lỗi
+        if (groupJoinRequestRepository.existsByTransGroupIdAndUserIdAndStatus(groupId, user.getId(), GroupJoinRequestStatus.PENDING)) {
+            throw new AppException(ResponseCode.GROUP_JOIN_REQUEST_ALREADY_EXISTS);
+        }
+
+        // Check xem user này đã vào nhóm dịch chưa
         if (user.getTransGroup() != null) {
             throw new AppException(ResponseCode.USER_ALREADY_IN_GROUP);
         }
@@ -100,14 +105,14 @@ public class GroupJoinRequestService {
 
         if (status != null) {
             return groupJoinRequestRepository
-                    .findAllByStatus(status)
+                    .findAllByTransGroupIdAndStatus(groupId, status)
                     .stream()
                     .map(groupJoinRequestMapper::toJoinRequestResponse)
                     .toList();
         }
 
         return groupJoinRequestRepository
-                .findAll()
+                .findAllByTransGroupId(groupId)
                 .stream()
                 .map(groupJoinRequestMapper::toJoinRequestResponse)
                 .toList();
