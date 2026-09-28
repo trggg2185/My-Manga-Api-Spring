@@ -73,6 +73,7 @@ public enum ResponseCode {
     PERMISSION_INVALID("3031", "Các quyền không hợp lệ! (Các quyền không tồn tại hoặc mảng các quyền của request rỗng)", HttpStatus.BAD_REQUEST),
     PERMISSION_REQUIRED("3032", "Mảng các quyền không được để trống!", HttpStatus.BAD_REQUEST),
     FIELD_VALUE_INVALID("3033", "Giá trị trường không hợp lệ!", HttpStatus.BAD_REQUEST),
+    TRANSGROUP_DESCRIPTION_INVALID("3034", "Mô tả nhóm dịch có tối đa {max} ký tự!", HttpStatus.BAD_REQUEST),
 
     USER_NOT_FOUND("4001", "Người dùng không tồn tại!", HttpStatus.NOT_FOUND),
     ROLE_NOT_FOUND("4002", "Vai trò không tồn tại!", HttpStatus.NOT_FOUND),
@@ -82,6 +83,7 @@ public enum ResponseCode {
     MANGA_NOT_FOUND("4006", "Manga không tồn tại!", HttpStatus.NOT_FOUND),
     CHAPTER_NOT_FOUND("4007", "Chương này không tồn tại!", HttpStatus.NOT_FOUND),
     CATEGORY_NOT_FOUND("4008", "Thể loại không tồn tại!", HttpStatus.NOT_FOUND),
+    TRANSGROUP_CREATION_REQUEST_NOT_FOUND("4009", "Yêu cầu tạo nhóm dịch không tồn tại!", HttpStatus.NOT_FOUND),
 
     USERNAME_ALREADY_EXISTS("5001", "Tên người dùng đã tồn tại!", HttpStatus.BAD_REQUEST),
     EMAIL_ALREADY_EXISTS("5002", "Email đã tồn tại!", HttpStatus.BAD_REQUEST),
@@ -91,7 +93,7 @@ public enum ResponseCode {
     TRANSGROUP_STATUS_INVALID("5006", "Nhóm dịch đã được chấp nhận, bị từ chối hoặc đã bị xoá!", HttpStatus.BAD_REQUEST),
     USER_ALREADY_IN_GROUP("5007", "Người dùng đã trong nhóm dịch!", HttpStatus.BAD_REQUEST),
     TRANSGROUP_NOT_APPROVED("5008", "Nhóm dịch chưa được duyệt!", HttpStatus.BAD_REQUEST),
-    GROUP_JOIN_REQUEST_STATUS_INVALID("5009", "Yêu cầu vào nhóm đã được chập nhận hoặc bị tự chối!", HttpStatus.BAD_REQUEST),
+    TRANSGROUP_JOIN_REQUEST_STATUS_INVALID("5009", "Yêu cầu vào nhóm đã được chập nhận hoặc bị tự chối!", HttpStatus.BAD_REQUEST),
     FILE_INVALID("5010", "File không hợp lệ!", HttpStatus.BAD_REQUEST),
     FILE_UPLOAD_FAILED("5011", "Upload file thất bại!", HttpStatus.BAD_REQUEST),
     FILE_COPY_FAILED("5012", "Copy file thất bại!", HttpStatus.BAD_REQUEST),
@@ -99,7 +101,9 @@ public enum ResponseCode {
     CATEGORY_NAME_ALREADY_EXISTS("5014", "Tên thể loại đã tồn tại!", HttpStatus.BAD_REQUEST),
     DELETE_FILE_FAILED("5015", "Xoá file thất bại!", HttpStatus.BAD_REQUEST),
     DATA_INTEGRITY_VIOLATION("5016", "Dữ liệu vi phạm ràng buộc!", HttpStatus.BAD_REQUEST),
-    GROUP_JOIN_REQUEST_ALREADY_EXISTS("5017", "Yêu cầu vào nhóm dịch đã tồn tại!", HttpStatus.BAD_REQUEST),
+    TRANSGROUP_JOIN_REQUEST_ALREADY_EXISTS("5017", "Yêu cầu vào nhóm dịch đã tồn tại!", HttpStatus.BAD_REQUEST),
+    TRANSGROUP_CREATION_REQUEST_ALREADY_EXISTS("5018", "Yêu cầu tạo nhóm dịch đã tồn tại!", HttpStatus.BAD_REQUEST),
+    TRANSGROUP_CREATION_REQUEST_STATUS_INVALID("5019", "Yêu cầu tạo nhóm dịch đã được chấp nhận hoặc bị từ chối!", HttpStatus.BAD_REQUEST),
 
     RATE_LIMIT_EXCEEDED("6001", "Đạt giới hạn thao tác, vui lòng thử lại sau!", HttpStatus.TOO_MANY_REQUESTS),
     METHOD_NOT_ALLOWED("6002", "Phương thức không được phép!", HttpStatus.METHOD_NOT_ALLOWED);

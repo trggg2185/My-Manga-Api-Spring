@@ -58,7 +58,7 @@ public class Manga extends BaseEntity {
     // Lưu enum dưới dạng chuỗi (varchar) thay vì số 0, 1, 2
     @Enumerated(EnumType.STRING)
     // Set value mặc định vì dùng JPA tạo, cập nhật bảng
-    @Column(name = "status", nullable = false, columnDefinition = "VARCHAR(20) DEFAULT 'ONGOING'")
+    @Column(name = "status", nullable = false, columnDefinition = "VARCHAR(15) DEFAULT 'ONGOING'")
     // Để Lombok ko bỏ qua giá trị khởi tạo = MangaStatus.ONGOING khi dựng object bằng Builder
     @Builder.Default
     MangaStatus status = MangaStatus.ONGOING;

@@ -53,7 +53,7 @@ public class GroupJoinRequestService {
 
         // Check xem user này đã gửi yêu cầu đang chờ duyệt vào nhóm dịch này chưa, gửi lại thì báo lỗi
         if (groupJoinRequestRepository.existsByTransGroupIdAndUserIdAndStatus(groupId, user.getId(), GroupJoinRequestStatus.PENDING)) {
-            throw new AppException(ResponseCode.GROUP_JOIN_REQUEST_ALREADY_EXISTS);
+            throw new AppException(ResponseCode.TRANSGROUP_JOIN_REQUEST_ALREADY_EXISTS);
         }
 
         // Check xem user này đã vào nhóm dịch chưa
@@ -146,7 +146,7 @@ public class GroupJoinRequestService {
 
         // Check xem yêu cầu này có thật đang đợi duyệt không
         if (!groupJoinRequest.getStatus().equals(GroupJoinRequestStatus.PENDING)) {
-            throw new AppException(ResponseCode.GROUP_JOIN_REQUEST_STATUS_INVALID);
+            throw new AppException(ResponseCode.TRANSGROUP_JOIN_REQUEST_STATUS_INVALID);
         }
         groupJoinRequest.setStatus(GroupJoinRequestStatus.APPROVED);
 
@@ -189,7 +189,7 @@ public class GroupJoinRequestService {
 
         // Check xem yêu cầu này có thật đang đợi duyệt không
         if (!groupJoinRequest.getStatus().equals(GroupJoinRequestStatus.PENDING)) {
-            throw new AppException(ResponseCode.GROUP_JOIN_REQUEST_STATUS_INVALID);
+            throw new AppException(ResponseCode.TRANSGROUP_JOIN_REQUEST_STATUS_INVALID);
         }
         groupJoinRequest.setStatus(GroupJoinRequestStatus.REJECTED);
 

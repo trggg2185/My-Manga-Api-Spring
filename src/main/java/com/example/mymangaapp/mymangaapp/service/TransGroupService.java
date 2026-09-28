@@ -1,19 +1,16 @@
 package com.example.mymangaapp.mymangaapp.service;
 
-import com.example.mymangaapp.mymangaapp.dto.request.TransGroupCreationRequest;
+import com.example.mymangaapp.mymangaapp.dto.transgroup.TransGroupUpdateRequest;
 import com.example.mymangaapp.mymangaapp.dto.response.PaginatedResponse;
-import com.example.mymangaapp.mymangaapp.dto.response.TransGroupResponse;
-import com.example.mymangaapp.mymangaapp.entity.Role;
+import com.example.mymangaapp.mymangaapp.dto.transgroup.TransGroupResponse;
+import com.example.mymangaapp.mymangaapp.entity.GroupCreationRequest;
 import com.example.mymangaapp.mymangaapp.entity.TransGroup;
-import com.example.mymangaapp.mymangaapp.entity.User;
 import com.example.mymangaapp.mymangaapp.enums.TransGroupStatus;
 import com.example.mymangaapp.mymangaapp.exception.AppException;
 import com.example.mymangaapp.mymangaapp.exception.ResponseCode;
 import com.example.mymangaapp.mymangaapp.mapper.TransGroupMapper;
-import com.example.mymangaapp.mymangaapp.repository.RoleRepository;
 import com.example.mymangaapp.mymangaapp.repository.TransGroupRepository;
 import com.example.mymangaapp.mymangaapp.repository.UserRepository;
-import com.example.mymangaapp.mymangaapp.security.utils.SecurityUtils;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -27,19 +24,32 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashSet;
-
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Slf4j
 public class TransGroupService {
 
-    RoleRepository roleRepository;
     UserRepository userRepository;
     TransGroupRepository transGroupRepository;
 
     TransGroupMapper transGroupMapper;
+
+    // method này đc gọi từ method đã có transactional thì method này ko cần transactional
+    // vì method này khác tự tham gia vào transaction đó, khi fail thì rollback toàn bộ 2 method
+    // hàm giúp tạo nhóm từ yêu cầu tạo nhóm
+    @Transactional // vẫn nên thêm transactional để khi có method nơi khác gọi
+    public TransGroup createTransGroup(GroupCreationRequest groupCreationRequest) {
+
+        // quyết định là trong members sẽ ko chứa leader
+        TransGroup transGroup = TransGroup.builder()
+                .name(groupCreationRequest.getNameGroup())
+                .description(groupCreationRequest.getDescription())
+                .leader(groupCreationRequest.getCreator())
+                .build();
+
+        return transGroupRepository.save(transGroup);
+    }
 
 
     // ----------------------------------- chức năng public (cho khách) -----------------------------------//
@@ -60,98 +70,7 @@ public class TransGroupService {
     }
 
 
-    // -------------------------- chức năng của user đã đăng nhập -------------------------- //
-
-    @Transactional
-    public TransGroupResponse requestCreateGroup(@NonNull TransGroupCreationRequest request) {
-
-        String username = SecurityUtils.getCurrentUsername();
-
-        User leader = userRepository
-                .findWithDetailsByUsername(username)
-                .orElseThrow(() -> new AppException(ResponseCode.USER_NOT_FOUND));
-
-        // Check người này đã có ở trong group chưa
-        if (leader.getTransGroup() != null) {
-            throw new AppException(ResponseCode.USER_ALREADY_IN_GROUP);
-        }
-
-        // dù nhóm đã bị xoá nhưng nhóm vẫn tồn tại trong db
-        // nên khi lập nhóm khác trùng tên thì ko cho (bản quyền tuyệt đối)
-        if (transGroupRepository.existsByName(request.getName())) {
-            throw new AppException(ResponseCode.TRANSGROUP_NAME_ALREADY_EXISTS);
-        }
-
-        TransGroup transGroup = transGroupMapper.toTransGroup(request);
-        transGroup.setLeader(leader);
-        transGroup.setMembers(new HashSet<>());
-
-        // Trưởng nhóm dịch cũng là 1 thành viên
-        transGroup.getMembers().add(leader);
-
-        // Nếu admin muốn tạo nhóm thì duyệt luôn
-        if (SecurityUtils.isAdmin()) {
-            transGroup.setStatus(TransGroupStatus.APPROVED);
-        }
-
-        transGroup = transGroupRepository.save(transGroup);
-
-        // Cho user thuộc về nhóm dịch
-        leader.setTransGroup(transGroup);
-        userRepository.save(leader);
-
-        // TH đặc biệt, trong trường hợp này mapper sẽ kẹt vòng lặp
-        // khiến không thể trả về group id cho user response được
-        // dù trong db vẫn có, giải quyết là khỏi hiển thị group id cho user response
-        // thay vào đó ta dùng user summary response cho gọn nhẹ
-        return transGroupMapper.toTransGroupResponse(transGroup);
-    }
-
-
     // -------------------------------- chức năng của admin -------------------------------- //
-
-    // admin
-    @Transactional
-    public TransGroupResponse approveCreateGroup(@NonNull String id) {
-
-        TransGroup transGroup = transGroupRepository
-                .findWithDetailsById(id)
-                .orElseThrow(() -> new AppException(ResponseCode.TRANSGROUP_NOT_FOUND));
-
-        // Duyệt nhóm tức là nhóm phải đang ở trạng thái chờ (PENDING) -> chấp nhận (APPROVED)
-        if (!transGroup.getStatus().equals(TransGroupStatus.PENDING)) {
-            throw new AppException(ResponseCode.TRANSGROUP_STATUS_INVALID);
-        }
-
-        transGroup.setStatus(TransGroupStatus.APPROVED);
-
-        Role translatorRole = roleRepository
-                .findById("TRANSLATOR")
-                .orElseThrow(() -> new AppException(ResponseCode.ROLE_NOT_FOUND));
-
-        // Từ khi nhóm này được chấp nhận thì leader nhóm chính thức được gán thêm role TRANSLATOR
-        transGroup.getLeader().getRoles().add(translatorRole);
-
-        return transGroupMapper.toTransGroupResponse(transGroupRepository.save(transGroup));
-    }
-
-    // admin
-    @Transactional
-    public TransGroupResponse rejectCreateGroup(@NonNull String id) {
-
-        TransGroup transGroup = transGroupRepository
-                .findWithDetailsById(id)
-                .orElseThrow(() -> new AppException(ResponseCode.TRANSGROUP_NOT_FOUND));
-
-        // Từ chối nhóm tức là nhóm phải đang ở trạng thái chờ (PENDING) -> từ chối (REJECTED)
-        if (!transGroup.getStatus().equals(TransGroupStatus.PENDING)) {
-            throw new AppException(ResponseCode.TRANSGROUP_STATUS_INVALID);
-        }
-
-        transGroup.setStatus(TransGroupStatus.REJECTED);
-
-        return transGroupMapper.toTransGroupResponse(transGroupRepository.save(transGroup));
-    }
 
     // Đây cũng lấy nhóm nhưng chỉ dành cho admin
     public PaginatedResponse<TransGroupResponse> getGroups(
@@ -201,6 +120,20 @@ public class TransGroupService {
         userRepository.clearTransGroupFromMembers(id);
 
         transGroupRepository.save(transGroup);
+    }
+
+    // cập nhật thông tin group (name và description)
+    @PreAuthorize("@groupSec.isGroupLeaderOrAdmin(#id)")
+    public TransGroupResponse updateGroupById(@NonNull String id, @NonNull TransGroupUpdateRequest request) {
+
+        TransGroup transGroup = transGroupRepository
+                .findWithDetailsById(id)
+                .orElseThrow(() -> new AppException(ResponseCode.TRANSGROUP_NOT_FOUND));
+
+        transGroupMapper.updateTransGroupFromRequest(transGroup, request);
+
+        return transGroupMapper.toTransGroupResponse(transGroupRepository.save(transGroup));
+
     }
 
 

@@ -8,11 +8,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import java.time.Duration;
 import java.time.Instant;
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
 
 @Component
 @RequiredArgsConstructor
@@ -21,6 +18,8 @@ import java.time.temporal.ChronoUnit;
 public class StorageCleanupScheduler {
 
     StorageService storageService;
+
+    static Duration TMP_THRESHOLD = Duration.ofHours(3); // 3 tiếng
 
 
     // -----------------------------------chức năng của hệ thống----------------------------------- //
@@ -33,11 +32,10 @@ public class StorageCleanupScheduler {
 
         try {
             // lấy tg lúc 3 tiếng trc
-            Instant thresholdTime = Instant.now().minus(3, ChronoUnit.HOURS);
+            Instant thresholdTime = Instant.now().minus(TMP_THRESHOLD);
 
-            // prefix sẽ vào tmp rồi vào folder theo ngày rồi xoá các files tmp trong đó
-            String dateFolder = LocalDate.now(ZoneId.systemDefault()).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-            String prefix = "tmp/" + dateFolder + "/";
+            // Quét toàn bộ tmp để xoá các files quá 3 tiếng
+            String prefix = "tmp/";
 
             // gọi hàm xoá bên storage service
             storageService.deleteFilesWithPrefix(prefix, thresholdTime);

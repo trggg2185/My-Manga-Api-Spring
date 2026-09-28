@@ -1,11 +1,11 @@
 package com.example.mymangaapp.mymangaapp.controller;
 
 import com.example.mymangaapp.mymangaapp.annotation.RateLimit;
+import com.example.mymangaapp.mymangaapp.dto.transgroup.TransGroupUpdateRequest;
 import com.example.mymangaapp.mymangaapp.enums.LimitType;
-import com.example.mymangaapp.mymangaapp.dto.request.TransGroupCreationRequest;
 import com.example.mymangaapp.mymangaapp.dto.response.ApiResponse;
 import com.example.mymangaapp.mymangaapp.dto.response.PaginatedResponse;
-import com.example.mymangaapp.mymangaapp.dto.response.TransGroupResponse;
+import com.example.mymangaapp.mymangaapp.dto.transgroup.TransGroupResponse;
 import com.example.mymangaapp.mymangaapp.enums.TransGroupStatus;
 import com.example.mymangaapp.mymangaapp.exception.ResponseCode;
 import com.example.mymangaapp.mymangaapp.service.TransGroupService;
@@ -42,40 +42,7 @@ public class TransGroupController {
     }
 
 
-    // -------------------------------- endpoint cho user đã đăng nhập -----------------------------------//
-
-    @PostMapping("/transgroups")
-    @RateLimit(capacity = 3, resetTimeInSeconds = 3600, limitType = LimitType.USER_ID)
-    public ApiResponse<TransGroupResponse> requestCreateGroup(@Valid @RequestBody TransGroupCreationRequest request) {
-        TransGroupResponse response = transGroupService.requestCreateGroup(request);
-
-        return ApiResponse.<TransGroupResponse>builder()
-                .result(response)
-                .build();
-    }
-
-
     // ----------------------------------- endpoint cho admin -----------------------------------//
-
-    @PatchMapping("/admin/transgroups/{id}/approve")
-    @RateLimit(capacity = 10, limitType = LimitType.USER_ID)
-    public ApiResponse<TransGroupResponse> approveCreateGroup(@PathVariable @NonNull String id) {
-        TransGroupResponse response = transGroupService.approveCreateGroup(id);
-
-        return ApiResponse.<TransGroupResponse>builder()
-                .result(response)
-                .build();
-    }
-
-    @PatchMapping("/admin/transgroups/{id}/reject")
-    @RateLimit(capacity = 10, limitType = LimitType.USER_ID)
-    public ApiResponse<TransGroupResponse> rejectCreateGroup(@PathVariable @NonNull String id) {
-        TransGroupResponse response = transGroupService.rejectCreateGroup(id);
-
-        return ApiResponse.<TransGroupResponse>builder()
-                .result(response)
-                .build();
-    }
 
     @GetMapping("/admin/transgroups")
     @RateLimit(capacity = 30, limitType = LimitType.USER_ID)
@@ -104,6 +71,19 @@ public class TransGroupController {
                 .code(ResponseCode.SUCCESS.getCode())
                 .message(ResponseCode.SUCCESS.getMessage())
                 .result("Group id: " + id)
+                .build();
+    }
+
+    @PatchMapping("/transgroups/{id}")
+    @RateLimit(limitType = LimitType.USER_ID)
+    public ApiResponse<TransGroupResponse> updateGroupById(
+            @PathVariable @NonNull String id,
+            @Valid @RequestBody TransGroupUpdateRequest request)
+    {
+        TransGroupResponse response = transGroupService.updateGroupById(id, request);
+
+        return ApiResponse.<TransGroupResponse>builder()
+                .result(response)
                 .build();
     }
 

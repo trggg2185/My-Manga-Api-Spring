@@ -25,7 +25,7 @@ public class TransGroup extends BaseEntity {
 
     // QH: 1 trans group thì chỉ có 1 leader
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "leader_id")
+    @JoinColumn(name = "leader_id", nullable = false)
     User leader;
 
     // QH: 1 trans group có thể có nhiều thành viên
@@ -36,16 +36,16 @@ public class TransGroup extends BaseEntity {
     Set<User> members;
 
     // name của trans group cũng ko pb hoa thường
-    @Column(name = "name", unique = true, columnDefinition = "VARCHAR(50) COLLATE utf8mb4_unicode_ci")
+    @Column(unique = true, columnDefinition = "VARCHAR(50) COLLATE utf8mb4_unicode_ci")
     String name;
 
-    @Column(name = "description", length = 300)
+    @Column(length = 300)
     String description;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = false, columnDefinition = "VARCHAR(20) DEFAULT 'PENDING'")
+    @Column(nullable = false, columnDefinition = "VARCHAR(15) DEFAULT 'APPROVED'")
     @Builder.Default
-    TransGroupStatus status = TransGroupStatus.PENDING;
+    TransGroupStatus status = TransGroupStatus.APPROVED;
 
     // QH: 1 trans group có thể dịch nhiều manga
     // đây chỉ là ds manga mà nhóm dịch, chưa chắc đã sở hữu (tạo ra), có thể chỉ là dịch phụ
