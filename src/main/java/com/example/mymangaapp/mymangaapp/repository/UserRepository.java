@@ -32,15 +32,16 @@ public interface UserRepository extends JpaRepository<User, String> {
     Page<User> findAll(@NonNull Pageable pageable);
 
     // Thao tác sẽ duyệt tất cả các user thuộc về nhóm dịch để set trường transgroup_id về null
-    @Modifying // Cho truy vấn update/delete làm thay đổi dữ liệu trong db
+    @Modifying(clearAutomatically = true, flushAutomatically = true) // Cho truy vấn update/delete làm thay đổi dữ liệu trong db
     @Query("UPDATE User u SET u.transGroup = null WHERE u.transGroup.id = :transGroupId")
     void clearTransGroupFromMembers(@Param("transGroupId") String id);
 
-    // Method này cần sửa lại ----------------------------------------
-    // Câu sql thuần để xoá role translator ra khỏi các members hiện tại trong 1 trans group
+    // Native sql để xoá role translator ra khỏi các members
     @Modifying
-    @Query(value = "DELETE FROM user_roles WHERE users_id IN " +
-                   "(SELECT id FROM user WHERE transgroup_id = :transGroupId) " +
-                   "AND roles_name = 'TRANSLATOR'", nativeQuery = true)
-    void removeTranslatorRoleFromMembers(@Param("transGroupId") String id);
+    @Query(value = """
+            DELETE FROM user_roles
+            WHERE roles_name = 'TRANSLATOR'
+            AND users_id IN (SELECT id FROM user WHERE transgroup_id = :groupId)
+    """, nativeQuery = true)
+    void removeTranslatorRoleFromMembers(@Param("groupId") String groupId);
 }

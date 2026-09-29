@@ -14,9 +14,9 @@ public class CreationRequestResponse {
 
     String id;
     String nameGroup;
-    String creatorId;
+    String creatorName;
+    String status;
     String description;
-    Instant createdAt;
     Instant updatedAt;
 
 }

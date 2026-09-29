@@ -35,7 +35,7 @@ public class PermissionService {
     public PermissionResponse createPermission(@NonNull PermissionRequest request) {
 
         if (permissionRepository.existsById(request.getName())) {
-            throw new AppException(ResponseCode.PERMISSION_NAME_ALREADY_EXISTS);
+            throw new AppException(ResponseCode.PERMISSION_NAME_ALREADY_EXISTED);
         }
 
         Permission permission = permissionMapper.toPermission(request);

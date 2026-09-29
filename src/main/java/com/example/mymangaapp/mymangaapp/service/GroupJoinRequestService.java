@@ -53,11 +53,11 @@ public class GroupJoinRequestService {
 
         // Check xem user này đã gửi yêu cầu đang chờ duyệt vào nhóm dịch này chưa, gửi lại thì báo lỗi
         if (groupJoinRequestRepository.existsByTransGroupIdAndUserIdAndStatus(groupId, user.getId(), GroupJoinRequestStatus.PENDING)) {
-            throw new AppException(ResponseCode.TRANSGROUP_JOIN_REQUEST_ALREADY_EXISTS);
+            throw new AppException(ResponseCode.TRANSGROUP_JOIN_REQUEST_ALREADY_EXISTED);
         }
 
-        // Check xem user này đã vào nhóm dịch chưa
-        if (user.getTransGroup() != null) {
+        // check user là member hay leader của nhóm dịch nào chưa
+        if (user.getTransGroup() != null || transGroupRepository.existsByLeaderId(user.getId())) {
             throw new AppException(ResponseCode.USER_ALREADY_IN_GROUP);
         }
 
@@ -138,8 +138,7 @@ public class GroupJoinRequestService {
             throw new AppException(ResponseCode.UNAUTHORIZED);
         }
 
-        // Vẫn phải check user có group chưa
-        // Nhỡ đâu trong khi đợi nhóm này duyệt, user vào nhóm khác mất rồi
+        // check trong khoảng tg duyệt vào nhóm, user vào nhóm khác chưa
         if (user.getTransGroup() != null) {
             throw new AppException(ResponseCode.USER_ALREADY_IN_GROUP);
         }

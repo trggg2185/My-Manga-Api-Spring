@@ -13,7 +13,6 @@ import com.example.mymangaapp.mymangaapp.exception.ResponseCode;
 import com.example.mymangaapp.mymangaapp.mapper.GroupCreationRequestMapper;
 import com.example.mymangaapp.mymangaapp.mapper.TransGroupMapper;
 import com.example.mymangaapp.mymangaapp.repository.GroupCreationRequestRepository;
-import com.example.mymangaapp.mymangaapp.repository.TransGroupRepository;
 import com.example.mymangaapp.mymangaapp.repository.UserRepository;
 import com.example.mymangaapp.mymangaapp.security.utils.SecurityUtils;
 import lombok.AccessLevel;
@@ -35,13 +34,12 @@ import org.springframework.transaction.annotation.Transactional;
 public class GroupCreationRequestService {
 
     GroupCreationRequestRepository groupCreationRequestRepository;
-    TransGroupRepository transGroupRepository;
     UserRepository userRepository;
 
     GroupCreationRequestMapper groupCreationRequestMapper;
+    TransGroupMapper transGroupMapper;
 
     TransGroupService transGroupService;
-    private final TransGroupMapper transGroupMapper;
 
 
     // -----------------------------chức năng dành cho user đã đăng nhập -------------------------------------
@@ -54,22 +52,16 @@ public class GroupCreationRequestService {
 
         // check yc tồn tại
         if (groupCreationRequestRepository.existsByCreatorIdAndStatus(currentUserId, GroupCreationRequestStatus.PENDING)) {
-            throw new AppException(ResponseCode.TRANSGROUP_CREATION_REQUEST_ALREADY_EXISTS);
+            throw new AppException(ResponseCode.TRANSGROUP_CREATION_REQUEST_ALREADY_EXISTED);
         }
 
         User user = userRepository
                 .findById(currentUserId)
                 .orElseThrow(() -> new AppException(ResponseCode.USER_NOT_FOUND));
 
+        // check user là thành viên của nhóm dịch nào chưa
         if (user.getTransGroup() != null) {
             throw new AppException(ResponseCode.USER_ALREADY_IN_GROUP);
-        }
-
-        // check tên nhóm trùng
-        if (transGroupRepository.existsByName(request.getNameGroup()) ||
-            groupCreationRequestRepository.existsByNameGroup(request.getNameGroup())
-        ) {
-            throw new AppException(ResponseCode.TRANSGROUP_NAME_ALREADY_EXISTS);
         }
 
         GroupCreationRequest groupCreationRequest = groupCreationRequestMapper.toGroupCreationRequest(request);
@@ -83,6 +75,7 @@ public class GroupCreationRequestService {
 
     // ----------------------------------chức năng cho admin ----------------------------------------
 
+    // duyệt việc tạo nhóm
     @Transactional
     public TransGroupResponse approveCreateGroup(@NonNull String requestId) {
 
@@ -114,6 +107,31 @@ public class GroupCreationRequestService {
         groupCreationRequestRepository.save(groupCreationRequest);
 
         return transGroupMapper.toTransGroupResponse(createdGroup);
+    }
+
+    // từ chối việc tạo nhóm
+    @Transactional
+    public CreationRequestResponse rejectCreateGroup(@NonNull String requestId) {
+
+        GroupCreationRequest groupCreationRequest = groupCreationRequestRepository
+                .findWithCreatorById(requestId)
+                .orElseThrow(() -> new AppException(ResponseCode.TRANSGROUP_CREATION_REQUEST_NOT_FOUND));
+
+        // check phải dg ở trg thái pending thì từ chối đc
+        if (!groupCreationRequest.getStatus().equals(GroupCreationRequestStatus.PENDING)) {
+            throw new AppException(ResponseCode.TRANSGROUP_CREATION_REQUEST_STATUS_INVALID);
+        }
+
+        User reviewer = userRepository
+                .findByUsername(SecurityUtils.getCurrentUsername())
+                .orElseThrow(() -> new AppException(ResponseCode.USER_NOT_FOUND));
+
+        groupCreationRequest.setStatus(GroupCreationRequestStatus.REJECTD);
+        groupCreationRequest.setReviewer(reviewer);
+
+        return groupCreationRequestMapper.toCreationRequestResponse(
+                groupCreationRequestRepository.save(groupCreationRequest)
+        );
     }
 
     // Lấy tất cả những yêu cầu tạo group

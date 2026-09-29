@@ -37,12 +37,22 @@ public class GroupCreationRequestController {
 
     // ----------------------------chức năng dành cho admin ---------------------------------
 
-    @PatchMapping("/admin/creation-requets/{requestId}")
+    @PatchMapping("/admin/creation-requests/{requestId}/approve")
     public ApiResponse<TransGroupResponse> approveCreateGroup(@PathVariable @NonNull String requestId) {
 
         TransGroupResponse response = groupCreationRequestService.approveCreateGroup(requestId);
 
         return ApiResponse.<TransGroupResponse>builder()
+                .result(response)
+                .build();
+    }
+
+    @PatchMapping("/admin/creation-requests/{requestId}/reject")
+    public ApiResponse<CreationRequestResponse> rejectCreateGroup(@PathVariable @NonNull String requestId) {
+
+        CreationRequestResponse response = groupCreationRequestService.rejectCreateGroup(requestId);
+
+        return ApiResponse.<CreationRequestResponse>builder()
                 .result(response)
                 .build();
     }

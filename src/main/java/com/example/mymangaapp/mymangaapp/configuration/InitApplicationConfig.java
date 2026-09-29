@@ -159,14 +159,16 @@ public class InitApplicationConfig {
                 TransGroup transGroup = TransGroup.builder()
                         .name("Admin Team")
                         .leader(leader)
+                        // bỏ set leader vào trong mảng members
                         .status(TransGroupStatus.APPROVED)
-                        .members(Set.of(leader))
                         .description("Transgroup của admin!")
                         .build();
 
-                transGroup = transGroupRepository.save(transGroup);
+                transGroupRepository.save(transGroup);
 
-                leader.setTransGroup(transGroup);
+                // ko set transgroup cho leader nữa
+                // vì leader ko phải member
+                // transgroup của user chỉ là thành viên thì mới set
                 userRepository.save(leader);
             }
 

@@ -13,13 +13,7 @@ import lombok.experimental.SuperBuilder;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @SuperBuilder
 @Entity
-@Table(
-        name = "group_creation_request",
-        uniqueConstraints = {
-                // ko cho 1 user gửi nhiều yc tạo nhóm pending cùng lúc
-                @UniqueConstraint(columnNames = { "creator_id", "status" })
-        }
-)
+// bỏ ràng buộc unique (creator_id, status)
 // Đây là bảng chứa các yêu cầu tạo nhóm dịch của user
 public class GroupCreationRequest extends BaseEntity {
 
@@ -40,7 +34,7 @@ public class GroupCreationRequest extends BaseEntity {
     String description;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = false, columnDefinition = "VARCHAR(15) DEFAULT 'PENDING'")
+    @Column(nullable = false, columnDefinition = "VARCHAR(15) DEFAULT 'PENDING'")
     @Builder.Default
     GroupCreationRequestStatus status = GroupCreationRequestStatus.PENDING;
 
@@ -49,8 +43,9 @@ public class GroupCreationRequest extends BaseEntity {
     // nếu đc duyệt thì sẽ có group được tạo ở đây
     TransGroup createdGroup;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    // 1 admin có thể duyệt nhiều yêu cầu
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "reviewer_id")
-    // Admin nào duyệt
+    // Admin nào duyệt hoặc từ chối
     User reviewer;
 }

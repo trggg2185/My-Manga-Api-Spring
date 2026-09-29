@@ -4,11 +4,14 @@ import com.example.mymangaapp.mymangaapp.dto.transgroup.TransGroupUpdateRequest;
 import com.example.mymangaapp.mymangaapp.dto.response.PaginatedResponse;
 import com.example.mymangaapp.mymangaapp.dto.transgroup.TransGroupResponse;
 import com.example.mymangaapp.mymangaapp.entity.GroupCreationRequest;
+import com.example.mymangaapp.mymangaapp.entity.Role;
 import com.example.mymangaapp.mymangaapp.entity.TransGroup;
+import com.example.mymangaapp.mymangaapp.entity.User;
 import com.example.mymangaapp.mymangaapp.enums.TransGroupStatus;
 import com.example.mymangaapp.mymangaapp.exception.AppException;
 import com.example.mymangaapp.mymangaapp.exception.ResponseCode;
 import com.example.mymangaapp.mymangaapp.mapper.TransGroupMapper;
+import com.example.mymangaapp.mymangaapp.repository.RoleRepository;
 import com.example.mymangaapp.mymangaapp.repository.TransGroupRepository;
 import com.example.mymangaapp.mymangaapp.repository.UserRepository;
 import lombok.AccessLevel;
@@ -32,6 +35,7 @@ public class TransGroupService {
 
     UserRepository userRepository;
     TransGroupRepository transGroupRepository;
+    RoleRepository roleRepository;
 
     TransGroupMapper transGroupMapper;
 
@@ -41,11 +45,22 @@ public class TransGroupService {
     @Transactional // vẫn nên thêm transactional để khi có method nơi khác gọi
     public TransGroup createTransGroup(GroupCreationRequest groupCreationRequest) {
 
+        User creator = groupCreationRequest.getCreator();
+
+        Role translatorRole = roleRepository
+                .findById("TRANSLATOR")
+                .orElseThrow(() -> new AppException(ResponseCode.ROLE_NOT_FOUND));
+
+        // Gán role translator cho leader
+        creator.getRoles().add(translatorRole);
+
+        creator = userRepository.save(creator);
+
         // quyết định là trong members sẽ ko chứa leader
         TransGroup transGroup = TransGroup.builder()
                 .name(groupCreationRequest.getNameGroup())
                 .description(groupCreationRequest.getDescription())
-                .leader(groupCreationRequest.getCreator())
+                .leader(creator)
                 .build();
 
         return transGroupRepository.save(transGroup);
@@ -108,15 +123,26 @@ public class TransGroupService {
                 .findById(id)
                 .orElseThrow(() -> new AppException(ResponseCode.TRANSGROUP_NOT_FOUND));
 
+        // Check nhómdịch bị xoá chưa
+        if (transGroup.getStatus().equals(TransGroupStatus.DELETED)) {
+            throw new AppException(ResponseCode.TRANSGROUP_ALREADY_DELETED);
+        }
+
         // Cập nhập trạng thái nhóm đã bị xoá
         transGroup.setStatus(TransGroupStatus.DELETED);
 
-        // Xoá tất role TRANSLATOR ra tất cả các thành viên
-        // Method này phải chạy trc method clear, nếu chạy sau
-        // thì members trong group bị clear hết thì method này ko hoạt động nữa
+        Role translatorRole = roleRepository
+                .findById("TRANSLATOR")
+                .orElseThrow(() -> new AppException(ResponseCode.ROLE_NOT_FOUND));
+        // xoá role translator ra khỏi leader
+        transGroup.getLeader().getRoles().remove(translatorRole);
+
+        // Dùng native sql xoá role translator ra khỏi các members
+        // tránh xoá bằng vòng for gây n+1 query
         userRepository.removeTranslatorRoleFromMembers(id);
 
-        // Xoá tất cả các thành viên ra khỏi nhóm (method tự định nghĩa query)
+        // JPQL xoá members ra khỏi nhóm
+        // Leader vẫn sẽ nằm trong nhóm bị xoá
         userRepository.clearTransGroupFromMembers(id);
 
         transGroupRepository.save(transGroup);

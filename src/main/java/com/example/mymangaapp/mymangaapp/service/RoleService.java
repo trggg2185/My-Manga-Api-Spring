@@ -42,7 +42,7 @@ public class RoleService {
     public RoleResponse createRole(@NonNull RoleRequest request) {
 
         if (roleRepository.existsById(request.getName())) {
-            throw new AppException(ResponseCode.ROLE_NAME_ALREADY_EXISTS);
+            throw new AppException(ResponseCode.ROLE_NAME_ALREADY_EXISTED);
         }
 
         if (CollectionUtils.isEmpty(request.getPermissions())) {

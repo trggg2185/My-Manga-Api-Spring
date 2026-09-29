@@ -13,7 +13,7 @@ MỘT HỆ THỐNG BACKEND MANGA
     - role_permissions(role_id, permission_id)
     - manga_transgroups(manga_id, transgroup_id)
     - group_join_request(id, status(pending, approved, rejected), transgroup_id, user_id, created_at, updated_at)
-    - group_creation_request(id, nameGroup, description, status(pending, approved, rejected), creator_id, reviewer_id, created_group_id created_at, updated_at)
+    - group_creation_request(id, name_group, description, status(pending, approved, rejected), creator_id, reviewer_id, created_group_id created_at, updated_at)
 
 * Công nghệ sử dụng
     - Spring Boot

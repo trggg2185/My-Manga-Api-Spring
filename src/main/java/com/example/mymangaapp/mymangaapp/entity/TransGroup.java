@@ -35,8 +35,8 @@ public class TransGroup extends BaseEntity {
     @OneToMany(mappedBy = "transGroup", fetch = FetchType.LAZY)
     Set<User> members;
 
-    // name của trans group cũng ko pb hoa thường
-    @Column(unique = true, columnDefinition = "VARCHAR(50) COLLATE utf8mb4_unicode_ci")
+    // bỏ unique
+    @Column(length = 50)
     String name;
 
     @Column(length = 300)

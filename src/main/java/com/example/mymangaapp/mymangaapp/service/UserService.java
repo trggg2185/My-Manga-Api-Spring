@@ -60,12 +60,12 @@ public class UserService {
 
         // Mặc dù username có unique vẫn phải check đã tồn tại ở service
         if (userRepository.existsByUsername(request.getUsername())) {
-            throw new AppException(ResponseCode.USERNAME_ALREADY_EXISTS);
+            throw new AppException(ResponseCode.USERNAME_ALREADY_EXISTED);
         }
 
         // Email cũng phải check tương tự username
         if (userRepository.existsByEmail(request.getEmail())) {
-            throw new AppException(ResponseCode.EMAIL_ALREADY_EXISTS);
+            throw new AppException(ResponseCode.EMAIL_ALREADY_EXISTED);
         }
 
         // Tìm role mặc định cho user mới là role USER
@@ -186,7 +186,7 @@ public class UserService {
         // Phải kiểm tra email thay đổi đó có tồn tại trong db chưa
         // Nếu trong TH họ vẫn nhập email nhưng email mới và email cũ chả khác gì nhau thì thôi
         if (newEmail != null && !newEmail.equalsIgnoreCase(user.getEmail()) && userRepository.existsByEmail(newEmail)) {
-            throw new AppException(ResponseCode.EMAIL_ALREADY_EXISTS);
+            throw new AppException(ResponseCode.EMAIL_ALREADY_EXISTED);
         }
 
         // Mapstruct tự động map từ UserUpdateRequest -> User

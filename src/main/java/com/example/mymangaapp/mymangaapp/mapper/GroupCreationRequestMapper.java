@@ -14,6 +14,6 @@ public interface GroupCreationRequestMapper {
     @Mapping(target = "status", ignore = true)
     GroupCreationRequest toGroupCreationRequest(CreationRequest request);
 
-    @Mapping(target = "creatorId", source = "creator.id")
+    @Mapping(target = "creatorName", source = "creator.username")
     CreationRequestResponse toCreationRequestResponse(GroupCreationRequest groupCreationRequest);
 }

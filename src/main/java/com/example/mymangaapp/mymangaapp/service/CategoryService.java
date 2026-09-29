@@ -51,7 +51,7 @@ public class CategoryService {
     @Transactional
     public CategoryResponse createCategory(@NonNull CategoryRequest request) {
         if (categoryRepository.existsByName(request.getName().trim())) {
-            throw new AppException(ResponseCode.CATEGORY_NAME_ALREADY_EXISTS);
+            throw new AppException(ResponseCode.CATEGORY_NAME_ALREADY_EXISTED);
         }
 
         Category category = categoryMapper.toCategory(request);
@@ -68,7 +68,7 @@ public class CategoryService {
 
         if (request.getName() != null && !request.getName().trim().equalsIgnoreCase(category.getName())
                 && categoryRepository.existsByName(request.getName().trim())) {
-            throw new AppException(ResponseCode.CATEGORY_NAME_ALREADY_EXISTS);
+            throw new AppException(ResponseCode.CATEGORY_NAME_ALREADY_EXISTED);
         }
 
         categoryMapper.updateCategoryFromRequest(category, request);

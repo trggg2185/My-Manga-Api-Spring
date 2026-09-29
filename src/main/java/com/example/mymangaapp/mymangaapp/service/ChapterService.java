@@ -71,7 +71,7 @@ public class ChapterService {
 
         // trong 1 bộ manga ko thể có 2 chapter cùng index
         if (chapterRepository.existsByMangaIdAndChapterIndex(mangaId, request.getChapterIndex())) {
-            throw new AppException(ResponseCode.CHAPTER_INDEX_ALREADY_EXISTS);
+            throw new AppException(ResponseCode.CHAPTER_INDEX_ALREADY_EXISTED);
         }
 
         Chapter chapter = chapterMapper.toChapter(request);
