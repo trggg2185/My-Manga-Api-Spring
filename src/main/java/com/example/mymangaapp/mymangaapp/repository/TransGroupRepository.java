@@ -34,4 +34,6 @@ public interface TransGroupRepository extends JpaRepository<TransGroup, String> 
     boolean existsByIdAndLeaderId(String id, String leaderId);
 
     boolean existsByLeaderId(String leaderId);
+
+    boolean existsByLeaderIdAndStatus(String leaderId, TransGroupStatus status);
 }

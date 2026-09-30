@@ -8,11 +8,13 @@ import com.example.mymangaapp.mymangaapp.entity.GroupCreationRequest;
 import com.example.mymangaapp.mymangaapp.entity.TransGroup;
 import com.example.mymangaapp.mymangaapp.entity.User;
 import com.example.mymangaapp.mymangaapp.enums.GroupCreationRequestStatus;
+import com.example.mymangaapp.mymangaapp.enums.TransGroupStatus;
 import com.example.mymangaapp.mymangaapp.exception.AppException;
 import com.example.mymangaapp.mymangaapp.exception.ResponseCode;
 import com.example.mymangaapp.mymangaapp.mapper.GroupCreationRequestMapper;
 import com.example.mymangaapp.mymangaapp.mapper.TransGroupMapper;
 import com.example.mymangaapp.mymangaapp.repository.GroupCreationRequestRepository;
+import com.example.mymangaapp.mymangaapp.repository.TransGroupRepository;
 import com.example.mymangaapp.mymangaapp.repository.UserRepository;
 import com.example.mymangaapp.mymangaapp.security.utils.SecurityUtils;
 import lombok.AccessLevel;
@@ -34,6 +36,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class GroupCreationRequestService {
 
     GroupCreationRequestRepository groupCreationRequestRepository;
+    TransGroupRepository transGroupRepository;
     UserRepository userRepository;
 
     GroupCreationRequestMapper groupCreationRequestMapper;
@@ -59,11 +62,6 @@ public class GroupCreationRequestService {
                 .findById(currentUserId)
                 .orElseThrow(() -> new AppException(ResponseCode.USER_NOT_FOUND));
 
-        // check user là thành viên của nhóm dịch nào chưa
-        if (user.getTransGroup() != null) {
-            throw new AppException(ResponseCode.USER_ALREADY_IN_GROUP);
-        }
-
         GroupCreationRequest groupCreationRequest = groupCreationRequestMapper.toGroupCreationRequest(request);
         groupCreationRequest.setCreator(user);
 
@@ -80,12 +78,25 @@ public class GroupCreationRequestService {
     public TransGroupResponse approveCreateGroup(@NonNull String requestId) {
 
         GroupCreationRequest groupCreationRequest = groupCreationRequestRepository
-                .findWithCreatorById(requestId)
+                .findById(requestId)
                 .orElseThrow(() -> new AppException(ResponseCode.TRANSGROUP_CREATION_REQUEST_NOT_FOUND));
 
         // check phải dg ở trg thái pending thì mới duyệt đc
         if (!groupCreationRequest.getStatus().equals(GroupCreationRequestStatus.PENDING)) {
             throw new AppException(ResponseCode.TRANSGROUP_CREATION_REQUEST_STATUS_INVALID);
+        }
+
+        // lazy Khác tự bắn thêm sql nữa để get
+        User creator = groupCreationRequest.getCreator();
+
+        // check user có đang leader 1 group nào approved không (nếu group đó deleted rồithì ko sao)
+        boolean isLeadingActiveGroup =
+                transGroupRepository.existsByLeaderIdAndStatus(creator.getId(), TransGroupStatus.APPROVED);
+
+        // check user là thành viên của nhóm dịch nào chưa
+        // đây cx lazy tự bắn thêm sql để get
+        if (creator.getTransGroup() != null || isLeadingActiveGroup) {
+            throw new AppException(ResponseCode.USER_ALREADY_IN_GROUP);
         }
 
         User reviewer = userRepository
@@ -113,6 +124,8 @@ public class GroupCreationRequestService {
     @Transactional
     public CreationRequestResponse rejectCreateGroup(@NonNull String requestId) {
 
+        // lệnh này phải lấy luôn creator vì ta ko dùng tới nên ko có get
+        // nhưng vẫn phải lấy để mapper còn có data mà map sang response
         GroupCreationRequest groupCreationRequest = groupCreationRequestRepository
                 .findWithCreatorById(requestId)
                 .orElseThrow(() -> new AppException(ResponseCode.TRANSGROUP_CREATION_REQUEST_NOT_FOUND));

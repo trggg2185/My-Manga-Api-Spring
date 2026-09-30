@@ -23,8 +23,9 @@ public class TransGroup extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.UUID)
     String id;
 
-    // QH: 1 trans group thì chỉ có 1 leader
-    @OneToOne(fetch = FetchType.LAZY)
+    // định nghĩa lại là 1 user có thể là leader nhiều nhóm
+    // nhiều nhóm ở đầy là cả nhóm đang hoạt động và nhóm đã xoá
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "leader_id", nullable = false)
     User leader;
 
@@ -35,8 +36,8 @@ public class TransGroup extends BaseEntity {
     @OneToMany(mappedBy = "transGroup", fetch = FetchType.LAZY)
     Set<User> members;
 
-    // bỏ unique
-    @Column(length = 50)
+    // bỏ unique, ko đc null
+    @Column(length = 50, nullable = false)
     String name;
 
     @Column(length = 300)

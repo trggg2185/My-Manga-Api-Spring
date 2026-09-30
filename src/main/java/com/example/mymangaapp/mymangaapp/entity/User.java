@@ -69,4 +69,8 @@ public class User extends BaseEntity {
     )
     Set<Role> roles;
 
+    // 1userr làm leader nhiều nhóm (nhóm đang hoạtdđọng và nhóm đã xoá)
+    @OneToMany(mappedBy = "leader", fetch = FetchType.LAZY)
+    Set<TransGroup> transGroups;
+
 }

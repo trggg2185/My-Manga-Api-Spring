@@ -27,7 +27,8 @@ public class GroupCreationRequest extends BaseEntity {
     User creator;
 
     // Tên nhóm dịch user muốn tạo
-    @Column(nullable = false, unique = true, columnDefinition = "VARCHAR(50) COLLATE utf8mb4_unicode_ci")
+    // Bỏ unique và ko đc null
+    @Column(length = 50, nullable = false)
     String nameGroup;
 
     @Column(length = 300)

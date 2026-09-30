@@ -59,8 +59,8 @@ public class RateLimitAspect {
         String actionScope = httpMethod + ":" + path;
 
         // Chỉ lấy userId nếu yêu cầu LimitType là USER_ID
-        String userId = rateLimitAnnotation.limitType().equals(LimitType.USER_ID)
-                ? SecurityUtils.getCurrentUserId()
+        String userId = rateLimitAnnotation.limitType() == LimitType.USER_ID
+                ? SecurityUtils.findCurrentUserId().orElse(null)
                 : null;
 
         // Nếu có userId thì limit theo id
@@ -82,13 +82,14 @@ public class RateLimitAspect {
 
             log.info("Cho truy cập path không: {}, redis key: {}", result, redisKey);
 
-            if (result == 0L) {
+            // check an toàn
+            if (Long.valueOf(0L).equals(result)) {
                 throw new AppException(ResponseCode.RATE_LIMIT_EXCEEDED);
             }
         } catch (AppException exception) {
             throw exception;
         } catch (Exception exception) {
-            log.info("Check rate limit lỗi cho key {}: {}", redisKey, exception.getMessage());
+            log.error("Check rate limit lỗi cho key {}: {}", redisKey, exception.getMessage());
         }
 
         // cho phép request đi qua
