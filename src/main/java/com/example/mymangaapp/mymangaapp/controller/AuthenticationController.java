@@ -1,15 +1,13 @@
 package com.example.mymangaapp.mymangaapp.controller;
 
 import com.example.mymangaapp.mymangaapp.annotation.RateLimit;
-import com.example.mymangaapp.mymangaapp.dto.request.RefreshRequest;
+import com.example.mymangaapp.mymangaapp.dto.request.*;
+import com.example.mymangaapp.mymangaapp.dto.response.UserSummaryResponse;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.mymangaapp.mymangaapp.dto.request.AuthenticationRequest;
-import com.example.mymangaapp.mymangaapp.dto.request.IntrospectRequest;
-import com.example.mymangaapp.mymangaapp.dto.request.LogoutRequest;
 import com.example.mymangaapp.mymangaapp.dto.response.ApiResponse;
 import com.example.mymangaapp.mymangaapp.dto.response.AuthenticationResponse;
 import com.example.mymangaapp.mymangaapp.dto.response.IntrospectResponse;
@@ -30,6 +28,16 @@ public class AuthenticationController {
 
 
     // ----------------------------endpoint public (cho khách) ----------------------------------//
+
+    @PostMapping("/register")
+    public ApiResponse<UserSummaryResponse> register(@RequestBody RegisterRequest request) {
+
+        UserSummaryResponse response = authenticationService.register(request);
+
+        return ApiResponse.<UserSummaryResponse>builder()
+                .result(response)
+                .build();
+    }
 
     @PostMapping("/login")
     @RateLimit

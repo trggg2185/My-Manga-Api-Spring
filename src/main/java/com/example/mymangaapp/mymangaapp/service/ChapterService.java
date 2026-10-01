@@ -7,6 +7,7 @@ import com.example.mymangaapp.mymangaapp.dto.response.PaginatedResponse;
 import com.example.mymangaapp.mymangaapp.entity.Chapter;
 import com.example.mymangaapp.mymangaapp.entity.Manga;
 import com.example.mymangaapp.mymangaapp.entity.Page;
+import com.example.mymangaapp.mymangaapp.enums.TransGroupStatus;
 import com.example.mymangaapp.mymangaapp.exception.AppException;
 import com.example.mymangaapp.mymangaapp.exception.ResponseCode;
 import com.example.mymangaapp.mymangaapp.mapper.ChapterMapper;
@@ -58,14 +59,11 @@ public class ChapterService {
                 .findById(mangaId)
                 .orElseThrow(() -> new AppException(ResponseCode.MANGA_NOT_FOUND));
 
-        String currentUsername = SecurityUtils.getCurrentUsername();
+        String currentUserId = SecurityUtils.getCurrentUserId();
 
-        // Chỉ cần user hiện tại là thành viên trong những
-        // nhóm đang dịch manga này là được
-        boolean isMember = manga.getTransGroups().stream()
-                .flatMap(transGroup -> transGroup.getMembers().stream())
-                .anyMatch(member -> member.getUsername().equals(currentUsername));
-        if (!isMember) {
+        // user phải là thành viên hoặc leader của các nhóm đang dịch truyện này
+        // và nhóm dịch phải hoạt động thì mới được tạo chương
+        if (!mangaRepository.isMemberOrLeaderOfAnyGroupOfManga(currentUserId, mangaId, TransGroupStatus.APPROVED)) {
             throw new AppException(ResponseCode.UNAUTHORIZED);
         }
 
@@ -156,14 +154,11 @@ public class ChapterService {
             throw new AppException(ResponseCode.UNAUTHORIZED);
         }
 
-        String currentUsername = SecurityUtils.getCurrentUsername();
+        String currentUserId = SecurityUtils.getCurrentUserId();
 
-        // Chỉ cần user hiện tại là thành viên trong những
-        // nhóm đang dịch manga này là được
-        boolean isMember = chapter.getManga().getTransGroups().stream()
-                .flatMap(transGroup -> transGroup.getMembers().stream())
-                .anyMatch(member -> member.getUsername().equals(currentUsername));
-        if (!isMember) {
+        // user phải là thành viên hoặc leader của các nhóm đang dịch truyện này
+        // và nhóm dịch phải hoạt động thì mới được tạo chương
+        if (!mangaRepository.isMemberOrLeaderOfAnyGroupOfManga(currentUserId, mangaId, TransGroupStatus.APPROVED)) {
             throw new AppException(ResponseCode.UNAUTHORIZED);
         }
 

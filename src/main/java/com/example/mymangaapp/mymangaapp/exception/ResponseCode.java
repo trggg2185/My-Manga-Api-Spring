@@ -48,6 +48,7 @@ public enum ResponseCode {
 
     // ===================== 2xxx - AUTHORIZATION =====================
     UNAUTHORIZED("2001", "Không có quyền!", HttpStatus.FORBIDDEN),
+    CANNOT_MODIFY_ADMIN("2002", "Không thể thao tác lên admin khác!", HttpStatus.FORBIDDEN),
 
     // ===================== 3xxx - VALIDATION =====================
     // --- Chung ---
@@ -155,7 +156,7 @@ public enum ResponseCode {
     FILE_INVALID("5701", "File không hợp lệ!", HttpStatus.BAD_REQUEST),
     FILE_UPLOAD_FAILED("5702", "Upload file thất bại!", HttpStatus.BAD_REQUEST),
     FILE_COPY_FAILED("5703", "Copy file thất bại!", HttpStatus.BAD_REQUEST),
-    DELETE_FILE_FAILED("5704", "Xoá file thất bại!", HttpStatus.BAD_REQUEST),
+    FILE_DELETE_FAILED("5704", "Xoá file thất bại!", HttpStatus.BAD_REQUEST),
 
     // ===================== 6xxx - REQUEST =====================
     RATE_LIMIT_EXCEEDED("6001", "Đạt giới hạn thao tác, vui lòng thử lại sau!", HttpStatus.TOO_MANY_REQUESTS),

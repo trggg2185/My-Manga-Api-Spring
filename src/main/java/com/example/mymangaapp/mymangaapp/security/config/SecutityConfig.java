@@ -31,7 +31,7 @@ public class SecutityConfig {
     JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 
     static String[] POST_PUBLIC_ENDPOINTS = {
-            "/users", // tạo acc mới cho user
+            "/auth/register", // user tự tạo acc mới
             "/auth/login", // đăng nhập
             "/auth/introspect", // check nhanh token còn valid k
             "/auth/logout", // đăng xuất

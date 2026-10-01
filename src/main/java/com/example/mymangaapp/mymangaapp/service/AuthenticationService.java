@@ -1,15 +1,18 @@
 package com.example.mymangaapp.mymangaapp.service;
 
 import java.util.Date;
+import java.util.Set;
 
+import com.example.mymangaapp.mymangaapp.constant.RoleConstants;
+import com.example.mymangaapp.mymangaapp.dto.request.*;
+import com.example.mymangaapp.mymangaapp.dto.response.UserSummaryResponse;
+import com.example.mymangaapp.mymangaapp.entity.Role;
+import com.example.mymangaapp.mymangaapp.mapper.UserMapper;
+import com.example.mymangaapp.mymangaapp.repository.RoleRepository;
 import org.springframework.lang.NonNull;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.example.mymangaapp.mymangaapp.dto.request.AuthenticationRequest;
-import com.example.mymangaapp.mymangaapp.dto.request.IntrospectRequest;
-import com.example.mymangaapp.mymangaapp.dto.request.LogoutRequest;
-import com.example.mymangaapp.mymangaapp.dto.request.RefreshRequest;
 import com.example.mymangaapp.mymangaapp.dto.response.AuthenticationResponse;
 import com.example.mymangaapp.mymangaapp.dto.response.IntrospectResponse;
 import com.example.mymangaapp.mymangaapp.entity.User;
@@ -31,8 +34,11 @@ import org.springframework.transaction.annotation.Transactional;
 public class AuthenticationService {
 
     UserRepository userRepository;
+    RoleRepository roleRepository;
 
     InvalidatedTokenService invalidatedTokenService;
+
+    UserMapper userMapper;
 
     PasswordEncoder passwordEncoder;
 
@@ -43,6 +49,32 @@ public class AuthenticationService {
 
     // Đôi với những hàm khác ngoài introspect sẽ coi việc xác thưc token trả về false
     // là 1 lỗi ứng dụng nên khi false sẽ ném ra ngoại lệ luôn
+
+    // Đăng ký tài khoản (khách tự đăng ký)
+    @Transactional
+    public UserSummaryResponse register(@NonNull RegisterRequest request) {
+
+        if (userRepository.existsByUsername(request.getUsername())) {
+            throw new AppException(ResponseCode.USERNAME_ALREADY_EXISTED);
+        }
+
+        if (userRepository.existsByEmail(request.getEmail())) {
+            throw new AppException(ResponseCode.EMAIL_ALREADY_EXISTED);
+        }
+
+        Role userRole = roleRepository
+                .findById(RoleConstants.USER)
+                .orElseThrow(() -> new AppException(ResponseCode.USER_NOT_FOUND));
+
+        User user = userMapper.toUser(request);
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
+        user.setRoles(Set.of(userRole));
+
+        log.info("Tạo tài khoản thành công!");
+
+        return userMapper.toUserSummaryResponse(userRepository.save(user));
+    }
+
     
     // Đăng nhập (tạo access token)
     public AuthenticationResponse login(@NonNull AuthenticationRequest request) {

@@ -1,5 +1,6 @@
 package com.example.mymangaapp.mymangaapp.service;
 
+import com.example.mymangaapp.mymangaapp.constant.RoleConstants;
 import com.example.mymangaapp.mymangaapp.dto.transgroup.TransGroupUpdateRequest;
 import com.example.mymangaapp.mymangaapp.dto.response.PaginatedResponse;
 import com.example.mymangaapp.mymangaapp.dto.transgroup.TransGroupResponse;
@@ -48,7 +49,7 @@ public class TransGroupService {
         User creator = groupCreationRequest.getCreator();
 
         Role translatorRole = roleRepository
-                .findById("TRANSLATOR")
+                .findById(RoleConstants.TRANSLATOR)
                 .orElseThrow(() -> new AppException(ResponseCode.ROLE_NOT_FOUND));
 
         // Gán role translator cho leader
@@ -132,7 +133,7 @@ public class TransGroupService {
         transGroup.setStatus(TransGroupStatus.DELETED);
 
         Role translatorRole = roleRepository
-                .findById("TRANSLATOR")
+                .findById(RoleConstants.TRANSLATOR)
                 .orElseThrow(() -> new AppException(ResponseCode.ROLE_NOT_FOUND));
         // xoá role translator ra khỏi leader
         transGroup.getLeader().getRoles().remove(translatorRole);

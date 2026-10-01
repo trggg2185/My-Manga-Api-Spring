@@ -1,8 +1,11 @@
 package com.example.mymangaapp.mymangaapp.service;
 
 import java.time.Instant;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
+import com.example.mymangaapp.mymangaapp.constant.RoleConstants;
 import com.example.mymangaapp.mymangaapp.dto.request.UserPasswordRequest;
 import com.example.mymangaapp.mymangaapp.dto.response.PaginatedResponse;
 import com.example.mymangaapp.mymangaapp.dto.response.UserSummaryResponse;
@@ -48,42 +51,6 @@ public class UserService {
     UserMapper userMapper;
 
     StorageService storageService;
-
-
-    // --------------------------------- chức năng public đây (dành cho khách) ----------------------------------------- //
-
-    // Tạo user mới
-    @Transactional
-    public UserSummaryResponse createUser(@NonNull UserCreationRequest request) {
-
-        log.info("Create user here!------------------------------");
-
-        // Mặc dù username có unique vẫn phải check đã tồn tại ở service
-        if (userRepository.existsByUsername(request.getUsername())) {
-            throw new AppException(ResponseCode.USERNAME_ALREADY_EXISTED);
-        }
-
-        // Email cũng phải check tương tự username
-        if (userRepository.existsByEmail(request.getEmail())) {
-            throw new AppException(ResponseCode.EMAIL_ALREADY_EXISTED);
-        }
-
-        // Tìm role mặc định cho user mới là role USER
-        Role role = roleRepository
-                .findById("USER")
-                .orElseThrow(() ->
-                        new AppException(ResponseCode.ROLE_NOT_FOUND));
-
-        User user = userMapper.toUser(request);
-
-        // Mã hoá mật khẩu
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        // Set role mặc định cho user mới tạo
-        user.setRoles(Set.of(role));
-
-        return userMapper.toUserSummaryResponse(userRepository.save(user));
-
-    }
 
 
     // --------------------------------- chức năng cho user đã đăng nhập đây -----------------------------------------  //
@@ -146,6 +113,47 @@ public class UserService {
 
     // --------------------------------- chức năng admin đây ----------------------------------------- //
 
+    // Tạo user mới dành cho admin
+    @Transactional
+    public UserResponse createUser(@NonNull UserCreationRequest request) {
+
+        // Mặc dù username có unique vẫn phải check đã tồn tại ở service
+        if (userRepository.existsByUsername(request.getUsername())) {
+            throw new AppException(ResponseCode.USERNAME_ALREADY_EXISTED);
+        }
+
+        // Email cũng phải check tương tự username
+        if (userRepository.existsByEmail(request.getEmail())) {
+            throw new AppException(ResponseCode.EMAIL_ALREADY_EXISTED);
+        }
+
+        Set<Role> roles = new HashSet<>();
+
+        if (request.getRoles().isEmpty()) {
+            // Tìm role mặc định cho user mới là role USER
+            Role role = roleRepository
+                    .findById(RoleConstants.USER)
+                    .orElseThrow(() ->
+                            new AppException(ResponseCode.ROLE_NOT_FOUND));
+
+            roles.add(role);
+        } else {
+            List<Role> foundRoles = roleRepository.findAllById(request.getRoles());
+            roles.addAll(foundRoles);
+        }
+
+        User user = userMapper.toUser(request);
+
+        // Mã hoá mật khẩu
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
+        // Set role mặc định cho user mới tạo
+        user.setRoles(roles);
+
+        log.info("Admin tạo user thành công!");
+        return userMapper.toUserResponse(userRepository.save(user));
+
+    }
+
     // Lấy tất cả user
     public PaginatedResponse<UserResponse> getAllUsers(
             int page, int size,
@@ -179,6 +187,11 @@ public class UserService {
         User user = userRepository
                 .findById(id)
                 .orElseThrow(() -> new AppException(ResponseCode.USER_NOT_FOUND));
+
+        // Nếu user mà admin đang cập nhật cũng là admin thì ko cho phép
+        if (userRepository.hasRole(id, RoleConstants.ADMIN)) {
+            throw new AppException(ResponseCode.CANNOT_MODIFY_ADMIN);
+        }
 
         String newEmail = request.getEmail();
 
@@ -220,6 +233,11 @@ public class UserService {
 
         if (!userRepository.existsById(id)) {
             throw new AppException(ResponseCode.USER_NOT_FOUND);
+        }
+
+        // Nếu user mà admin đang cập nhật cũng là admin thì ko cho phép
+        if (userRepository.hasRole(id, RoleConstants.ADMIN)) {
+            throw new AppException(ResponseCode.CANNOT_MODIFY_ADMIN);
         }
 
         userRepository.deleteById(id);

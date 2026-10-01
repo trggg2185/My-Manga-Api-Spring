@@ -18,6 +18,14 @@ public interface UserRepository extends JpaRepository<User, String> {
     boolean existsByUsername(String username);
     boolean existsByEmail(String email);
 
+    @Query("""
+        SELECT COUNT(u) > 0
+        FROM User u
+        JOIN u.roles r
+        WHERE u.id = :userId AND r.name = :roleName
+    """)
+    boolean hasRole(String userId, String roleName);
+
     Optional<User> findByUsername(String username);
 
     // Khi lấy user, lấy luôn roles, và khi lấy các roles, lấy luôn các permissions

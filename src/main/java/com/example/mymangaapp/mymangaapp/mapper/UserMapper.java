@@ -1,5 +1,6 @@
 package com.example.mymangaapp.mymangaapp.mapper;
 
+import com.example.mymangaapp.mymangaapp.dto.request.RegisterRequest;
 import com.example.mymangaapp.mymangaapp.dto.response.UserSummaryResponse;
 import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
@@ -29,10 +30,23 @@ public interface UserMapper {
     @Mapping(target = "facebook", ignore = true)
     @Mapping(target = "discord", ignore = true)
     @Mapping(target = "bio", ignore = true)
+    @Mapping(target = "password", ignore = true)
     @Mapping(target = "avatar", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
     User toUser(UserCreationRequest request);
+
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "roles", ignore = true)
+    @Mapping(target = "transGroup", ignore = true)
+    @Mapping(target = "facebook", ignore = true)
+    @Mapping(target = "discord", ignore = true)
+    @Mapping(target = "bio", ignore = true)
+    @Mapping(target = "password", ignore = true)
+    @Mapping(target = "avatar", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
+    User toUser(RegisterRequest request);
 
     @Mapping(target = "id", ignore = true) // Không sửa id
     @Mapping(target = "username", ignore = true) // Không sửa username

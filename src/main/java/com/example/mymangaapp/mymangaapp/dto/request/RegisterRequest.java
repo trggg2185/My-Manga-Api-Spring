@@ -3,22 +3,16 @@ package com.example.mymangaapp.mymangaapp.dto.request;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
-
-import java.util.Set;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Builder
-public class UserCreationRequest {
-    
+public class RegisterRequest {
+
     @NotBlank(message = "USERNAME_REQUIRED")
     @Size(min = 3, max = 50, message = "USERNAME_INVALID")
     String username;
@@ -29,7 +23,4 @@ public class UserCreationRequest {
 
     @Email(message = "EMAIL_INVALID")
     String email;
-
-    Set<String> roles;
-
 }

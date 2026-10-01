@@ -36,14 +36,14 @@ public class UserController {
 
     // ---------------------- endpoint public đây (dành cho khách) -------------------------- //
 
-    @PostMapping("/users")
+    @PostMapping("/admin/users")
     @RateLimit(capacity = 3, resetTimeInSeconds = 3600)
     // Nhớ có annotation @Valid để validate các fields trong request
-    public ApiResponse<UserSummaryResponse> createUser(@Valid @RequestBody UserCreationRequest request) {
+    public ApiResponse<UserResponse> createUser(@Valid @RequestBody UserCreationRequest request) {
 
-        UserSummaryResponse response = userService.createUser(request);
+        UserResponse response = userService.createUser(request);
 
-        return ApiResponse.<UserSummaryResponse>builder()
+        return ApiResponse.<UserResponse>builder()
                 .result(response)
                 .build();
 

@@ -2,6 +2,7 @@ package com.example.mymangaapp.mymangaapp.repository;
 
 import com.example.mymangaapp.mymangaapp.entity.Manga;
 import com.example.mymangaapp.mymangaapp.enums.MangaStatus;
+import com.example.mymangaapp.mymangaapp.enums.TransGroupStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
@@ -46,5 +47,27 @@ public interface MangaRepository extends JpaRepository<Manga, String> {
        "WHERE m.ownerTransGroup.id = :groupId OR tg.id = :groupId"
    )
    Page<Manga> findAllByGroupMembershipId(@Param("groupId") String groupId, Pageable pageable);
+
+   // Check user này có phải là thànhviên hoặc leader của các nhómdịch truyện này không
+   // đồng thời các nhóm dịch phải là APPROVED
+   @Query("""
+        SELECT COUNT(g) > 0
+        FROM Manga m
+        JOIN m.transGroups g
+        WHERE m.id = :mangaId
+            AND g.status = :status
+            AND (
+                g.leader.id = :userId
+                OR EXISTS (
+                    SELECT 1 FROM User u
+                    WHERE u.id = :userId
+                        AND u.transGroup = g
+                )
+            )
+        """)
+   boolean isMemberOrLeaderOfAnyGroupOfManga(
+           @Param("userId") String userId,
+           @Param("mangaId") String mangaId,
+           @Param("status")TransGroupStatus status);
 
 }

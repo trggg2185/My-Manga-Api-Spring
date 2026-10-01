@@ -1,5 +1,6 @@
 package com.example.mymangaapp.mymangaapp.service;
 
+import com.example.mymangaapp.mymangaapp.constant.RoleConstants;
 import com.example.mymangaapp.mymangaapp.dto.response.JoinRequestResponse;
 import com.example.mymangaapp.mymangaapp.entity.GroupJoinRequest;
 import com.example.mymangaapp.mymangaapp.entity.Role;
@@ -150,7 +151,7 @@ public class GroupJoinRequestService {
         groupJoinRequest.setStatus(GroupJoinRequestStatus.APPROVED);
 
         Role translatorRole = roleRepository
-                .findById("TRANSLATOR")
+                .findById(RoleConstants.TRANSLATOR)
                 .orElseThrow(() -> new AppException(ResponseCode.ROLE_NOT_FOUND));
 
         // Gán nhóm đó vào user

@@ -52,7 +52,7 @@ public class SecurityUtils {
                 .map(CustomUserDetails::getId);
     }
 
-    // check user là admin
+    // check user đang đăng nhập là admin
     public static boolean isAdmin() {
         return findAuthentication()
                 .map(auth -> auth.getAuthorities().stream()

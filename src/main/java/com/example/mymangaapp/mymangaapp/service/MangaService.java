@@ -46,10 +46,10 @@ public class MangaService {
     MangaMapper mangaMapper;
 
 
-    // ----------------------------chức năng dành cho leader nhóm hoặc admin ---------------------------------//
+    // ----------------------------chức năng dành cho leader nhóm ---------------------------------//
 
     // tạo mới 1 truyện
-    @PreAuthorize("hasRole('ADMIN') or @groupSec.isGroupLeader(#groupId)")
+    @PreAuthorize("@groupSec.isGroupLeader(#groupId)")
     @Transactional
     public MangaResponse createManga(@NonNull MangaRequest request, @NonNull String groupId) {
 
@@ -79,7 +79,7 @@ public class MangaService {
     }
 
     // cập nhật info truyện
-    @PreAuthorize("hasRole('ADMIN') or @groupSec.isGroupLeader(#groupId)")
+    @PreAuthorize("@groupSec.isGroupLeader(#groupId)")
     @Transactional
     public MangaResponse updateMangaById(@NonNull String groupId, @NonNull String mangaId, @NonNull MangaRequest request) {
 
@@ -113,9 +113,12 @@ public class MangaService {
         return mangaMapper.toMangaResponse(mangaRepository.save(manga));
     }
 
+
+    // ----------------------------chức năng dành cho admin hoặc leader nhóm-----------------------------------
+
     // xoá truyện theo id
     @Transactional
-    @PreAuthorize("@groupSec.isGroupLeader(#groupId)")
+    @PreAuthorize("hasRole('ADMIN') or @groupSec.isGroupLeader(#groupId)")
     public void deleteMangaById(@NonNull String groupId, @NonNull String mangaId) {
         Manga manga = mangaRepository
                 .findById(mangaId)
@@ -163,9 +166,7 @@ public class MangaService {
     // sẽ lấy tất cả các manga có phân trang, những chỉ lấy với
     // chút thông tin của manga như: name, categories, description, transgroups
     public PaginatedResponse<MangaSummaryResponse> getMangas(int page, int size, String sortBy) {
-
-        log.info("page: {}, size: {}, sort by: {}", page, size, sortBy);
-
+        
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, sortBy));
 
         Page<MangaSummaryResponse> dtoPage = mangaRepository
