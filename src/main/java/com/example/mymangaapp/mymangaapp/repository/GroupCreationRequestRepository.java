@@ -14,7 +14,7 @@ public interface GroupCreationRequestRepository extends JpaRepository<GroupCreat
 
     boolean existsByCreatorIdAndStatus(String creatorId, GroupCreationRequestStatus status);
 
-    boolean existsByNameGroup(String groupName);
+    boolean existsByGroupName(String groupName);
 
     @EntityGraph(attributePaths = { "creator" })
     Optional<GroupCreationRequest> findWithCreatorById(String id);

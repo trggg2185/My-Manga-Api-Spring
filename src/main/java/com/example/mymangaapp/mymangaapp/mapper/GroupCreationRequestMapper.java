@@ -1,7 +1,7 @@
 package com.example.mymangaapp.mymangaapp.mapper;
 
-import com.example.mymangaapp.mymangaapp.dto.request.CreationRequest;
-import com.example.mymangaapp.mymangaapp.dto.response.CreationRequestResponse;
+import com.example.mymangaapp.mymangaapp.dto.groupcreation.request.CreationRequest;
+import com.example.mymangaapp.mymangaapp.dto.groupcreation.response.CreationRequestResponse;
 import com.example.mymangaapp.mymangaapp.entity.GroupCreationRequest;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

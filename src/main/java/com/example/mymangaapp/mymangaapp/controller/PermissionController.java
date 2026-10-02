@@ -14,9 +14,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.mymangaapp.mymangaapp.dto.request.PermissionRequest;
-import com.example.mymangaapp.mymangaapp.dto.response.ApiResponse;
-import com.example.mymangaapp.mymangaapp.dto.response.PermissionResponse;
+import com.example.mymangaapp.mymangaapp.dto.permission.request.PermissionRequest;
+import com.example.mymangaapp.mymangaapp.dto.common.ApiResponse;
+import com.example.mymangaapp.mymangaapp.dto.permission.response.PermissionResponse;
+import com.example.mymangaapp.mymangaapp.dto.permission.response.DeletePermissionResponse;
 import com.example.mymangaapp.mymangaapp.exception.ResponseCode;
 import com.example.mymangaapp.mymangaapp.service.PermissionService;
 
@@ -60,15 +61,15 @@ public class PermissionController {
     }
 
     @DeleteMapping("/{id}")
-    @RateLimit(limitType = LimitType.USER_ID)
-    public ApiResponse<String> deletePermissionById(@PathVariable @NonNull String id) {
+    @RateLimit(capacity = 10, limitType = LimitType.USER_ID)
+    public ApiResponse<DeletePermissionResponse> deletePermissionById(@PathVariable @NonNull String id) {
 
         permissionService.deletePermissionById(id);
 
-        return ApiResponse.<String>builder()
+        return ApiResponse.<DeletePermissionResponse>builder()
                 .code(ResponseCode.SUCCESS.getCode())
                 .message(ResponseCode.SUCCESS.getMessage())
-                .result("Permission id: " + id)
+                .result(DeletePermissionResponse.builder().permissionId(id).build())
                 .build();
     }
 

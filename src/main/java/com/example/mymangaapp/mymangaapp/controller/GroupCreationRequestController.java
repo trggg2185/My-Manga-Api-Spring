@@ -1,10 +1,10 @@
 package com.example.mymangaapp.mymangaapp.controller;
 
-import com.example.mymangaapp.mymangaapp.dto.request.CreationRequest;
-import com.example.mymangaapp.mymangaapp.dto.response.ApiResponse;
-import com.example.mymangaapp.mymangaapp.dto.response.CreationRequestResponse;
-import com.example.mymangaapp.mymangaapp.dto.response.PaginatedResponse;
-import com.example.mymangaapp.mymangaapp.dto.transgroup.TransGroupResponse;
+import com.example.mymangaapp.mymangaapp.dto.groupcreation.request.CreationRequest;
+import com.example.mymangaapp.mymangaapp.dto.common.ApiResponse;
+import com.example.mymangaapp.mymangaapp.dto.groupcreation.response.CreationRequestResponse;
+import com.example.mymangaapp.mymangaapp.dto.common.PaginatedResponse;
+import com.example.mymangaapp.mymangaapp.dto.transgroup.response.TransGroupResponse;
 import com.example.mymangaapp.mymangaapp.enums.GroupCreationRequestStatus;
 import com.example.mymangaapp.mymangaapp.service.GroupCreationRequestService;
 import jakarta.validation.Valid;

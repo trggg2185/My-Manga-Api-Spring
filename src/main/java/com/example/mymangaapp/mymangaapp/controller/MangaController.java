@@ -2,11 +2,12 @@ package com.example.mymangaapp.mymangaapp.controller;
 
 import com.example.mymangaapp.mymangaapp.annotation.RateLimit;
 import com.example.mymangaapp.mymangaapp.enums.LimitType;
-import com.example.mymangaapp.mymangaapp.dto.request.MangaRequest;
-import com.example.mymangaapp.mymangaapp.dto.response.ApiResponse;
-import com.example.mymangaapp.mymangaapp.dto.response.MangaResponse;
-import com.example.mymangaapp.mymangaapp.dto.response.MangaSummaryResponse;
-import com.example.mymangaapp.mymangaapp.dto.response.PaginatedResponse;
+import com.example.mymangaapp.mymangaapp.dto.manga.request.MangaRequest;
+import com.example.mymangaapp.mymangaapp.dto.common.ApiResponse;
+import com.example.mymangaapp.mymangaapp.dto.manga.response.MangaResponse;
+import com.example.mymangaapp.mymangaapp.dto.manga.response.MangaSummaryResponse;
+import com.example.mymangaapp.mymangaapp.dto.manga.response.DeleteMangaResponse;
+import com.example.mymangaapp.mymangaapp.dto.common.PaginatedResponse;
 import com.example.mymangaapp.mymangaapp.enums.MangaStatus;
 import com.example.mymangaapp.mymangaapp.exception.ResponseCode;
 import com.example.mymangaapp.mymangaapp.service.MangaService;
@@ -55,18 +56,18 @@ public class MangaController {
     }
 
     @DeleteMapping("/transgroups/{groupId}/mangas/{mangaId}")
-    @RateLimit(limitType = LimitType.USER_ID)
-    public ApiResponse<String> deleteMangaById(
+    @RateLimit(capacity = 10, limitType = LimitType.USER_ID)
+    public ApiResponse<DeleteMangaResponse> deleteMangaById(
             @PathVariable @NonNull String groupId,
             @PathVariable @NonNull String mangaId
     ) {
 
         mangaService.deleteMangaById(groupId, mangaId);
 
-        return ApiResponse.<String>builder()
+        return ApiResponse.<DeleteMangaResponse>builder()
                 .code(ResponseCode.SUCCESS.getCode())
                 .message(ResponseCode.SUCCESS.getMessage())
-                .result("Transgroup id: " + groupId + ", manga id: " + mangaId)
+                .result(DeleteMangaResponse.builder().groupId(groupId).mangaId(mangaId).build())
                 .build();
     }
 
@@ -97,7 +98,7 @@ public class MangaController {
     // sẽ lấy tất cả các manga có phân trang, những chỉ lấy với
     // chút thông tin của manga như: name, categories, description, transgroups
     @GetMapping("/mangas")
-    @RateLimit(capacity = 120)
+    @RateLimit(capacity = 60)
     public ApiResponse<PaginatedResponse<MangaSummaryResponse>> getMangas(
             @RequestParam(defaultValue = "0") int page, // số trang
             @RequestParam(defaultValue = "24") int size, // số bản ghi mỗi trang
@@ -115,7 +116,7 @@ public class MangaController {
     // thì lấy tất cả các bộ truyện mà nhóm đang tham gia dịch
     // cả dịch chính lẫn phụ
     @GetMapping("/transgroups/{groupId}/mangas")
-    @RateLimit(capacity = 120)
+    @RateLimit(capacity = 60)
     public ApiResponse<PaginatedResponse<MangaSummaryResponse>> getMangasByGroupId(
             @PathVariable @NonNull String groupId,
             @RequestParam(defaultValue = "0") int page, // số trang
@@ -130,7 +131,7 @@ public class MangaController {
     }
 
     @GetMapping("/mangas/{id}")
-    @RateLimit(capacity = 120)
+    @RateLimit(capacity = 60)
     public ApiResponse<MangaResponse> getMangaById(
             @PathVariable @NonNull String id
     ) {

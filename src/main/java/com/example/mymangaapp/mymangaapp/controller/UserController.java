@@ -2,17 +2,18 @@ package com.example.mymangaapp.mymangaapp.controller;
 
 import com.example.mymangaapp.mymangaapp.annotation.RateLimit;
 import com.example.mymangaapp.mymangaapp.enums.LimitType;
-import com.example.mymangaapp.mymangaapp.dto.request.UserPasswordRequest;
-import com.example.mymangaapp.mymangaapp.dto.response.PaginatedResponse;
-import com.example.mymangaapp.mymangaapp.dto.response.UserSummaryResponse;
+import com.example.mymangaapp.mymangaapp.dto.user.request.UserPasswordRequest;
+import com.example.mymangaapp.mymangaapp.dto.common.PaginatedResponse;
+import com.example.mymangaapp.mymangaapp.dto.user.response.CurrentUserResponse;
 import org.springframework.http.MediaType;
 import org.springframework.lang.NonNull;
 import org.springframework.web.bind.annotation.*;
 
-import com.example.mymangaapp.mymangaapp.dto.request.UserCreationRequest;
-import com.example.mymangaapp.mymangaapp.dto.request.UserUpdateRequest;
-import com.example.mymangaapp.mymangaapp.dto.response.ApiResponse;
-import com.example.mymangaapp.mymangaapp.dto.response.UserResponse;
+import com.example.mymangaapp.mymangaapp.dto.user.request.UserCreationRequest;
+import com.example.mymangaapp.mymangaapp.dto.user.request.UserUpdateRequest;
+import com.example.mymangaapp.mymangaapp.dto.common.ApiResponse;
+import com.example.mymangaapp.mymangaapp.dto.user.response.UserResponse;
+import com.example.mymangaapp.mymangaapp.dto.user.response.DeleteUserResponse;
 import com.example.mymangaapp.mymangaapp.exception.ResponseCode;
 import com.example.mymangaapp.mymangaapp.service.UserService;
 
@@ -37,7 +38,7 @@ public class UserController {
     // ---------------------- endpoint public đây (dành cho khách) -------------------------- //
 
     @PostMapping("/admin/users")
-    @RateLimit(capacity = 3, resetTimeInSeconds = 3600)
+    @RateLimit(capacity = 10, limitType = LimitType.USER_ID)
     // Nhớ có annotation @Valid để validate các fields trong request
     public ApiResponse<UserResponse> createUser(@Valid @RequestBody UserCreationRequest request) {
 
@@ -54,11 +55,11 @@ public class UserController {
 
     @GetMapping("/users/me")
     @RateLimit(capacity = 60, limitType = LimitType.USER_ID)
-    public ApiResponse<UserSummaryResponse> getMyInfo() {
+    public ApiResponse<CurrentUserResponse> getMyInfo() {
 
-        UserSummaryResponse response = userService.getMyInfo();
+        CurrentUserResponse response = userService.getMyInfo();
 
-        return ApiResponse.<UserSummaryResponse>builder()
+        return ApiResponse.<CurrentUserResponse>builder()
                 .result(response)
                 .build();
 
@@ -69,14 +70,14 @@ public class UserController {
     // khi đó trong postman ta làm việc bên form-data chứ ko bên raw json nữa
     @PatchMapping(value = "/users/me", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @RateLimit(capacity = 10, limitType = LimitType.USER_ID)
-    public ApiResponse<UserSummaryResponse> updateMyInfo(
+    public ApiResponse<CurrentUserResponse> updateMyInfo(
             @Valid @ModelAttribute("userUpdateRequest") UserUpdateRequest request
 
     ) {
 
-        UserSummaryResponse response = userService.updateMyInfo(request);
+        CurrentUserResponse response = userService.updateMyInfo(request);
 
-        return ApiResponse.<UserSummaryResponse>builder()
+        return ApiResponse.<CurrentUserResponse>builder()
                 .result(response)
                 .build();
 
@@ -119,7 +120,7 @@ public class UserController {
 
     // fix lại chỉ có admin lấy đc user băng id
     @GetMapping("/admin/users/{id}")
-    @RateLimit(capacity = 60, limitType = LimitType.USER_ID)
+    @RateLimit(capacity = 30, limitType = LimitType.USER_ID)
     public ApiResponse<UserResponse> getUserById(@PathVariable @NonNull String id) {
 
         UserResponse response = userService.getUserById(id);
@@ -148,15 +149,15 @@ public class UserController {
 
     // xoá user bằng id
     @DeleteMapping("/admin/users/{id}")
-    @RateLimit(limitType = LimitType.USER_ID)
-    public ApiResponse<String> deleteUserById(@PathVariable @NonNull String id) {
+    @RateLimit(capacity = 10, limitType = LimitType.USER_ID)
+    public ApiResponse<DeleteUserResponse> deleteUserById(@PathVariable @NonNull String id) {
 
         userService.deleteUserById(id);
 
-        return ApiResponse.<String>builder()
+        return ApiResponse.<DeleteUserResponse>builder()
                 .code(ResponseCode.SUCCESS.getCode())
                 .message(ResponseCode.SUCCESS.getMessage())
-                .result("User id: " + id)
+                .result(DeleteUserResponse.builder().userId(id).build())
                 .build();
     }
 

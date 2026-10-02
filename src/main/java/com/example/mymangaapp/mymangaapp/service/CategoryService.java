@@ -1,7 +1,7 @@
 package com.example.mymangaapp.mymangaapp.service;
 
-import com.example.mymangaapp.mymangaapp.dto.request.CategoryRequest;
-import com.example.mymangaapp.mymangaapp.dto.response.CategoryResponse;
+import com.example.mymangaapp.mymangaapp.dto.category.request.CategoryRequest;
+import com.example.mymangaapp.mymangaapp.dto.category.response.CategoryResponse;
 import com.example.mymangaapp.mymangaapp.entity.Category;
 import com.example.mymangaapp.mymangaapp.exception.AppException;
 import com.example.mymangaapp.mymangaapp.exception.ResponseCode;

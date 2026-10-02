@@ -1,16 +1,17 @@
 package com.example.mymangaapp.mymangaapp.mapper;
 
-import com.example.mymangaapp.mymangaapp.dto.request.RegisterRequest;
-import com.example.mymangaapp.mymangaapp.dto.response.UserSummaryResponse;
+import com.example.mymangaapp.mymangaapp.dto.auth.request.RegisterRequest;
+import com.example.mymangaapp.mymangaapp.dto.user.response.CurrentUserResponse;
+import com.example.mymangaapp.mymangaapp.dto.user.response.UserSummaryResponse;
 import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 
-import com.example.mymangaapp.mymangaapp.dto.request.UserCreationRequest;
-import com.example.mymangaapp.mymangaapp.dto.request.UserUpdateRequest;
-import com.example.mymangaapp.mymangaapp.dto.response.UserResponse;
+import com.example.mymangaapp.mymangaapp.dto.user.request.UserCreationRequest;
+import com.example.mymangaapp.mymangaapp.dto.user.request.UserUpdateRequest;
+import com.example.mymangaapp.mymangaapp.dto.user.response.UserResponse;
 import com.example.mymangaapp.mymangaapp.entity.User;
 
 @Mapper(componentModel = "spring")
@@ -64,5 +65,8 @@ public interface UserMapper {
     UserResponse toUserResponse(User user);
 
     UserSummaryResponse toUserSummaryResponse(User user);
+
+    @Mapping(target = "transGroupId", source = "transGroup.id")
+    CurrentUserResponse toCurrentUserResponse(User user);
 
 }

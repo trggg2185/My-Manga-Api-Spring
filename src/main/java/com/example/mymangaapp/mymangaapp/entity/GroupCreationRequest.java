@@ -29,7 +29,7 @@ public class GroupCreationRequest extends BaseEntity {
     // Tên nhóm dịch user muốn tạo
     // Bỏ unique và ko đc null
     @Column(length = 50, nullable = false)
-    String nameGroup;
+    String groupName;
 
     @Column(length = 300)
     String description;

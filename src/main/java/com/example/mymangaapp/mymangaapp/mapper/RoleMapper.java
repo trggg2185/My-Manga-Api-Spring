@@ -3,8 +3,8 @@ package com.example.mymangaapp.mymangaapp.mapper;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-import com.example.mymangaapp.mymangaapp.dto.request.RoleRequest;
-import com.example.mymangaapp.mymangaapp.dto.response.RoleResponse;
+import com.example.mymangaapp.mymangaapp.dto.role.request.RoleRequest;
+import com.example.mymangaapp.mymangaapp.dto.role.response.RoleResponse;
 import com.example.mymangaapp.mymangaapp.entity.Role;
 
 @Mapper(componentModel = "spring")

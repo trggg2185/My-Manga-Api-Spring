@@ -5,8 +5,8 @@ import java.util.List;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
-import com.example.mymangaapp.mymangaapp.dto.request.PermissionRequest;
-import com.example.mymangaapp.mymangaapp.dto.response.PermissionResponse;
+import com.example.mymangaapp.mymangaapp.dto.permission.request.PermissionRequest;
+import com.example.mymangaapp.mymangaapp.dto.permission.response.PermissionResponse;
 import com.example.mymangaapp.mymangaapp.entity.Permission;
 import com.example.mymangaapp.mymangaapp.exception.AppException;
 import com.example.mymangaapp.mymangaapp.exception.ResponseCode;

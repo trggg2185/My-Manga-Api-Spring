@@ -8,8 +8,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
-import com.example.mymangaapp.mymangaapp.dto.request.RoleRequest;
-import com.example.mymangaapp.mymangaapp.dto.response.RoleResponse;
+import com.example.mymangaapp.mymangaapp.dto.role.request.RoleRequest;
+import com.example.mymangaapp.mymangaapp.dto.role.response.RoleResponse;
 import com.example.mymangaapp.mymangaapp.entity.Permission;
 import com.example.mymangaapp.mymangaapp.entity.Role;
 import com.example.mymangaapp.mymangaapp.exception.AppException;

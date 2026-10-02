@@ -1,6 +1,6 @@
 package com.example.mymangaapp.mymangaapp.mapper;
 
-import com.example.mymangaapp.mymangaapp.dto.response.JoinRequestResponse;
+import com.example.mymangaapp.mymangaapp.dto.groupjoin.response.JoinRequestResponse;
 import com.example.mymangaapp.mymangaapp.entity.GroupJoinRequest;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

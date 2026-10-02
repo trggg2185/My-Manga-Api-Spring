@@ -1,7 +1,7 @@
 package com.example.mymangaapp.mymangaapp.mapper;
 
-import com.example.mymangaapp.mymangaapp.dto.transgroup.TransGroupUpdateRequest;
-import com.example.mymangaapp.mymangaapp.dto.transgroup.TransGroupResponse;
+import com.example.mymangaapp.mymangaapp.dto.transgroup.request.TransGroupUpdateRequest;
+import com.example.mymangaapp.mymangaapp.dto.transgroup.response.TransGroupResponse;
 import com.example.mymangaapp.mymangaapp.entity.TransGroup;
 import org.mapstruct.*;
 

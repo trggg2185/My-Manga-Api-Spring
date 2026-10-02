@@ -2,11 +2,12 @@ package com.example.mymangaapp.mymangaapp.controller;
 
 import com.example.mymangaapp.mymangaapp.annotation.RateLimit;
 import com.example.mymangaapp.mymangaapp.enums.LimitType;
-import com.example.mymangaapp.mymangaapp.dto.request.ChapterRequest;
-import com.example.mymangaapp.mymangaapp.dto.response.ApiResponse;
-import com.example.mymangaapp.mymangaapp.dto.response.ChapterResponse;
-import com.example.mymangaapp.mymangaapp.dto.response.ChapterSummaryResponse;
-import com.example.mymangaapp.mymangaapp.dto.response.PaginatedResponse;
+import com.example.mymangaapp.mymangaapp.dto.chapter.request.ChapterRequest;
+import com.example.mymangaapp.mymangaapp.dto.common.ApiResponse;
+import com.example.mymangaapp.mymangaapp.dto.chapter.response.ChapterResponse;
+import com.example.mymangaapp.mymangaapp.dto.chapter.response.ChapterSummaryResponse;
+import com.example.mymangaapp.mymangaapp.dto.chapter.response.DeleteChapterResponse;
+import com.example.mymangaapp.mymangaapp.dto.common.PaginatedResponse;
 import com.example.mymangaapp.mymangaapp.exception.ResponseCode;
 import com.example.mymangaapp.mymangaapp.service.ChapterService;
 import jakarta.validation.Valid;
@@ -43,18 +44,18 @@ public class ChapterController {
     // Mặc dù tên hàm là xoá theo id chapter nhưng ko phải nhóm nào cũng xoá đc
     // chỉ có chapter thuộc về manga của nhóm đó mới xoá đc nhé
     @DeleteMapping("/mangas/{mangaId}/chapters/{chapterId}")
-    @RateLimit(limitType = LimitType.USER_ID)
-    public ApiResponse<String> deleteChapterById(
+    @RateLimit(capacity = 10, limitType = LimitType.USER_ID)
+    public ApiResponse<DeleteChapterResponse> deleteChapterById(
             @PathVariable @NonNull String mangaId,
             @PathVariable @NonNull String chapterId
     ) {
 
         chapterService.deleteChapterById(mangaId, chapterId);
 
-        return ApiResponse.<String>builder()
+        return ApiResponse.<DeleteChapterResponse>builder()
                 .code(ResponseCode.SUCCESS.getCode())
                 .message(ResponseCode.SUCCESS.getMessage())
-                .result("Chapter id: " + chapterId + ", manga id: " + mangaId)
+                .result(DeleteChapterResponse.builder().chapterId(chapterId).mangaId(mangaId).build())
                 .build();
 
     }
@@ -63,7 +64,7 @@ public class ChapterController {
     // ----------------------------------endpoints public ---------------------------------------------//
 
     @GetMapping("/mangas/{mangaId}/chapters")
-    @RateLimit(capacity = 120)
+    @RateLimit(capacity = 60)
     public ApiResponse<PaginatedResponse<ChapterSummaryResponse>> getChaptersByMangaId(
             @PathVariable @NonNull String mangaId,
             @RequestParam(defaultValue = "0") int page,

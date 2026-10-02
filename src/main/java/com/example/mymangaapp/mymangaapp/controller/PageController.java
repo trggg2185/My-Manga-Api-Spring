@@ -1,8 +1,8 @@
 package com.example.mymangaapp.mymangaapp.controller;
 
 import com.example.mymangaapp.mymangaapp.annotation.RateLimit;
-import com.example.mymangaapp.mymangaapp.dto.response.ApiResponse;
-import com.example.mymangaapp.mymangaapp.dto.response.PageResponse;
+import com.example.mymangaapp.mymangaapp.dto.common.ApiResponse;
+import com.example.mymangaapp.mymangaapp.dto.chapter.response.PageResponse;
 import com.example.mymangaapp.mymangaapp.security.utils.SecurityUtils;
 import com.example.mymangaapp.mymangaapp.service.ChapterViewService;
 import com.example.mymangaapp.mymangaapp.service.PageService;
@@ -31,7 +31,7 @@ public class PageController {
     // -------------------------------endpoints public ----------------------------------//
 
     @GetMapping("/chapters/{chapterId}/pages")
-    @RateLimit(capacity = 120)
+    @RateLimit(capacity = 60)
     public ApiResponse<List<PageResponse>> getAllPagesByChapterId(
             @PathVariable @NonNull String chapterId,
             HttpServletRequest request

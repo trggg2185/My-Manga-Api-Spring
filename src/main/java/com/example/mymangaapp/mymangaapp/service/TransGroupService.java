@@ -1,9 +1,9 @@
 package com.example.mymangaapp.mymangaapp.service;
 
 import com.example.mymangaapp.mymangaapp.constant.RoleConstants;
-import com.example.mymangaapp.mymangaapp.dto.transgroup.TransGroupUpdateRequest;
-import com.example.mymangaapp.mymangaapp.dto.response.PaginatedResponse;
-import com.example.mymangaapp.mymangaapp.dto.transgroup.TransGroupResponse;
+import com.example.mymangaapp.mymangaapp.dto.transgroup.request.TransGroupUpdateRequest;
+import com.example.mymangaapp.mymangaapp.dto.common.PaginatedResponse;
+import com.example.mymangaapp.mymangaapp.dto.transgroup.response.TransGroupResponse;
 import com.example.mymangaapp.mymangaapp.entity.GroupCreationRequest;
 import com.example.mymangaapp.mymangaapp.entity.Role;
 import com.example.mymangaapp.mymangaapp.entity.TransGroup;
@@ -59,7 +59,7 @@ public class TransGroupService {
 
         // quyết định là trong members sẽ ko chứa leader
         TransGroup transGroup = TransGroup.builder()
-                .name(groupCreationRequest.getNameGroup())
+                .name(groupCreationRequest.getGroupName())
                 .description(groupCreationRequest.getDescription())
                 .leader(creator)
                 .build();

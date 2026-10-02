@@ -1,7 +1,7 @@
 package com.example.mymangaapp.mymangaapp.service;
 
 import com.example.mymangaapp.mymangaapp.constant.RoleConstants;
-import com.example.mymangaapp.mymangaapp.dto.response.JoinRequestResponse;
+import com.example.mymangaapp.mymangaapp.dto.groupjoin.response.JoinRequestResponse;
 import com.example.mymangaapp.mymangaapp.entity.GroupJoinRequest;
 import com.example.mymangaapp.mymangaapp.entity.Role;
 import com.example.mymangaapp.mymangaapp.entity.TransGroup;

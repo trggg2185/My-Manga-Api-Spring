@@ -1,13 +1,13 @@
 package com.example.mymangaapp.mymangaapp.mapper;
 
-import com.example.mymangaapp.mymangaapp.dto.request.MangaRequest;
-import com.example.mymangaapp.mymangaapp.dto.response.MangaResponse;
-import com.example.mymangaapp.mymangaapp.dto.response.MangaSummaryResponse;
+import com.example.mymangaapp.mymangaapp.dto.manga.request.MangaRequest;
+import com.example.mymangaapp.mymangaapp.dto.manga.response.MangaResponse;
+import com.example.mymangaapp.mymangaapp.dto.manga.response.MangaSummaryResponse;
 import com.example.mymangaapp.mymangaapp.entity.Manga;
 import com.example.mymangaapp.mymangaapp.entity.TransGroup;
 import org.mapstruct.*;
 
-@Mapper(componentModel = "spring", uses = CategoryMapper.class)
+@Mapper(componentModel = "spring", uses = {CategoryMapper.class, ChapterMapper.class})
 public interface MangaMapper {
 
     @Mapping(target = "id", ignore = true)
@@ -36,6 +36,9 @@ public interface MangaMapper {
         return (transGroup != null) ? transGroup.getId() : null;
     }
 
+    @Mapping(target = "transGroupsId", source = "transGroups")
+    @Mapping(target = "ownerTransGroupId", source = "ownerTransGroup.id")
+    @Mapping(target = "categories", source = "categories")
     MangaSummaryResponse toMangaSummaryResponse(Manga manga);
 
     @Mapping(target = "id", ignore = true)

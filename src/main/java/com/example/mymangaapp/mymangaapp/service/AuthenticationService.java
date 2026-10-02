@@ -4,8 +4,12 @@ import java.util.Date;
 import java.util.Set;
 
 import com.example.mymangaapp.mymangaapp.constant.RoleConstants;
-import com.example.mymangaapp.mymangaapp.dto.request.*;
-import com.example.mymangaapp.mymangaapp.dto.response.UserSummaryResponse;
+import com.example.mymangaapp.mymangaapp.dto.auth.request.AuthenticationRequest;
+import com.example.mymangaapp.mymangaapp.dto.auth.request.IntrospectRequest;
+import com.example.mymangaapp.mymangaapp.dto.auth.request.LogoutRequest;
+import com.example.mymangaapp.mymangaapp.dto.auth.request.RefreshRequest;
+import com.example.mymangaapp.mymangaapp.dto.auth.request.RegisterRequest;
+import com.example.mymangaapp.mymangaapp.dto.user.response.CurrentUserResponse;
 import com.example.mymangaapp.mymangaapp.entity.Role;
 import com.example.mymangaapp.mymangaapp.mapper.UserMapper;
 import com.example.mymangaapp.mymangaapp.repository.RoleRepository;
@@ -13,8 +17,8 @@ import org.springframework.lang.NonNull;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.example.mymangaapp.mymangaapp.dto.response.AuthenticationResponse;
-import com.example.mymangaapp.mymangaapp.dto.response.IntrospectResponse;
+import com.example.mymangaapp.mymangaapp.dto.auth.response.AuthenticationResponse;
+import com.example.mymangaapp.mymangaapp.dto.auth.response.IntrospectResponse;
 import com.example.mymangaapp.mymangaapp.entity.User;
 import com.example.mymangaapp.mymangaapp.exception.AppException;
 import com.example.mymangaapp.mymangaapp.exception.ResponseCode;
@@ -52,7 +56,7 @@ public class AuthenticationService {
 
     // Đăng ký tài khoản (khách tự đăng ký)
     @Transactional
-    public UserSummaryResponse register(@NonNull RegisterRequest request) {
+    public CurrentUserResponse register(@NonNull RegisterRequest request) {
 
         if (userRepository.existsByUsername(request.getUsername())) {
             throw new AppException(ResponseCode.USERNAME_ALREADY_EXISTED);
@@ -72,7 +76,7 @@ public class AuthenticationService {
 
         log.info("Tạo tài khoản thành công!");
 
-        return userMapper.toUserSummaryResponse(userRepository.save(user));
+        return userMapper.toCurrentUserResponse(userRepository.save(user));
     }
 
     

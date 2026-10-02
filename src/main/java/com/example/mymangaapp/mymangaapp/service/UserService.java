@@ -6,9 +6,9 @@ import java.util.List;
 import java.util.Set;
 
 import com.example.mymangaapp.mymangaapp.constant.RoleConstants;
-import com.example.mymangaapp.mymangaapp.dto.request.UserPasswordRequest;
-import com.example.mymangaapp.mymangaapp.dto.response.PaginatedResponse;
-import com.example.mymangaapp.mymangaapp.dto.response.UserSummaryResponse;
+import com.example.mymangaapp.mymangaapp.dto.user.request.UserPasswordRequest;
+import com.example.mymangaapp.mymangaapp.dto.common.PaginatedResponse;
+import com.example.mymangaapp.mymangaapp.dto.user.response.CurrentUserResponse;
 import com.example.mymangaapp.mymangaapp.security.utils.SecurityUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -20,9 +20,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.example.mymangaapp.mymangaapp.dto.request.UserCreationRequest;
-import com.example.mymangaapp.mymangaapp.dto.request.UserUpdateRequest;
-import com.example.mymangaapp.mymangaapp.dto.response.UserResponse;
+import com.example.mymangaapp.mymangaapp.dto.user.request.UserCreationRequest;
+import com.example.mymangaapp.mymangaapp.dto.user.request.UserUpdateRequest;
+import com.example.mymangaapp.mymangaapp.dto.user.response.UserResponse;
 import com.example.mymangaapp.mymangaapp.entity.Role;
 import com.example.mymangaapp.mymangaapp.entity.User;
 import com.example.mymangaapp.mymangaapp.exception.AppException;
@@ -55,22 +55,22 @@ public class UserService {
 
     // --------------------------------- chức năng cho user đã đăng nhập đây -----------------------------------------  //
 
-    public UserSummaryResponse getMyInfo() {
+    public CurrentUserResponse getMyInfo() {
         String username = SecurityUtils.getCurrentUsername();
 
         User user = userRepository
-                .findByUsername(username)
+                .findWithDetailsByUsername(username)
                 .orElseThrow(() -> new AppException(ResponseCode.USER_NOT_FOUND));
 
-        return userMapper.toUserSummaryResponse(user);
+        return userMapper.toCurrentUserResponse(user);
     }
 
     @Transactional
-    public UserSummaryResponse updateMyInfo(UserUpdateRequest request) {
+    public CurrentUserResponse updateMyInfo(UserUpdateRequest request) {
         String username = SecurityUtils.getCurrentUsername();
 
         User user = userRepository
-                .findByUsername(username)
+                .findWithDetailsByUsername(username)
                 .orElseThrow(() -> new AppException(ResponseCode.USER_NOT_FOUND));
 
         userMapper.updateUserFromRequest(user, request);
@@ -90,7 +90,7 @@ public class UserService {
 
         }
 
-        return userMapper.toUserSummaryResponse(userRepository.save(user));
+        return userMapper.toCurrentUserResponse(userRepository.save(user));
     }
 
     @Transactional

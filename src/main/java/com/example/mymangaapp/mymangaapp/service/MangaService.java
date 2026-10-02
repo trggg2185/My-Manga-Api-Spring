@@ -1,9 +1,9 @@
 package com.example.mymangaapp.mymangaapp.service;
 
-import com.example.mymangaapp.mymangaapp.dto.request.MangaRequest;
-import com.example.mymangaapp.mymangaapp.dto.response.MangaResponse;
-import com.example.mymangaapp.mymangaapp.dto.response.MangaSummaryResponse;
-import com.example.mymangaapp.mymangaapp.dto.response.PaginatedResponse;
+import com.example.mymangaapp.mymangaapp.dto.manga.request.MangaRequest;
+import com.example.mymangaapp.mymangaapp.dto.manga.response.MangaResponse;
+import com.example.mymangaapp.mymangaapp.dto.manga.response.MangaSummaryResponse;
+import com.example.mymangaapp.mymangaapp.dto.common.PaginatedResponse;
 import com.example.mymangaapp.mymangaapp.entity.Category;
 import com.example.mymangaapp.mymangaapp.entity.Manga;
 import com.example.mymangaapp.mymangaapp.entity.TransGroup;

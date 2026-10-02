@@ -21,6 +21,7 @@ import java.util.Optional;
 public interface MangaRepository extends JpaRepository<Manga, String> {
 
    // Public list: trả về list tối giản, không join quá sâu
+   @EntityGraph(attributePaths = { "categories", "transGroups", "ownerTransGroup" })
    @NonNull
    Page<Manga> findAll(@NonNull Pageable pageable);
 

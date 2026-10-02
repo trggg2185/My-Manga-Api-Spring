@@ -2,8 +2,8 @@ package com.example.mymangaapp.mymangaapp.controller;
 
 import com.example.mymangaapp.mymangaapp.annotation.RateLimit;
 import com.example.mymangaapp.mymangaapp.enums.LimitType;
-import com.example.mymangaapp.mymangaapp.dto.response.ApiResponse;
-import com.example.mymangaapp.mymangaapp.dto.response.JoinRequestResponse;
+import com.example.mymangaapp.mymangaapp.dto.common.ApiResponse;
+import com.example.mymangaapp.mymangaapp.dto.groupjoin.response.JoinRequestResponse;
 import com.example.mymangaapp.mymangaapp.enums.GroupJoinRequestStatus;
 import com.example.mymangaapp.mymangaapp.service.GroupJoinRequestService;
 import lombok.AccessLevel;
@@ -66,7 +66,7 @@ public class GroupJoinRequestController {
     }
 
     @PatchMapping("/transgroups/{groupId}/join-requests/{requestId}/approve")
-    @RateLimit(capacity = 20, limitType = LimitType.USER_ID)
+    @RateLimit(capacity = 10, limitType = LimitType.USER_ID)
     public ApiResponse<JoinRequestResponse> approveJoinGroup(
             @PathVariable @NonNull String groupId,
             @PathVariable @NonNull String requestId
@@ -80,7 +80,7 @@ public class GroupJoinRequestController {
     }
 
     @PatchMapping("/transgroups/{groupId}/join-requests/{requestId}/reject")
-    @RateLimit(capacity = 20, limitType = LimitType.USER_ID)
+    @RateLimit(capacity = 10, limitType = LimitType.USER_ID)
     public ApiResponse<JoinRequestResponse> rejectJoinGroup(
             @PathVariable @NonNull String groupId,
             @PathVariable @NonNull String requestId

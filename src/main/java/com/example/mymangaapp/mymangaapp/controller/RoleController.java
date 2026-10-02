@@ -14,9 +14,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.mymangaapp.mymangaapp.dto.request.RoleRequest;
-import com.example.mymangaapp.mymangaapp.dto.response.ApiResponse;
-import com.example.mymangaapp.mymangaapp.dto.response.RoleResponse;
+import com.example.mymangaapp.mymangaapp.dto.role.request.RoleRequest;
+import com.example.mymangaapp.mymangaapp.dto.common.ApiResponse;
+import com.example.mymangaapp.mymangaapp.dto.role.response.RoleResponse;
+import com.example.mymangaapp.mymangaapp.dto.role.response.DeleteRoleResponse;
 import com.example.mymangaapp.mymangaapp.exception.ResponseCode;
 import com.example.mymangaapp.mymangaapp.service.RoleService;
 
@@ -60,15 +61,15 @@ public class RoleController {
     }
 
     @DeleteMapping("/{id}")
-    @RateLimit(limitType = LimitType.USER_ID)
-    public ApiResponse<String> deleteRoleById(@PathVariable @NonNull String id) {
+    @RateLimit(capacity = 10, limitType = LimitType.USER_ID)
+    public ApiResponse<DeleteRoleResponse> deleteRoleById(@PathVariable @NonNull String id) {
 
         roleService.deleteRoleById(id);
 
-        return ApiResponse.<String>builder()
+        return ApiResponse.<DeleteRoleResponse>builder()
                 .code(ResponseCode.SUCCESS.getCode())
                 .message(ResponseCode.SUCCESS.getMessage())
-                .result("Role id: " + id)
+                .result(DeleteRoleResponse.builder().roleId(id).build())
                 .build();
     }
 

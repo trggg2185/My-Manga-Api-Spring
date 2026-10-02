@@ -1,6 +1,6 @@
 package com.example.mymangaapp.mymangaapp.service;
 
-import com.example.mymangaapp.mymangaapp.dto.response.PageResponse;
+import com.example.mymangaapp.mymangaapp.dto.chapter.response.PageResponse;
 import com.example.mymangaapp.mymangaapp.entity.Chapter;
 import com.example.mymangaapp.mymangaapp.entity.Page;
 import com.example.mymangaapp.mymangaapp.exception.AppException;

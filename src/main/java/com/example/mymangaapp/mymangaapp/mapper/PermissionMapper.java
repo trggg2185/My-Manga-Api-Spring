@@ -3,8 +3,8 @@ package com.example.mymangaapp.mymangaapp.mapper;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-import com.example.mymangaapp.mymangaapp.dto.request.PermissionRequest;
-import com.example.mymangaapp.mymangaapp.dto.response.PermissionResponse;
+import com.example.mymangaapp.mymangaapp.dto.permission.request.PermissionRequest;
+import com.example.mymangaapp.mymangaapp.dto.permission.response.PermissionResponse;
 import com.example.mymangaapp.mymangaapp.entity.Permission;
 
 @Mapper(componentModel = "spring")
