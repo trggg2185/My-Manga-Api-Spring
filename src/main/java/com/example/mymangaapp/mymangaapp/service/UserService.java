@@ -10,6 +10,8 @@ import com.example.mymangaapp.mymangaapp.dto.user.request.UserPasswordRequest;
 import com.example.mymangaapp.mymangaapp.dto.common.PaginatedResponse;
 import com.example.mymangaapp.mymangaapp.dto.user.response.CurrentUserResponse;
 import com.example.mymangaapp.mymangaapp.security.utils.SecurityUtils;
+import com.example.mymangaapp.mymangaapp.service.storage.ObjectStorage;
+import com.example.mymangaapp.mymangaapp.service.storage.StorageService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -50,8 +52,9 @@ public class UserService {
     // Map từ đối tượng này sang đối tượng khác nhanh chóng
     UserMapper userMapper;
 
-    StorageService storageService;
+    ObjectStorage objectStorage;
 
+    StorageService storageService;
 
     // --------------------------------- chức năng cho user đã đăng nhập đây -----------------------------------------  //
 
@@ -81,7 +84,7 @@ public class UserService {
             // nếu user có avatar cũ thì xoá trc đã, nếu ko có thì thôi upload avatar mới luôn rồi set
             if (user.getAvatar() != null && !user.getAvatar().isEmpty()) {
                 String prefix = "avatars/" + user.getId() + "/";
-                storageService.deleteFilesWithPrefix(prefix, Instant.now());
+                objectStorage.deleteFilesWithPrefix(prefix, Instant.now());
             }
 
             // sau mới upload avatar mới
@@ -211,7 +214,7 @@ public class UserService {
             // nếu user có avatar cũ thì xoá trc đã, nếu ko có thì thôi upload avatar mới luôn rồi set
             if (user.getAvatar() != null && !user.getAvatar().isEmpty()) {
                 String prefix = "avatars/" + user.getId() + "/";
-                storageService.deleteFilesWithPrefix(prefix, Instant.now());
+                objectStorage.deleteFilesWithPrefix(prefix, Instant.now());
             }
 
             // sau mới upload avatar mới

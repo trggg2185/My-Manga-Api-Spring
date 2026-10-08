@@ -12,7 +12,7 @@ import java.util.Optional;
 
 
 @Slf4j
-public class SecurityUtils {
+public final class SecurityUtils {
 
     private SecurityUtils() {}
 

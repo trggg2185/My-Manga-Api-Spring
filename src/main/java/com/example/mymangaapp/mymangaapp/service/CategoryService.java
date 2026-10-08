@@ -37,7 +37,7 @@ public class CategoryService {
     }
 
     // public
-    public CategoryResponse getCategoryById(@NonNull String id) {
+    public CategoryResponse getCategoryById(@NonNull Long id) {
         Category category = categoryRepository.findById(id)
                 .orElseThrow(() -> new AppException(ResponseCode.CATEGORY_NOT_FOUND));
 
@@ -62,7 +62,7 @@ public class CategoryService {
 
     // admin
     @Transactional
-    public CategoryResponse updateCategoryById(@NonNull String id, @NonNull CategoryRequest request) {
+    public CategoryResponse updateCategoryById(@NonNull Long id, @NonNull CategoryRequest request) {
         Category category = categoryRepository.findById(id)
                 .orElseThrow(() -> new AppException(ResponseCode.CATEGORY_NOT_FOUND));
 
@@ -81,7 +81,7 @@ public class CategoryService {
 
     // admin
     @Transactional
-    public void deleteCategoryById(@NonNull String id) {
+    public void deleteCategoryById(@NonNull Long id) {
         if (!categoryRepository.existsById(id)) {
             throw new AppException(ResponseCode.CATEGORY_NOT_FOUND);
         }

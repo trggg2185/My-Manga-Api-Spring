@@ -14,6 +14,8 @@ import software.amazon.awssdk.services.s3.S3Client;
 
 import java.net.URI;
 import java.time.Duration;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 // Cấu hình cho dịch vụ lưu trũ cloud r2 object storage của cloudflare
 @Configuration
@@ -79,5 +81,10 @@ public class CloudStorageConfig {
                 // thông tin xác thực
                 .credentialsProvider(StaticCredentialsProvider.create(credentials))
                 .build();
+    }
+
+    @Bean(destroyMethod = "shutdown")
+    public ExecutorService storageExecutor() {
+        return Executors.newFixedThreadPool(4);
     }
 }

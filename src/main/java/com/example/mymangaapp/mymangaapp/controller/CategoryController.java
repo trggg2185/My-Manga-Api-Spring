@@ -38,7 +38,7 @@ public class CategoryController {
 
     @GetMapping("/categories/{id}")
     @RateLimit(capacity = 60)
-    public ApiResponse<CategoryResponse> getCategoryById(@PathVariable @NonNull String id) {
+    public ApiResponse<CategoryResponse> getCategoryById(@PathVariable @NonNull Long id) {
         return ApiResponse.<CategoryResponse>builder()
                 .result(categoryService.getCategoryById(id))
                 .build();
@@ -58,7 +58,7 @@ public class CategoryController {
     @PatchMapping("/admin/categories/{id}")
     @RateLimit(capacity = 10, limitType = LimitType.USER_ID)
     public ApiResponse<CategoryResponse> updateCategoryById(
-            @PathVariable @NonNull String id,
+            @PathVariable @NonNull Long id,
             @Valid @RequestBody CategoryRequest request) {
         return ApiResponse.<CategoryResponse>builder()
                 .result(categoryService.updateCategoryById(id, request))
@@ -67,7 +67,7 @@ public class CategoryController {
 
     @DeleteMapping("/admin/categories/{id}")
     @RateLimit(capacity = 10, limitType = LimitType.USER_ID)
-    public ApiResponse<DeleteCategoryResponse> deleteCategoryById(@PathVariable @NonNull String id) {
+    public ApiResponse<DeleteCategoryResponse> deleteCategoryById(@PathVariable @NonNull Long id) {
         categoryService.deleteCategoryById(id);
 
         return ApiResponse.<DeleteCategoryResponse>builder()

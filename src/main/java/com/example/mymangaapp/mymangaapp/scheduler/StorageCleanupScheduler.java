@@ -1,6 +1,6 @@
 package com.example.mymangaapp.mymangaapp.scheduler;
 
-import com.example.mymangaapp.mymangaapp.service.StorageService;
+import com.example.mymangaapp.mymangaapp.service.storage.ObjectStorage;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -17,8 +17,9 @@ import java.time.Instant;
 @Slf4j
 public class StorageCleanupScheduler {
 
-    StorageService storageService;
+    ObjectStorage objectStorage;
 
+    static String TMP_PREFIX = "tmp/";
     static Duration TMP_THRESHOLD = Duration.ofHours(3); // 3 tiếng
 
 
@@ -34,11 +35,8 @@ public class StorageCleanupScheduler {
             // lấy tg lúc 3 tiếng trc
             Instant thresholdTime = Instant.now().minus(TMP_THRESHOLD);
 
-            // Quét toàn bộ tmp để xoá các files quá 3 tiếng
-            String prefix = "tmp/";
-
             // gọi hàm xoá bên storage service
-            storageService.deleteFilesWithPrefix(prefix, thresholdTime);
+            objectStorage.deleteFilesWithPrefix(TMP_PREFIX, thresholdTime);
 
         } catch (Exception e) {
             log.error("Lỗi dọn dẹp tmp r2!", e);

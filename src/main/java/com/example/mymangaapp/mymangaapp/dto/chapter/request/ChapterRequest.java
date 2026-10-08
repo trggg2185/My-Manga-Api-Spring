@@ -23,5 +23,6 @@ public class ChapterRequest {
     // Khi submit lưu chap thì frontend gửi 1 list các url của
     // các ảnh đã lưu ở trên r2 ở thư mục tmp
     @NotEmpty(message = "PAGE_URLS_REQUIRED")
+    @Size(max = 150, message = "PAGE_URLS_SIZE_INVALID")
     List<String> pageUrls;
 }

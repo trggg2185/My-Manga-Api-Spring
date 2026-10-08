@@ -91,6 +91,7 @@ public enum ResponseCode {
     CHAPTER_INDEX_POSITIVE("3502", "Số chương phải là số nguyên dương!", HttpStatus.BAD_REQUEST),
     CHAPTER_TITLE_INVALID("3503", "Tiêu đề chương có tối đa {max} ký tự!", HttpStatus.BAD_REQUEST),
     PAGE_URLS_REQUIRED("3504", "Danh sách url của ảnh không được để trống!", HttpStatus.BAD_REQUEST),
+    PAGE_URLS_SIZE_INVALID("3505", "Số lượng url tối đa là {max}!", HttpStatus.BAD_REQUEST),
 
     // --- Category ---
     CATEGORY_NAME_REQUIRED("3601", "Tên thể loại không được để trống!", HttpStatus.BAD_REQUEST),

@@ -3,7 +3,7 @@ package com.example.mymangaapp.mymangaapp.controller;
 import com.example.mymangaapp.mymangaapp.annotation.RateLimit;
 import com.example.mymangaapp.mymangaapp.enums.LimitType;
 import com.example.mymangaapp.mymangaapp.dto.common.ApiResponse;
-import com.example.mymangaapp.mymangaapp.service.StorageService;
+import com.example.mymangaapp.mymangaapp.service.storage.StorageService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;

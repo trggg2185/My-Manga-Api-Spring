@@ -2,7 +2,7 @@ package com.example.mymangaapp.mymangaapp.utils;
 
 import jakarta.servlet.http.HttpServletRequest;
 
-public class HttpUtils {
+public final class HttpUtils {
 
     private HttpUtils() {
         /* This utility class should not be instantiated */
