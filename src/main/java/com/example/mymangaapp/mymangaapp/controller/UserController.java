@@ -155,7 +155,6 @@ public class UserController {
         userService.deleteUserById(id);
 
         return ApiResponse.<DeleteUserResponse>builder()
-                .code(ResponseCode.SUCCESS.getCode())
                 .message(ResponseCode.SUCCESS.getMessage())
                 .result(DeleteUserResponse.builder().userId(id).build())
                 .build();

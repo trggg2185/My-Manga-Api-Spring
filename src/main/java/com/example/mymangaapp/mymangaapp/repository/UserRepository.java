@@ -28,6 +28,9 @@ public interface UserRepository extends JpaRepository<User, String> {
 
     Optional<User> findByUsername(String username);
 
+    @EntityGraph(attributePaths = { "roles" })
+    Optional<User> findWithRolesById(String id);
+
     // Khi lấy user, lấy luôn roles, và khi lấy các roles, lấy luôn các permissions
     @EntityGraph(attributePaths = { "roles", "roles.permissions", "transGroup" })
     Optional<User> findWithDetailsByUsername(@NonNull String username);

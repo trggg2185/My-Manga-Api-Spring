@@ -7,6 +7,7 @@ import com.example.mymangaapp.mymangaapp.dto.auth.request.LogoutRequest;
 import com.example.mymangaapp.mymangaapp.dto.auth.request.RefreshRequest;
 import com.example.mymangaapp.mymangaapp.dto.auth.request.RegisterRequest;
 import com.example.mymangaapp.mymangaapp.dto.user.response.CurrentUserResponse;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -35,7 +36,7 @@ public class AuthenticationController {
     // ----------------------------endpoint public (cho khách) ----------------------------------//
 
     @PostMapping("/register")
-    public ApiResponse<CurrentUserResponse> register(@RequestBody RegisterRequest request) {
+    public ApiResponse<CurrentUserResponse> register(@RequestBody @Valid RegisterRequest request) {
 
         CurrentUserResponse response = authenticationService.register(request);
 
@@ -46,7 +47,7 @@ public class AuthenticationController {
 
     @PostMapping("/login")
     @RateLimit(resetTimeInSeconds = 900)
-    public ApiResponse<AuthenticationResponse> login(@RequestBody AuthenticationRequest request) {
+    public ApiResponse<AuthenticationResponse> login(@RequestBody @Valid AuthenticationRequest request) {
 
         AuthenticationResponse response = authenticationService.login(request);
 
@@ -58,7 +59,7 @@ public class AuthenticationController {
 
     @PostMapping("/introspect")
     @RateLimit(capacity = 60)
-    public ApiResponse<IntrospectResponse> introspect(@RequestBody IntrospectRequest request) {
+    public ApiResponse<IntrospectResponse> introspect(@RequestBody @Valid IntrospectRequest request) {
 
         IntrospectResponse response = authenticationService.introspect(request);
 
@@ -70,7 +71,7 @@ public class AuthenticationController {
 
     @PostMapping("/logout")
     @RateLimit(capacity = 10, limitType = LimitType.USER_ID)
-    public ApiResponse<Void> logout(@RequestBody LogoutRequest request) {
+    public ApiResponse<Void> logout(@RequestBody @Valid LogoutRequest request) {
 
         authenticationService.logout(request);
 
@@ -82,7 +83,7 @@ public class AuthenticationController {
 
     @PostMapping("/refresh")
     @RateLimit(capacity = 10, limitType = LimitType.USER_ID)
-    public ApiResponse<AuthenticationResponse> refresh(@RequestBody RefreshRequest request) {
+    public ApiResponse<AuthenticationResponse> refresh(@RequestBody @Valid RefreshRequest request) {
 
         AuthenticationResponse response = authenticationService.refresh(request);
 

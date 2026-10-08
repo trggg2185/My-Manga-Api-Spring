@@ -71,7 +71,6 @@ public class CategoryController {
         categoryService.deleteCategoryById(id);
 
         return ApiResponse.<DeleteCategoryResponse>builder()
-                .code(ResponseCode.SUCCESS.getCode())
                 .message(ResponseCode.SUCCESS.getMessage())
                 .result(DeleteCategoryResponse.builder().categoryId(id).build())
                 .build();

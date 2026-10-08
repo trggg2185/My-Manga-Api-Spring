@@ -67,7 +67,6 @@ public class PermissionController {
         permissionService.deletePermissionById(id);
 
         return ApiResponse.<DeletePermissionResponse>builder()
-                .code(ResponseCode.SUCCESS.getCode())
                 .message(ResponseCode.SUCCESS.getMessage())
                 .result(DeletePermissionResponse.builder().permissionId(id).build())
                 .build();

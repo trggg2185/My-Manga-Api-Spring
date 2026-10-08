@@ -34,7 +34,7 @@ public class MangaRequest {
 
     // Not blank dùng cho string, còn notempty dùng cho collection, set, list
     @NotEmpty(message = "CATEGORIES_REQUIRED")
-    Set<String> categoryIds;
+    Set<Long> categoryIds;
 
     @NotNull(message = "MANGA_STATUS_REQUIRED")
     MangaStatus status;

@@ -65,7 +65,6 @@ public class MangaController {
         mangaService.deleteMangaById(groupId, mangaId);
 
         return ApiResponse.<DeleteMangaResponse>builder()
-                .code(ResponseCode.SUCCESS.getCode())
                 .message(ResponseCode.SUCCESS.getMessage())
                 .result(DeleteMangaResponse.builder().groupId(groupId).mangaId(mangaId).build())
                 .build();

@@ -27,7 +27,6 @@ import org.springframework.lang.NonNull;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
 
 import java.util.HashSet;
 import java.util.List;
@@ -96,19 +95,15 @@ public class MangaService {
             throw new AppException(ResponseCode.UNAUTHORIZED);
         }
 
-        if (request.getCategoryIds() != null) {
-            if (CollectionUtils.isEmpty(request.getCategoryIds())) {
-                throw new AppException(ResponseCode.CATEGORIES_REQUIRED);
-            }
+        List<Category> categories = categoryRepository.findAllById(request.getCategoryIds());
 
-            Set<Category> categories = new HashSet<>(categoryRepository.findAllById(request.getCategoryIds()));
-            if (categories.isEmpty()) {
-                throw new AppException(ResponseCode.CATEGORY_NOT_FOUND);
-            }
-            manga.setCategories(categories);
+        // check 1 là ko thấy category nào, 2 là có vài category ko tồn tại thì bắn exception
+        if (categories.isEmpty() || categories.size() != request.getCategoryIds().size()) {
+            throw new AppException(ResponseCode.CATEGORY_NOT_FOUND);
         }
 
         mangaMapper.updateMangaFromRequest(manga, request);
+        manga.setCategories(new HashSet<>(categories));
 
         return mangaMapper.toMangaResponse(mangaRepository.save(manga));
     }

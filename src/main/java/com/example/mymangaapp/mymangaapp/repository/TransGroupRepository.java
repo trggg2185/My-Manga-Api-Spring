@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.lang.NonNull;
 
 import java.util.Optional;
@@ -36,4 +37,11 @@ public interface TransGroupRepository extends JpaRepository<TransGroup, String> 
     boolean existsByLeaderId(String leaderId);
 
     boolean existsByLeaderIdAndStatus(String leaderId, TransGroupStatus status);
+
+    @Query("""
+            SELECT COUNT(g) > 0 FROM TransGroup g
+            JOIN g.members m
+            WHERE g.id = :groupId and m.id = :memberId
+            """)
+    boolean isMemberOfGroup(String groupId, String memberId);
 }

@@ -69,7 +69,6 @@ public class TransGroupController {
         transGroupService.softDeleteGroupById(id);
 
         return ApiResponse.<DeleteTransGroupResponse>builder()
-                .code(ResponseCode.SUCCESS.getCode())
                 .message(ResponseCode.SUCCESS.getMessage())
                 .result(DeleteTransGroupResponse.builder().groupId(id).build())
                 .build();

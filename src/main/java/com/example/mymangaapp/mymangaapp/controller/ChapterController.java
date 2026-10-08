@@ -53,7 +53,6 @@ public class ChapterController {
         chapterService.deleteChapterById(mangaId, chapterId);
 
         return ApiResponse.<DeleteChapterResponse>builder()
-                .code(ResponseCode.SUCCESS.getCode())
                 .message(ResponseCode.SUCCESS.getMessage())
                 .result(DeleteChapterResponse.builder().chapterId(chapterId).mangaId(mangaId).build())
                 .build();

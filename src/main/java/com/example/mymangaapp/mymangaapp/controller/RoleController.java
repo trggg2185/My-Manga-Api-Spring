@@ -67,7 +67,6 @@ public class RoleController {
         roleService.deleteRoleById(id);
 
         return ApiResponse.<DeleteRoleResponse>builder()
-                .code(ResponseCode.SUCCESS.getCode())
                 .message(ResponseCode.SUCCESS.getMessage())
                 .result(DeleteRoleResponse.builder().roleId(id).build())
                 .build();
