@@ -4,13 +4,14 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.RedisSystemException;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -20,60 +21,86 @@ public class ChapterViewService {
 
     StringRedisTemplate redisTemplate;
 
-    static String REDIS_HASH_KEY = "mymangaapp:views:chapter";
+    // Hash đang nhận view mới: field = chapterId, value = số view chờ flush
+    static String PENDING_KEY = "mymangaapp:views:chapter";
+
+    // Hash đã được "chốt" để flush (RENAME từ PENDING_KEY)
+    static String PROCESSING_KEY = "mymangaapp:views:chapter:processing";
     static String LOCK_VIEW_KEY = "mymangaapp:views-lock:chapter";
 
-    // Khoá views của 1 user khi đọc trong 30p, sau 30p đọc lại tính thêm view
+    // Khoá view của 1 người đọc trong 30 phút, sau đó đọc lại mới tính thêm
     static Duration LOCK_VIEW_TIMEOUT = Duration.ofMinutes(30);
 
     public void incrementView(String chapterId, String userId, String clientId) {
 
-        String lockKey = LOCK_VIEW_KEY + ":" + chapterId + ":";
-
-        // nếu user đăng nhập thì chặn theo user id
-        if (userId != null) {
-            lockKey = lockKey + ":" + userId;
-        } else { // ko đăng nhập chặn theo ip
-            lockKey = lockKey + ":" + clientId;
+        try {
+            doIncrement(chapterId, userId, clientId);
+        } catch (Exception e) {
+            // cô tình bắt exception rồi log, để ko làm ảnh hưởng đọc truyện của user
+            log.warn("Lỗi không tăng view được cho chapter {}: {}", chapterId, e.getMessage());
         }
 
-        // lock view của người dùng trong vòng 30min
-        // nếu key chưa tồn tại thì set key và trả về true, tồn tại rồi thì false
+    }
+
+    public void doIncrement(String chapterId, String userId, String clientId) {
+        // Đăng nhập thì chặn theo user, không thì chặn theo ip
+        String viewer;
+        if (userId != null) {
+            viewer = "user:" + userId;
+        } else if (clientId != null && !clientId.isBlank()) {
+            viewer = "ip:" + clientId;
+        } else {
+            log.warn("Không xác định được người đọc, bỏ qua tính view. chapter: {}", chapterId);
+            return;
+        }
+
+        String lockKey = LOCK_VIEW_KEY + ":" + chapterId + ":" + viewer;
+
+        // Key chưa tồn tại thì set và trả về true (lượt xem mới), tồn tại rồi thì false
         Boolean isNewView = redisTemplate.opsForValue().setIfAbsent(lockKey, "1", LOCK_VIEW_TIMEOUT);
 
         if (Boolean.TRUE.equals(isNewView)) {
-            Long result = redisTemplate.opsForHash().increment(REDIS_HASH_KEY, chapterId, 1);
-
-            log.info("Kết quả tăng view: {}", result);
+            redisTemplate.opsForHash().increment(PENDING_KEY, chapterId, 1);
+            log.debug("Tính thêm view cho chapter {}", chapterId);
         } else {
-            log.info("Không tính view nữa vì đã tính rồi! chapter: {}, lock key: {}", chapterId, lockKey);
+            log.debug("Không tính view vì đã tính trong {} phút: {}", LOCK_VIEW_TIMEOUT.toMinutes(), lockKey);
+        }
+    }
+
+    /**
+     * Chốt lô cần flush. Nếu lần trước còn dở (PROCESSING_KEY còn tồn tại) thì xử lý tiếp lô đó,
+     * vì renameIfAbsent từ chối ghi đè nên không bao giờ làm mất dữ liệu cũ.
+     */
+    public Map<String, Long> claimPendingViews() {
+        try {
+            redisTemplate.renameIfAbsent(PENDING_KEY, PROCESSING_KEY);   // RENAMENX: nguyên tử
+        } catch (RedisSystemException e) {
+            // "no such key": không có view nào đang chờ. Bình thường, bỏ qua.
         }
 
+        Map<Object, Object> raw = redisTemplate.opsForHash().entries(PROCESSING_KEY);
+        Map<String, Long> result = HashMap.newHashMap(raw.size());
+
+        raw.forEach((key, value) -> {
+            try {
+                result.put(key.toString(), Long.parseLong(value.toString()));
+            } catch (NumberFormatException e) {
+                // Một giá trị hỏng không được làm hỏng cả lượt flush
+                log.error("Bỏ qua view có giá trị không hợp lệ, chapter: {}, value: {}", key, value);
+            }
+        });
+
+        return result;
     }
 
-    // lấy các views trong redis đg chờ được flush xuống db
-    public Map<String, Long> getAllPendingViews() {
-        // Lấy tất các các field-value trong hash
-        Map<Object, Object> raw = redisTemplate.opsForHash().entries(REDIS_HASH_KEY);
-
-        Map<String, Long> map = new HashMap<>();
-
-        // convert sang string-long
-        // key là chapter id, value là views
-        raw.forEach((key, value) ->
-                map.put(key.toString(), Long.parseLong(value.toString())));
-
-        return map;
-    }
-
-    // clear các cặp chapterId-views trong hash đã được flush xuống db
-    public void clearViews(Set<String> chapterIds) {
+    // Xóa các chương đã flush xong khỏi lô đang xử lý. Hash rỗng thì Redis tự xóa key.
+    public void removeProcessed(Collection<String> chapterIds) {
         if (chapterIds == null || chapterIds.isEmpty()) {
             return;
         }
 
-        redisTemplate.opsForHash().delete(REDIS_HASH_KEY, chapterIds.toArray());
-        log.info("Clear {} field-value trong hash redis thành công!", chapterIds.size());
+        redisTemplate.opsForHash().delete(PROCESSING_KEY, chapterIds.toArray());
+        log.debug("Đã xóa {} chương khỏi lô processing", chapterIds.size());
     }
 
 }

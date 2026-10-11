@@ -39,10 +39,13 @@ public class PageController {
 
         List<PageResponse> responses = pageService.getAllPagesByChapterId(chapterId);
 
-        String userId = SecurityUtils.getCurrentUserId();
-        String clientId = HttpUtils.getClientIp(request);
-
-        chapterViewService.incrementView(chapterId, userId, clientId);
+        // Nếu giả tính view có lỗi thì ở hàm incrementView đã bắt exception và chỉ log ra lỗi thôi
+        // chứ ko ném exception để khôgn ảnh hưởng tới việc đcọ truyện của user
+        chapterViewService.incrementView(
+                chapterId,
+                SecurityUtils.findCurrentUserId().orElse(null),
+                HttpUtils.getClientIp(request)
+        );
 
         return ApiResponse.<List<PageResponse>>builder()
                 .result(responses)
