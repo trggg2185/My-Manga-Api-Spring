@@ -18,6 +18,7 @@ public class TransGroupResponse {
     // dùng response này của user cho gọn, ko select thêm role, permision, transgroup cho mệt
     UserSummaryResponse leader;
     String name;
+    String slug;
     String status;
     Set<UserSummaryResponse> members;
     String description;

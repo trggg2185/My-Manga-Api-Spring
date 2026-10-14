@@ -22,7 +22,6 @@ public class MangaResponse {
     String authorsName;
     String status;
     Set<CategoryResponse> categories;
-    String ownerTransGroupId;
     List<String> transGroupsId;
     List<ChapterSummaryResponse> chapters;
     String description;

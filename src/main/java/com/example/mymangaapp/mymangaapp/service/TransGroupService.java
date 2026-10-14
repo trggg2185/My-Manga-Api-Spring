@@ -157,6 +157,10 @@ public class TransGroupService {
                 .findWithDetailsById(id)
                 .orElseThrow(() -> new AppException(ResponseCode.TRANSGROUP_NOT_FOUND));
 
+        if (!transGroup.getStatus().equals(TransGroupStatus.APPROVED)) {
+            throw new AppException(ResponseCode.TRANSGROUP_ALREADY_DELETED);
+        }
+
         transGroupMapper.updateTransGroupFromRequest(transGroup, request);
 
         return transGroupMapper.toTransGroupResponse(transGroupRepository.save(transGroup));

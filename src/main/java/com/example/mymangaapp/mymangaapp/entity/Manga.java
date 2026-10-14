@@ -66,14 +66,7 @@ public class Manga extends BaseEntity {
     @Column(name = "description", length = 500)
     String description;
 
-    // Manga này do nhóm transgroup này sỡ hữu
-    // 1 nhóm dịch có thể sỡ hữu (tạo ra) nhiều manga
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "owner_transgroup_id", nullable = false)
-    TransGroup ownerTransGroup;
-
     // QH: 1 manga có thể có nhiều trans group dịch
-
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
         name = "manga_transgroups",

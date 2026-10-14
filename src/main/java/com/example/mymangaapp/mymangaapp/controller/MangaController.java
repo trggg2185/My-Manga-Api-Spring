@@ -1,8 +1,9 @@
 package com.example.mymangaapp.mymangaapp.controller;
 
 import com.example.mymangaapp.mymangaapp.annotation.RateLimit;
+import com.example.mymangaapp.mymangaapp.dto.manga.request.MangaUpdateRequest;
 import com.example.mymangaapp.mymangaapp.enums.LimitType;
-import com.example.mymangaapp.mymangaapp.dto.manga.request.MangaRequest;
+import com.example.mymangaapp.mymangaapp.dto.manga.request.MangaCreationRequest;
 import com.example.mymangaapp.mymangaapp.dto.common.ApiResponse;
 import com.example.mymangaapp.mymangaapp.dto.manga.response.MangaResponse;
 import com.example.mymangaapp.mymangaapp.dto.manga.response.MangaSummaryResponse;
@@ -28,27 +29,25 @@ public class MangaController {
 
     // ---------------------------------endpoints dành cho leader nhóm hoặc admin ------------------------------//
 
-    @PostMapping("/transgroups/{groupId}/mangas")
+    @PostMapping("/mangas")
     @RateLimit(capacity = 10, limitType = LimitType.USER_ID)
     public ApiResponse<MangaResponse> createManga(
-            @Valid @RequestBody MangaRequest request,
-            @PathVariable @NonNull String groupId
+            @Valid @RequestBody MangaCreationRequest request
     ) {
-        MangaResponse response = mangaService.createManga(request, groupId);
+        MangaResponse response = mangaService.createManga(request);
 
         return ApiResponse.<MangaResponse>builder()
                 .result(response)
                 .build();
     }
 
-    @PatchMapping("/transgroups/{groupId}/mangas/{mangaId}")
+    @PatchMapping("/mangas/{mangaId}")
     @RateLimit(capacity = 10, limitType = LimitType.USER_ID)
     public ApiResponse<MangaResponse> updateMangaById(
-            @PathVariable @NonNull String groupId,
             @PathVariable @NonNull String mangaId,
-            @Valid @RequestBody MangaRequest request
+            @Valid @RequestBody MangaUpdateRequest request
     ) {
-        MangaResponse response = mangaService.updateMangaById(groupId, mangaId, request);
+        MangaResponse response = mangaService.updateMangaById(mangaId, request);
 
         return ApiResponse.<MangaResponse>builder()
                 .result(response)

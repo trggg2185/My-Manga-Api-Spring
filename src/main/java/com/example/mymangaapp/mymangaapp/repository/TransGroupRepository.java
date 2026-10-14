@@ -9,6 +9,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.lang.NonNull;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 public interface TransGroupRepository extends JpaRepository<TransGroup, String> {
@@ -29,8 +31,13 @@ public interface TransGroupRepository extends JpaRepository<TransGroup, String> 
     @EntityGraph(attributePaths = { "leader", "members" })
     Page<TransGroup> findAllByStatus(TransGroupStatus status, Pageable pageable);
 
+    List<TransGroup> findAllByIdInAndStatus(Collection<String> id, TransGroupStatus status);
+
     @EntityGraph(attributePaths = { "leader", "members" })
     Optional<TransGroup> findByIdAndStatus(String id, TransGroupStatus status);
+
+    @EntityGraph(attributePaths = { "leader", "members" })
+    Optional<TransGroup> findByLeaderIdAndStatus(String leaderId, TransGroupStatus status);
 
     boolean existsByIdAndLeaderId(String id, String leaderId);
 

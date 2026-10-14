@@ -15,7 +15,7 @@ import java.util.Set;
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Builder
-public class MangaRequest {
+public class MangaCreationRequest {
 
     /*
     * - Not Blank: cho string
@@ -23,14 +23,16 @@ public class MangaRequest {
     * - Not Null: cho object
     * */
 
-
-
     @NotBlank
     @Size(max = 200, message = "MANGA_NAME_INVALID")
     String name;
 
     @Size(max = 255, message = "AUTHORS_NAME_INVALID")
     String authorsName;
+
+    // khi tạo manga, có thể hay không kèm theo những nhóm tham gia dịch
+    // ko có thì mặc định trong service luôn có nhóm của ng đang tạo truyện
+    Set<String> transGroups;
 
     // Not blank dùng cho string, còn notempty dùng cho collection, set, list
     @NotEmpty(message = "CATEGORIES_REQUIRED")

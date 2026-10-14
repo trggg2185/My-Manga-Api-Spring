@@ -11,6 +11,10 @@ public interface GroupCreationRequestMapper {
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "creator", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "createdGroup", ignore = true)
+    @Mapping(target = "reviewer", ignore = true)
     @Mapping(target = "status", ignore = true)
     GroupCreationRequest toGroupCreationRequest(CreationRequest request);
 

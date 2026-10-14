@@ -21,7 +21,6 @@ public class MangaSummaryResponse {
     String status;
     String description;
     Set<CategoryResponse> categories;
-    String ownerTransGroupId;
     List<String> transGroupsId;
     Instant updatedAt;
 

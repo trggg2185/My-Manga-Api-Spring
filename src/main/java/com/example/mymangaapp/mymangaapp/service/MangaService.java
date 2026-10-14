@@ -1,6 +1,7 @@
 package com.example.mymangaapp.mymangaapp.service;
 
-import com.example.mymangaapp.mymangaapp.dto.manga.request.MangaRequest;
+import com.example.mymangaapp.mymangaapp.dto.manga.request.MangaCreationRequest;
+import com.example.mymangaapp.mymangaapp.dto.manga.request.MangaUpdateRequest;
 import com.example.mymangaapp.mymangaapp.dto.manga.response.MangaResponse;
 import com.example.mymangaapp.mymangaapp.dto.manga.response.MangaSummaryResponse;
 import com.example.mymangaapp.mymangaapp.dto.common.PaginatedResponse;
@@ -15,6 +16,7 @@ import com.example.mymangaapp.mymangaapp.mapper.MangaMapper;
 import com.example.mymangaapp.mymangaapp.repository.CategoryRepository;
 import com.example.mymangaapp.mymangaapp.repository.MangaRepository;
 import com.example.mymangaapp.mymangaapp.repository.TransGroupRepository;
+import com.example.mymangaapp.mymangaapp.security.utils.SecurityUtils;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -31,6 +33,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -48,18 +51,28 @@ public class MangaService {
     // ----------------------------chức năng dành cho leader nhóm ---------------------------------//
 
     // tạo mới 1 truyện
-    @PreAuthorize("@groupSec.isGroupLeader(#groupId)")
     @Transactional
-    public MangaResponse createManga(@NonNull MangaRequest request, @NonNull String groupId) {
+    public MangaResponse createManga(@NonNull MangaCreationRequest request) {
 
-        // Vẫn phải check nhóm tồn tại không
-        TransGroup ownerTransGroup = transGroupRepository
-                .findWithDetailsById(groupId)
+        String currentUserId = SecurityUtils.getCurrentUserId();
+
+        TransGroup myGroup = transGroupRepository
+                .findByLeaderIdAndStatus(currentUserId, TransGroupStatus.APPROVED)
                 .orElseThrow(() -> new AppException(ResponseCode.TRANSGROUP_NOT_FOUND));
 
-        // Nhóm này đã được admin approve chưa
-        if (!ownerTransGroup.getStatus().equals(TransGroupStatus.APPROVED)) {
-            throw new AppException(ResponseCode.TRANSGROUP_NOT_APPROVED);
+        Set<String> groupIds = new HashSet<>();
+        groupIds.add(myGroup.getId()); // mặc định có nhóm của ng đg tạo truyện
+
+        // Nếu có mảng nhóm thì add hết vào, set chống trùng
+        if (request.getTransGroups() != null) {
+            groupIds.addAll(request.getTransGroups());
+        }
+
+        // find tất cả các groups bằng ids và phải đc duyệt hết r
+        List<TransGroup> transGroups = transGroupRepository.findAllByIdInAndStatus(groupIds, TransGroupStatus.APPROVED);
+
+        if (transGroups.isEmpty() || transGroups.size() != groupIds.size()) {
+            throw new AppException(ResponseCode.TRANSGROUP_NOT_FOUND);
         }
 
         List<Category> categories = categoryRepository.findAllById(request.getCategoryIds());
@@ -71,29 +84,20 @@ public class MangaService {
 
         Manga manga = mangaMapper.toManga(request);
         manga.setCategories(new HashSet<>(categories));
-        manga.setOwnerTransGroup(ownerTransGroup);
-        manga.setTransGroups(Set.of(ownerTransGroup));
+        manga.setTransGroups(new HashSet<>(transGroups));
 
         return mangaMapper.toMangaResponse(mangaRepository.save(manga));
     }
 
     // cập nhật info truyện
-    @PreAuthorize("@groupSec.isGroupLeader(#groupId)")
     @Transactional
-    public MangaResponse updateMangaById(@NonNull String groupId, @NonNull String mangaId, @NonNull MangaRequest request) {
+    // check quyền vừa là leader, vừa phải trong nhóm dịch truyện này và vừa nhóm phải APPROVED
+    @PreAuthorize("@mangaSec.isLeaderOfManga(#mangaId)")
+    public MangaResponse updateMangaById(@NonNull String mangaId, @NonNull MangaUpdateRequest request) {
 
         Manga manga = mangaRepository
                 .findWithDetailsById(mangaId)
                 .orElseThrow(() -> new AppException(ResponseCode.MANGA_NOT_FOUND));
-
-        // Những nhóm khác cùng dịch 1 bộ thì ko có quyền sửa thông tin manga đâu
-        // chỉ có nhóm chủ sở hữu bộ này thôi
-
-        // Check xem manga này đúng sở hữu bởi nhóm không
-        // nhỡ manga của nhóm khác mà update thì toi
-        if (!manga.getOwnerTransGroup().getId().equals(groupId)) {
-            throw new AppException(ResponseCode.UNAUTHORIZED);
-        }
 
         List<Category> categories = categoryRepository.findAllById(request.getCategoryIds());
 
@@ -105,6 +109,8 @@ public class MangaService {
         mangaMapper.updateMangaFromRequest(manga, request);
         manga.setCategories(new HashSet<>(categories));
 
+        addGroups(manga, request.getAddTransGroups());
+
         return mangaMapper.toMangaResponse(mangaRepository.save(manga));
     }
 
@@ -115,15 +121,17 @@ public class MangaService {
     @Transactional
     @PreAuthorize("hasRole('ADMIN') or @groupSec.isGroupLeader(#groupId)")
     public void deleteMangaById(@NonNull String groupId, @NonNull String mangaId) {
-        Manga manga = mangaRepository
-                .findById(mangaId)
-                .orElseThrow(() -> new AppException(ResponseCode.MANGA_NOT_FOUND));
 
-        if (!manga.getOwnerTransGroup().getId().equals(groupId)) {
+        if (!mangaRepository.existsById(mangaId)) {
+            throw new AppException(ResponseCode.MANGA_NOT_FOUND);
+        }
+
+        // check manga có thật là của nhóm dịch này ko
+        if (!mangaRepository.isMangaTranslatedByGroup(groupId, mangaId, TransGroupStatus.APPROVED)) {
             throw new AppException(ResponseCode.UNAUTHORIZED);
         }
 
-        mangaRepository.delete(manga);
+        mangaRepository.deleteById(mangaId);
     }
 
 
@@ -204,6 +212,36 @@ public class MangaService {
                 .orElseThrow(() -> new AppException(ResponseCode.MANGA_NOT_FOUND));
 
         return mangaMapper.toMangaResponse(manga);
+    }
+
+
+    // --------------------------method private --------------------------------------
+
+    private void addGroups(Manga manga, Set<String> addIds) {
+        if (addIds == null || addIds.isEmpty())
+            return;
+
+        // lấy nhóm đang dịch truyện này
+        Set<String> existingIds = manga.getTransGroups()
+                .stream()
+                .map(TransGroup::getId) // <=> transgroup -> transgroup.getId()
+                .collect(Collectors.toSet());
+
+        // đây là các nhóm dịch mới thêm
+        Set<String> newIds = new HashSet<>(addIds);
+        newIds.removeAll(existingIds); // xoá nhóm cũ đi
+
+        if (newIds.isEmpty())
+            return;
+
+        List<TransGroup> newTransGroups = transGroupRepository
+                .findAllByIdInAndStatus(newIds, TransGroupStatus.APPROVED);
+
+        if (newTransGroups.size() != newIds.size())
+            throw new AppException(ResponseCode.TRANSGROUP_NOT_FOUND);
+
+        // add tất cả nhóm mới vào
+        manga.getTransGroups().addAll(newTransGroups);
     }
 
 }

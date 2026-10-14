@@ -1,6 +1,7 @@
 package com.example.mymangaapp.mymangaapp.mapper;
 
-import com.example.mymangaapp.mymangaapp.dto.manga.request.MangaRequest;
+import com.example.mymangaapp.mymangaapp.dto.manga.request.MangaCreationRequest;
+import com.example.mymangaapp.mymangaapp.dto.manga.request.MangaUpdateRequest;
 import com.example.mymangaapp.mymangaapp.dto.manga.response.MangaResponse;
 import com.example.mymangaapp.mymangaapp.dto.manga.response.MangaSummaryResponse;
 import com.example.mymangaapp.mymangaapp.entity.Manga;
@@ -11,7 +12,6 @@ import org.mapstruct.*;
 public interface MangaMapper {
 
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "ownerTransGroup", ignore = true)
     @Mapping(target = "transGroups", ignore = true)
     @Mapping(target = "categories", ignore = true)
     @Mapping(target = "chapters", ignore = true)
@@ -24,10 +24,9 @@ public interface MangaMapper {
     * hãy giữ nguyên giá trị mặc định của Manga."
     * */
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    Manga toManga(MangaRequest request);
+    Manga toManga(MangaCreationRequest request);
 
     @Mapping(target = "transGroupsId", source = "transGroups")
-    @Mapping(target = "ownerTransGroupId", source = "ownerTransGroup.id")
     @Mapping(target = "categories", source = "categories")
     MangaResponse toMangaResponse(Manga manga);
 
@@ -37,19 +36,17 @@ public interface MangaMapper {
     }
 
     @Mapping(target = "transGroupsId", source = "transGroups")
-    @Mapping(target = "ownerTransGroupId", source = "ownerTransGroup.id")
     @Mapping(target = "categories", source = "categories")
     MangaSummaryResponse toMangaSummaryResponse(Manga manga);
 
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "ownerTransGroup", ignore = true)
-    @Mapping(target = "transGroups", ignore = true)
     @Mapping(target = "categories", ignore = true)
+    @Mapping(target = "transGroups", ignore = true)
     @Mapping(target = "chapters", ignore = true)
     @Mapping(target = "slug", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    void updateMangaFromRequest(@MappingTarget Manga manga, MangaRequest request);
+    void updateMangaFromRequest(@MappingTarget Manga manga, MangaUpdateRequest request);
 
 }

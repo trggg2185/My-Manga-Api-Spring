@@ -32,9 +32,17 @@ The application provides:
 src/main/java/com/example/mymangaapp/mymangaapp/
 ├── controller/       REST controllers
 ├── dto/
-│   ├── request/      Validated request DTOs
-│   ├── response/     Response DTOs and wrappers
-│   └── transgroup/   Translation-group DTOs
+│   ├── user/      Validated request DTOs    
+│   ├── auth/   
+│   ├── category/     
+│   ├── chapter/    
+│   ├── common/     
+│   ├── groupcreation/     
+│   ├── groupjoin/     
+│   ├── manga/     
+│   ├── permission/     
+│   ├── role/     
+│   └── transgroup/  
 ├── entity/           JPA entities and relationships
 ├── enums/            Domain enums
 ├── exception/        AppException, response codes, global handler

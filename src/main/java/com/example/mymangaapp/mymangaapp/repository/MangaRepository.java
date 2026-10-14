@@ -20,13 +20,23 @@ import java.util.Optional;
 * */
 public interface MangaRepository extends JpaRepository<Manga, String> {
 
+   // Check xem có thật là được nhóm dịch này dịch không
+   @Query("""
+            SELECT COUNT(m) > 0 FROM Manga m
+            JOIN m.transGroups tg
+            WHERE m.id = :mangaId AND tg.id = :groupId AND tg.status = :status
+   """)
+   boolean isMangaTranslatedByGroup(
+           @Param("groupId") String groupId,
+           @Param("mangaId") String mangaId,
+           @Param("status") TransGroupStatus status);
+
    // Public list: trả về list tối giản, không join quá sâu
-   @EntityGraph(attributePaths = { "categories", "transGroups", "ownerTransGroup" })
+   @EntityGraph(attributePaths = { "categories", "transGroups" })
    @NonNull
    Page<Manga> findAll(@NonNull Pageable pageable);
 
    // Admin list: join thêm ownerTransGroup / transGroups / categories để view dashboard chi tiết hơn
-   @EntityGraph(attributePaths = { "ownerTransGroup" })
    @Query("SELECT m FROM Manga m")
    Page<Manga> findAllDetailed(Pageable pageable);
 
@@ -34,37 +44,49 @@ public interface MangaRepository extends JpaRepository<Manga, String> {
    @Query("SELECT m FROM Manga m WHERE m.status = :status")
    Page<Manga> findAllDetailedByStatus(MangaStatus status, Pageable pageable);
 
-   @EntityGraph(attributePaths = { "ownerTransGroup", "categories", "transGroups", "chapters" })
+   @EntityGraph(attributePaths = { "categories", "transGroups", "chapters" })
    Optional<Manga> findWithChaptersById(String id);
 
-   @EntityGraph(attributePaths = { "ownerTransGroup", "categories", "transGroups" })
+   @EntityGraph(attributePaths = { "categories", "transGroups" })
    Optional<Manga> findWithDetailsById(String id);
 
-   // Group membership: tìm mọi manga mà group tham gia, bao gồm sỡ hữu và dịch phụ
-   @EntityGraph(attributePaths = { "ownerTransGroup", "transGroups", "categories" })
-   @Query(
-       "SELECT DISTINCT m FROM Manga m " +
-       "LEFT JOIN m.transGroups tg " +
-       "WHERE m.ownerTransGroup.id = :groupId OR tg.id = :groupId"
-   )
-   Page<Manga> findAllByGroupMembershipId(@Param("groupId") String groupId, Pageable pageable);
+   @EntityGraph(attributePaths = { "transGroups" })
+   Optional<Manga> findWithTransGroupsById(String id);
+
+   // là check xem có đúng là leader của nhóm đang dịch manga này không
+   @Query("""
+            SELECT COUNT(m) > 0 FROM Manga m
+            JOIN m.transGroups tg
+            WHERE m.id = :mangaId AND tg.leader.id = :userId AND tg.status = :status
+   """)
+   boolean isLeaderOfManga(String userId, String mangaId, TransGroupStatus status);
+
+   // Group membership: tìm mọi manga mà group tham gia
+   @Query("""
+            SELECT DISTINCT m FROM Manga m
+            JOIN m.transGroups tg
+            WHERE tg.id = :groupId
+    """)
+   Page<Manga> findAllByGroupMembershipId(
+           @Param("groupId") String groupId,
+           Pageable pageable);
 
    // Check user này có phải là thànhviên hoặc leader của các nhómdịch truyện này không
    // đồng thời các nhóm dịch phải là APPROVED
    @Query("""
-        SELECT COUNT(g) > 0
-        FROM Manga m
-        JOIN m.transGroups g
-        WHERE m.id = :mangaId
-            AND g.status = :status
-            AND (
-                g.leader.id = :userId
-                OR EXISTS (
-                    SELECT 1 FROM User u
-                    WHERE u.id = :userId
-                        AND u.transGroup = g
-                )
-            )
+           SELECT COUNT(g) > 0
+           FROM Manga m
+           JOIN m.transGroups g
+           WHERE m.id = :mangaId
+               AND g.status = :status
+               AND (
+                   g.leader.id = :userId
+                   OR EXISTS (
+                       SELECT 1 FROM User u
+                       WHERE u.id = :userId
+                           AND u.transGroup = g
+                   )
+               )
         """)
    boolean isMemberOrLeaderOfAnyGroupOfManga(
            @Param("userId") String userId,

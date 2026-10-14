@@ -28,6 +28,7 @@ public interface UserMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "roles", ignore = true)
     @Mapping(target = "transGroup", ignore = true)
+    @Mapping(target = "transGroups", ignore = true)
     @Mapping(target = "facebook", ignore = true)
     @Mapping(target = "discord", ignore = true)
     @Mapping(target = "bio", ignore = true)
@@ -40,6 +41,7 @@ public interface UserMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "roles", ignore = true)
     @Mapping(target = "transGroup", ignore = true)
+    @Mapping(target = "transGroups", ignore = true)
     @Mapping(target = "facebook", ignore = true)
     @Mapping(target = "discord", ignore = true)
     @Mapping(target = "bio", ignore = true)
@@ -49,11 +51,12 @@ public interface UserMapper {
     @Mapping(target = "updatedAt", ignore = true)
     User toUser(RegisterRequest request);
 
-    @Mapping(target = "id", ignore = true) // Không sửa id
-    @Mapping(target = "username", ignore = true) // Không sửa username
-    @Mapping(target = "password", ignore = true) // Sửa password ở endpoint riêng, ko ở update
-    @Mapping(target = "transGroup", ignore = true) // tạmthời lờ đi transGroup
-    @Mapping(target = "roles", ignore = true) // roles ta tự giải quyết bên user service
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "username", ignore = true)
+    @Mapping(target = "password", ignore = true)
+    @Mapping(target = "transGroup", ignore = true)
+    @Mapping(target = "transGroups", ignore = true)
+    @Mapping(target = "roles", ignore = true)
     @Mapping(target = "avatar", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)

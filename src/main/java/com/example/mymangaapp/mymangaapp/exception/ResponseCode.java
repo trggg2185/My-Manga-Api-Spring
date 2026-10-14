@@ -147,6 +147,9 @@ public enum ResponseCode {
     TRANSGROUP_CREATION_REQUEST_STATUS_INVALID("5308", "Yêu cầu tạo nhóm dịch đã được chấp nhận hoặc bị từ chối!", HttpStatus.BAD_REQUEST),
     TRANSGROUP_ALREADY_DELETED("5309", "Nhóm dịch đã bị xoá!", HttpStatus.BAD_REQUEST),
 
+    // ------ Manga ----------
+    MANGA_MUST_HAVE_GROUP("5401", "Truyện phải có ít nhất 1 nhóm dịch!", HttpStatus.BAD_REQUEST),
+
     // --- Chapter ---
     CHAPTER_INDEX_ALREADY_EXISTED("5501", "Chapter index đã tồn tại!", HttpStatus.BAD_REQUEST),
 

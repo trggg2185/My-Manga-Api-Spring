@@ -1,14 +1,15 @@
 package com.example.mymangaapp.mymangaapp.entity;
 
-import java.util.List;
 import java.util.Set;
 
 import com.example.mymangaapp.mymangaapp.enums.TransGroupStatus;
+import com.github.slugify.Slugify;
 import jakarta.persistence.*;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
+import lombok.extern.slf4j.Slf4j;
 
 @Getter
 @Setter
@@ -17,6 +18,7 @@ import lombok.experimental.SuperBuilder;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @SuperBuilder
 @Entity
+@Slf4j
 public class TransGroup extends BaseEntity {
     
     @Id
@@ -40,6 +42,22 @@ public class TransGroup extends BaseEntity {
     @Column(length = 50, nullable = false)
     String name;
 
+    // bảng transgroup bổ sung thêm trường slug
+    @Column(length = 100, nullable = false)
+    String slug;
+
+    // chạy trc khi perist xuống db để tạo slug từ group name
+    @PrePersist
+    @PreUpdate
+    public void generateSlug() {
+        if (this.name == null || this.name.isBlank()) {
+            return;
+        }
+
+        this.slug = new Slugify().slugify(this.name);
+        log.info("Transgroup name: {} -> slug: {}", this.name, this.slug);
+    }
+
     @Column(length = 300)
     String description;
 
@@ -52,9 +70,5 @@ public class TransGroup extends BaseEntity {
     // đây chỉ là ds manga mà nhóm dịch, chưa chắc đã sở hữu (tạo ra), có thể chỉ là dịch phụ
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "transGroups")
     Set<Manga> translatedMangas;
-
-    // 1 transgroup sẽ sở hữu (tạo ra) nhiều manga
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "ownerTransGroup")
-    List<Manga> ownedMangas;
 
 }
