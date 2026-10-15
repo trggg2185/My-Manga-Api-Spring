@@ -125,11 +125,22 @@ public class GroupJoinRequestService {
     @Transactional
     public JoinRequestResponse approveJoinGroup(@NonNull String groupId, @NonNull String requestId) {
 
+        // Sau phải làm thêm cơ chế này!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        // Add concurrency protection to membership approval.
+        // Two pending requests for the same user can be approved concurrently
+        // because membership checks and updates are not locked.
+
         GroupJoinRequest groupJoinRequest = groupJoinRequestRepository
                 .findWithDetailsById(requestId)
                 .orElseThrow(() -> new AppException(ResponseCode.TRANSGROUP_JOIN_REQUEST_NOT_FOUND));
 
         TransGroup transGroup = groupJoinRequest.getTransGroup();
+
+        // check nhóm dịchcòn hoạt động ko, hãy bị xoá r
+        if (transGroup.getStatus().equals(TransGroupStatus.DELETED)) {
+            throw new AppException(ResponseCode.TRANSGROUP_ALREADY_DELETED);
+        }
+
         User user = groupJoinRequest.getUser();
 
         // Check xem request này có thực sự của của nhóm leader này không

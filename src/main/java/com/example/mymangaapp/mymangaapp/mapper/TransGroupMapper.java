@@ -1,7 +1,9 @@
 package com.example.mymangaapp.mymangaapp.mapper;
 
 import com.example.mymangaapp.mymangaapp.dto.transgroup.request.TransGroupUpdateRequest;
+import com.example.mymangaapp.mymangaapp.dto.transgroup.response.TransGroupDetailsResponse;
 import com.example.mymangaapp.mymangaapp.dto.transgroup.response.TransGroupResponse;
+import com.example.mymangaapp.mymangaapp.dto.transgroup.response.TransGroupSummaryResponse;
 import com.example.mymangaapp.mymangaapp.entity.TransGroup;
 import org.mapstruct.*;
 
@@ -9,6 +11,10 @@ import org.mapstruct.*;
 public interface TransGroupMapper {
 
     TransGroupResponse toTransGroupResponse(TransGroup transGroup);
+
+    TransGroupSummaryResponse toTransGroupSummaryResponse(TransGroup transGroup);
+
+    TransGroupDetailsResponse toTransGroupDetailsResponse(TransGroup transGroup);
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "leader", ignore = true)

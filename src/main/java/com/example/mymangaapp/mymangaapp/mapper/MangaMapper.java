@@ -2,6 +2,7 @@ package com.example.mymangaapp.mymangaapp.mapper;
 
 import com.example.mymangaapp.mymangaapp.dto.manga.request.MangaCreationRequest;
 import com.example.mymangaapp.mymangaapp.dto.manga.request.MangaUpdateRequest;
+import com.example.mymangaapp.mymangaapp.dto.manga.response.MangaDetailsResponse;
 import com.example.mymangaapp.mymangaapp.dto.manga.response.MangaResponse;
 import com.example.mymangaapp.mymangaapp.dto.manga.response.MangaSummaryResponse;
 import com.example.mymangaapp.mymangaapp.entity.Manga;
@@ -35,9 +36,11 @@ public interface MangaMapper {
         return (transGroup != null) ? transGroup.getId() : null;
     }
 
+    MangaSummaryResponse toMangaSummaryResponse(Manga manga);
+
     @Mapping(target = "transGroupsId", source = "transGroups")
     @Mapping(target = "categories", source = "categories")
-    MangaSummaryResponse toMangaSummaryResponse(Manga manga);
+    MangaDetailsResponse toMangaDetailsResponse(Manga manga);
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "categories", ignore = true)

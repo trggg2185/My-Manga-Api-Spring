@@ -2,9 +2,10 @@ package com.example.mymangaapp.mymangaapp.service;
 
 import com.example.mymangaapp.mymangaapp.dto.manga.request.MangaCreationRequest;
 import com.example.mymangaapp.mymangaapp.dto.manga.request.MangaUpdateRequest;
+import com.example.mymangaapp.mymangaapp.dto.manga.response.MangaDetailsResponse;
 import com.example.mymangaapp.mymangaapp.dto.manga.response.MangaResponse;
-import com.example.mymangaapp.mymangaapp.dto.manga.response.MangaSummaryResponse;
 import com.example.mymangaapp.mymangaapp.dto.common.PaginatedResponse;
+import com.example.mymangaapp.mymangaapp.dto.manga.response.MangaSummaryResponse;
 import com.example.mymangaapp.mymangaapp.entity.Category;
 import com.example.mymangaapp.mymangaapp.entity.Manga;
 import com.example.mymangaapp.mymangaapp.entity.TransGroup;
@@ -50,7 +51,7 @@ public class MangaService {
 
     // ----------------------------chức năng dành cho leader nhóm ---------------------------------//
 
-    // tạo mới 1 truyện
+    // tạo mới 1 truyện, dành cho leader
     @Transactional
     public MangaResponse createManga(@NonNull MangaCreationRequest request) {
 
@@ -139,23 +140,23 @@ public class MangaService {
 
     // chỉ dành cho admin
     @Transactional(readOnly = true)
-    public PaginatedResponse<MangaResponse> getMangas(
+    public PaginatedResponse<MangaSummaryResponse> getMangas(
             MangaStatus status, int page,
             int size, String sortBy
     ) {
 
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, sortBy));
 
-        Page<MangaResponse> dtoPage;
+        Page<MangaSummaryResponse> dtoPage;
 
         if (status != null) {
             dtoPage = mangaRepository
-                    .findAllDetailedByStatus(status, pageable)
-                    .map(mangaMapper::toMangaResponse);
+                    .findAllByStatus(status, pageable)
+                    .map(mangaMapper::toMangaSummaryResponse);
         } else {
             dtoPage = mangaRepository
-                    .findAllDetailed(pageable)
-                    .map(mangaMapper::toMangaResponse);
+                    .findAll(pageable)
+                    .map(mangaMapper::toMangaSummaryResponse);
         }
 
         return PaginatedResponse.of(dtoPage);
@@ -168,13 +169,13 @@ public class MangaService {
     // đây là khi họ vào trang home của web
     // sẽ lấy tất cả các manga có phân trang, những chỉ lấy với
     // chút thông tin của manga như: name, categories, description, transgroups
-    public PaginatedResponse<MangaSummaryResponse> getMangas(int page, int size, String sortBy) {
+    public PaginatedResponse<MangaResponse> getMangas(int page, int size, String sortBy) {
         
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, sortBy));
 
-        Page<MangaSummaryResponse> dtoPage = mangaRepository
+        Page<MangaResponse> dtoPage = mangaRepository
                 .findAll(pageable)
-                .map(mangaMapper::toMangaSummaryResponse);
+                .map(mangaMapper::toMangaResponse);
 
         return PaginatedResponse.of(dtoPage);
     }
@@ -204,14 +205,14 @@ public class MangaService {
     // public
     // đây là khi user nhấn chi tiết 1 manga
     // manga sẽ get toàn bộ info, có cả các chapter luôn
-    public MangaResponse getMangaById(@NonNull String id) {
+    public MangaDetailsResponse getMangaById(@NonNull String id) {
 
         // này phải dùng method select toàn bộ thông tin manga có cả chapter
         Manga manga = mangaRepository
-                .findWithChaptersById(id)
+                .findWithDetailsAndChaptersById(id)
                 .orElseThrow(() -> new AppException(ResponseCode.MANGA_NOT_FOUND));
 
-        return mangaMapper.toMangaResponse(manga);
+        return mangaMapper.toMangaDetailsResponse(manga);
     }
 
 

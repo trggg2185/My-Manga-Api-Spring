@@ -2,11 +2,12 @@ package com.example.mymangaapp.mymangaapp.controller;
 
 import com.example.mymangaapp.mymangaapp.annotation.RateLimit;
 import com.example.mymangaapp.mymangaapp.dto.manga.request.MangaUpdateRequest;
+import com.example.mymangaapp.mymangaapp.dto.manga.response.MangaDetailsResponse;
+import com.example.mymangaapp.mymangaapp.dto.manga.response.MangaResponse;
+import com.example.mymangaapp.mymangaapp.dto.manga.response.MangaSummaryResponse;
 import com.example.mymangaapp.mymangaapp.enums.LimitType;
 import com.example.mymangaapp.mymangaapp.dto.manga.request.MangaCreationRequest;
 import com.example.mymangaapp.mymangaapp.dto.common.ApiResponse;
-import com.example.mymangaapp.mymangaapp.dto.manga.response.MangaResponse;
-import com.example.mymangaapp.mymangaapp.dto.manga.response.MangaSummaryResponse;
 import com.example.mymangaapp.mymangaapp.dto.manga.response.DeleteMangaResponse;
 import com.example.mymangaapp.mymangaapp.dto.common.PaginatedResponse;
 import com.example.mymangaapp.mymangaapp.enums.MangaStatus;
@@ -75,15 +76,15 @@ public class MangaController {
     // admin only
     @GetMapping("/admin/mangas")
     @RateLimit(capacity = 30, limitType = LimitType.USER_ID)
-    public ApiResponse<PaginatedResponse<MangaResponse>> getMangas(
+    public ApiResponse<PaginatedResponse<MangaSummaryResponse>> getMangas(
             @RequestParam(required = false) MangaStatus status,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "24") int size,
             @RequestParam(defaultValue = "createdAt") String sortBy
     ) {
-        PaginatedResponse<MangaResponse> responses = mangaService.getMangas(status, page, size, sortBy);
+        PaginatedResponse<MangaSummaryResponse> responses = mangaService.getMangas(status, page, size, sortBy);
 
-        return ApiResponse.<PaginatedResponse<MangaResponse>>builder()
+        return ApiResponse.<PaginatedResponse<MangaSummaryResponse>>builder()
                 .result(responses)
                 .build();
     }
@@ -97,14 +98,14 @@ public class MangaController {
     // chút thông tin của manga như: name, categories, description, transgroups
     @GetMapping("/mangas")
     @RateLimit(capacity = 60)
-    public ApiResponse<PaginatedResponse<MangaSummaryResponse>> getMangas(
+    public ApiResponse<PaginatedResponse<MangaResponse>> getMangas(
             @RequestParam(defaultValue = "0") int page, // số trang
             @RequestParam(defaultValue = "24") int size, // số bản ghi mỗi trang
             @RequestParam(defaultValue = "createdAt") String sortBy // sxep theo field nào
     ) {
-        PaginatedResponse<MangaSummaryResponse> responses = mangaService.getMangas(page, size, sortBy);
+        PaginatedResponse<MangaResponse> responses = mangaService.getMangas(page, size, sortBy);
 
-        return ApiResponse.<PaginatedResponse<MangaSummaryResponse>>builder()
+        return ApiResponse.<PaginatedResponse<MangaResponse>>builder()
                 .result(responses)
                 .build();
     }
@@ -130,12 +131,12 @@ public class MangaController {
 
     @GetMapping("/mangas/{id}")
     @RateLimit(capacity = 60)
-    public ApiResponse<MangaResponse> getMangaById(
+    public ApiResponse<MangaDetailsResponse> getMangaById(
             @PathVariable @NonNull String id
     ) {
-        MangaResponse response = mangaService.getMangaById(id);
+        MangaDetailsResponse response = mangaService.getMangaById(id);
 
-        return ApiResponse.<MangaResponse>builder()
+        return ApiResponse.<MangaDetailsResponse>builder()
                 .result(response)
                 .build();
     }

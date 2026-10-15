@@ -25,7 +25,7 @@ public final class StorageKeysUtils {
 
     // url r2 cho avatar: avatars/userId/uuid.webp
     public static String avatar(String userId) {
-        return AVATAR_PREFIX + userId + "/" + UUID.randomUUID() + "/" + newFileName();
+        return AVATAR_PREFIX + userId + "/" + newFileName();
     }
 
     public static boolean isTmp(String key) {

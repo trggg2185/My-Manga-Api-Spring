@@ -2,6 +2,8 @@ package com.example.mymangaapp.mymangaapp.controller;
 
 import com.example.mymangaapp.mymangaapp.annotation.RateLimit;
 import com.example.mymangaapp.mymangaapp.dto.transgroup.request.TransGroupUpdateRequest;
+import com.example.mymangaapp.mymangaapp.dto.transgroup.response.TransGroupDetailsResponse;
+import com.example.mymangaapp.mymangaapp.dto.transgroup.response.TransGroupSummaryResponse;
 import com.example.mymangaapp.mymangaapp.enums.LimitType;
 import com.example.mymangaapp.mymangaapp.dto.common.ApiResponse;
 import com.example.mymangaapp.mymangaapp.dto.common.PaginatedResponse;
@@ -30,15 +32,24 @@ public class TransGroupController {
     // Endpoint này dành cho user thông thường có thể thấy tất cả nhóm dịch đang hoạt động
     @RateLimit(capacity = 60)
     @GetMapping("/transgroups")
-    public ApiResponse<PaginatedResponse<TransGroupResponse>> getGroups(
+    public ApiResponse<PaginatedResponse<TransGroupSummaryResponse>> getGroups(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size,
             @RequestParam(defaultValue = "createdAt") String sortBy
     ) {
-        PaginatedResponse<TransGroupResponse> responses = transGroupService.getGroups(page, size, sortBy);
+        PaginatedResponse<TransGroupSummaryResponse> responses = transGroupService.getGroups(page, size, sortBy);
 
-        return ApiResponse.<PaginatedResponse<TransGroupResponse>>builder()
+        return ApiResponse.<PaginatedResponse<TransGroupSummaryResponse>>builder()
                 .result(responses)
+                .build();
+    }
+
+    @GetMapping("/transgroups/{id}")
+    public ApiResponse<TransGroupDetailsResponse> getGroupById(@PathVariable @NonNull String id) {
+        TransGroupDetailsResponse response = transGroupService.getGroupById(id);
+
+        return ApiResponse.<TransGroupDetailsResponse>builder()
+                .result(response)
                 .build();
     }
 
@@ -47,15 +58,15 @@ public class TransGroupController {
 
     @GetMapping("/admin/transgroups")
     @RateLimit(capacity = 30, limitType = LimitType.USER_ID)
-    public ApiResponse<PaginatedResponse<TransGroupResponse>> getGroups(
+    public ApiResponse<PaginatedResponse<TransGroupSummaryResponse>> getGroups(
             @RequestParam(required = false) TransGroupStatus status,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size,
             @RequestParam(defaultValue = "createdAt") String sortBy
     ) {
-        PaginatedResponse<TransGroupResponse> responses = transGroupService.getGroups(status, page, size, sortBy);
+        PaginatedResponse<TransGroupSummaryResponse> responses = transGroupService.getGroups(status, page, size, sortBy);
 
-        return ApiResponse.<PaginatedResponse<TransGroupResponse>>builder()
+        return ApiResponse.<PaginatedResponse<TransGroupSummaryResponse>>builder()
                 .result(responses)
                 .build();
     }

@@ -18,6 +18,8 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserResponse {
 
+    // response chi tiết của user, thường trả về cho admin
+
     String id;
     String username;
     String email;

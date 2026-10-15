@@ -25,6 +25,7 @@ public class MangaTransGroupService {
     MangaRepository mangaRepository;
     TransGroupRepository transGroupRepository;
 
+    // Chỉ có thể tự mình rời dịch, ko được phép xoá nhóm khác khỏi dịch truyện
     // nhóm dịch này muốn rút, ko dịch truyện này nữa
     @Transactional
     @PreAuthorize("@groupSec.isGroupLeader(#groupId)") // chỉ leader mới có thể rời
@@ -43,7 +44,7 @@ public class MangaTransGroupService {
         long numberApprovedGroups = manga.getTransGroups().stream()
                 .filter(transGroup -> transGroup.getStatus().equals(TransGroupStatus.APPROVED))
                 .count();
-        // nếu chỉ còn đúng 1 nhóm đang hoạt động này dịch thì
+        // không cho phép rời khi còn mỗi nhóm đó dịch
         if (numberApprovedGroups <= 1) {
             throw new AppException(ResponseCode.MANGA_MUST_HAVE_GROUP);
         }

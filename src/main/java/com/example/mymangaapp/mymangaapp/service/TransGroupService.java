@@ -3,7 +3,9 @@ package com.example.mymangaapp.mymangaapp.service;
 import com.example.mymangaapp.mymangaapp.constant.RoleConstants;
 import com.example.mymangaapp.mymangaapp.dto.transgroup.request.TransGroupUpdateRequest;
 import com.example.mymangaapp.mymangaapp.dto.common.PaginatedResponse;
+import com.example.mymangaapp.mymangaapp.dto.transgroup.response.TransGroupDetailsResponse;
 import com.example.mymangaapp.mymangaapp.dto.transgroup.response.TransGroupResponse;
+import com.example.mymangaapp.mymangaapp.dto.transgroup.response.TransGroupSummaryResponse;
 import com.example.mymangaapp.mymangaapp.entity.GroupCreationRequest;
 import com.example.mymangaapp.mymangaapp.entity.Role;
 import com.example.mymangaapp.mymangaapp.entity.TransGroup;
@@ -71,42 +73,53 @@ public class TransGroupService {
     // ----------------------------------- chức năng public (cho khách) -----------------------------------//
 
     // Lấy tất cả nhóm dịch đã được chấp thuận, public
-    public PaginatedResponse<TransGroupResponse> getGroups(
+    public PaginatedResponse<TransGroupSummaryResponse> getGroups(
             int page, int size,
             @NonNull String sortBy
     ) {
 
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, sortBy));
 
-        Page<TransGroupResponse> dtoPage = transGroupRepository
+        Page<TransGroupSummaryResponse> dtoPage = transGroupRepository
                 .findAllByStatus(TransGroupStatus.APPROVED, pageable)
-                .map(transGroupMapper::toTransGroupResponse);
+                .map(transGroupMapper::toTransGroupSummaryResponse);
 
         return PaginatedResponse.of(dtoPage);
+    }
+
+    // chức năng khi 1 user vào trang cá nhân của 1 nhóm
+    // hiện chi tiết toàn bộ về nhóm đó
+    public TransGroupDetailsResponse getGroupById(@NonNull String id) {
+
+        TransGroup transGroup = transGroupRepository
+                .findWithDetailsById(id)
+                .orElseThrow(() -> new AppException(ResponseCode.TRANSGROUP_NOT_FOUND));
+
+        return transGroupMapper.toTransGroupDetailsResponse(transGroup);
     }
 
 
     // -------------------------------- chức năng của admin -------------------------------- //
 
     // Đây cũng lấy nhóm nhưng chỉ dành cho admin
-    public PaginatedResponse<TransGroupResponse> getGroups(
+    public PaginatedResponse<TransGroupSummaryResponse> getGroups(
             TransGroupStatus status, int page,
             int size, @NonNull String sortBy
     ) {
 
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, sortBy));
 
-        Page<TransGroupResponse> dtoPage;
+        Page<TransGroupSummaryResponse> dtoPage;
 
         // Nếu cho query string status thì lấy nhóm dịch theo status
         if (status != null) {
             dtoPage = transGroupRepository
                     .findAllByStatus(status, pageable)
-                    .map(transGroupMapper::toTransGroupResponse);
+                    .map(transGroupMapper::toTransGroupSummaryResponse);
         } else { // Nếu ko status thì mặc định lấy tất cả các nhóm
             dtoPage = transGroupRepository
                     .findAll(pageable)
-                    .map(transGroupMapper::toTransGroupResponse);
+                    .map(transGroupMapper::toTransGroupSummaryResponse);
         }
 
         return PaginatedResponse.of(dtoPage);
@@ -154,7 +167,7 @@ public class TransGroupService {
     public TransGroupResponse updateGroupById(@NonNull String id, @NonNull TransGroupUpdateRequest request) {
 
         TransGroup transGroup = transGroupRepository
-                .findWithDetailsById(id)
+                .findWithLeaderAndMembersById(id)
                 .orElseThrow(() -> new AppException(ResponseCode.TRANSGROUP_NOT_FOUND));
 
         if (!transGroup.getStatus().equals(TransGroupStatus.APPROVED)) {

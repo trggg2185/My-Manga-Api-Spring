@@ -31,7 +31,8 @@ public interface MangaRepository extends JpaRepository<Manga, String> {
            @Param("mangaId") String mangaId,
            @Param("status") TransGroupStatus status);
 
-   // Public list: trả về list tối giản, không join quá sâu
+   Page<Manga> findAllByStatus(MangaStatus status, Pageable pageable);
+
    @EntityGraph(attributePaths = { "categories", "transGroups" })
    @NonNull
    Page<Manga> findAll(@NonNull Pageable pageable);
@@ -40,12 +41,11 @@ public interface MangaRepository extends JpaRepository<Manga, String> {
    @Query("SELECT m FROM Manga m")
    Page<Manga> findAllDetailed(Pageable pageable);
 
-   @EntityGraph(attributePaths = { "ownerTransGroup" })
    @Query("SELECT m FROM Manga m WHERE m.status = :status")
    Page<Manga> findAllDetailedByStatus(MangaStatus status, Pageable pageable);
 
    @EntityGraph(attributePaths = { "categories", "transGroups", "chapters" })
-   Optional<Manga> findWithChaptersById(String id);
+   Optional<Manga> findWithDetailsAndChaptersById(String id);
 
    @EntityGraph(attributePaths = { "categories", "transGroups" })
    Optional<Manga> findWithDetailsById(String id);

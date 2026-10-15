@@ -1,12 +1,9 @@
 package com.example.mymangaapp.mymangaapp.dto.manga.response;
 
-import com.example.mymangaapp.mymangaapp.dto.category.response.CategoryResponse;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.time.Instant;
-import java.util.List;
-import java.util.Set;
 
 @Data
 @AllArgsConstructor
@@ -18,10 +15,9 @@ public class MangaSummaryResponse {
     String id;
     String name;
     String slug;
+    String authorsName;
     String status;
     String description;
-    Set<CategoryResponse> categories;
-    List<String> transGroupsId;
-    Instant updatedAt;
+    Instant createdAt;
 
 }

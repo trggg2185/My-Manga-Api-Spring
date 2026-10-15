@@ -1,8 +1,6 @@
 package com.example.mymangaapp.mymangaapp.dto.user.response;
 
-import com.example.mymangaapp.mymangaapp.dto.role.response.RoleResponse;
 import java.time.Instant;
-import java.util.Set;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -18,6 +16,9 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class CurrentUserResponse {
 
+    // Đây là response cho trả về khi user lấy thông tin của mình
+    // bằng cách truy cập vào profiles
+
     String id;
     String username;
     String email;
@@ -25,8 +26,5 @@ public class CurrentUserResponse {
     String discord;
     String bio;
     String avatar;
-    Set<RoleResponse> roles;
-    String transGroupId;
-    Instant createdAt;
-    Instant updatedAt;
+    Instant createdAt; // ngày tham gia (ngày tạo tk)
 }

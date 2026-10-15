@@ -38,7 +38,6 @@ public interface UserRepository extends JpaRepository<User, String> {
     @EntityGraph(attributePaths = { "roles", "roles.permissions", "transGroup" })
     Optional<User> findWithDetailsById(@NonNull String id);
 
-    @EntityGraph(attributePaths = { "roles", "roles.permissions", "transGroup" })
     @NonNull
     Page<User> findAll(@NonNull Pageable pageable);
 

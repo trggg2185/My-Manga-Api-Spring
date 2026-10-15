@@ -14,8 +14,9 @@ import java.util.Set;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class TransGroupResponse {
 
+    // response transgroup để xem chi tiết thì ổn hơn
+
     String id;
-    // dùng response này của user cho gọn, ko select thêm role, permision, transgroup cho mệt
     UserSummaryResponse leader;
     String name;
     String slug;

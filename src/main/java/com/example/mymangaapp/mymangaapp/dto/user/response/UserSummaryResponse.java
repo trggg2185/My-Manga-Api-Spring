@@ -3,8 +3,6 @@ package com.example.mymangaapp.mymangaapp.dto.user.response;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.time.Instant;
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -12,9 +10,9 @@ import java.time.Instant;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserSummaryResponse {
 
+    // response tối giản nhất có thể
+
     String id;
     String username;
     String avatar;
-    Instant createdAt;
-
 }

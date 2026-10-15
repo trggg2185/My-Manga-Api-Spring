@@ -1,6 +1,7 @@
 package com.example.mymangaapp.mymangaapp.controller;
 
 import com.example.mymangaapp.mymangaapp.annotation.RateLimit;
+import com.example.mymangaapp.mymangaapp.dto.user.response.UserSummaryResponse;
 import com.example.mymangaapp.mymangaapp.enums.LimitType;
 import com.example.mymangaapp.mymangaapp.dto.user.request.UserPasswordRequest;
 import com.example.mymangaapp.mymangaapp.dto.common.PaginatedResponse;
@@ -104,15 +105,15 @@ public class UserController {
 
     @GetMapping("/admin/users")
     @RateLimit(capacity = 30, limitType = LimitType.USER_ID)
-    public ApiResponse<PaginatedResponse<UserResponse>> getAllUsers(
+    public ApiResponse<PaginatedResponse<UserSummaryResponse>> getAllUsers(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size,
             @RequestParam(defaultValue = "createdAt") String sortBy
     ) {
 
-        PaginatedResponse<UserResponse> responses = userService.getAllUsers(page, size, sortBy);
+        PaginatedResponse<UserSummaryResponse> responses = userService.getAllUsers(page, size, sortBy);
 
-        return ApiResponse.<PaginatedResponse<UserResponse>>builder()
+        return ApiResponse.<PaginatedResponse<UserSummaryResponse>>builder()
                 .result(responses)
                 .build();
 

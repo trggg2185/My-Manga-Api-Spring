@@ -69,7 +69,6 @@ public interface UserMapper {
 
     UserSummaryResponse toUserSummaryResponse(User user);
 
-    @Mapping(target = "transGroupId", source = "transGroup.id")
     CurrentUserResponse toCurrentUserResponse(User user);
 
 }

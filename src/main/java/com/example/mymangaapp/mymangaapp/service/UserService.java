@@ -9,6 +9,7 @@ import com.example.mymangaapp.mymangaapp.constant.RoleConstants;
 import com.example.mymangaapp.mymangaapp.dto.user.request.UserPasswordRequest;
 import com.example.mymangaapp.mymangaapp.dto.common.PaginatedResponse;
 import com.example.mymangaapp.mymangaapp.dto.user.response.CurrentUserResponse;
+import com.example.mymangaapp.mymangaapp.dto.user.response.UserSummaryResponse;
 import com.example.mymangaapp.mymangaapp.security.utils.SecurityUtils;
 import com.example.mymangaapp.mymangaapp.service.storage.ObjectStorage;
 import com.example.mymangaapp.mymangaapp.service.storage.StorageService;
@@ -62,7 +63,7 @@ public class UserService {
         String username = SecurityUtils.getCurrentUsername();
 
         User user = userRepository
-                .findWithDetailsByUsername(username)
+                .findByUsername(username)
                 .orElseThrow(() -> new AppException(ResponseCode.USER_NOT_FOUND));
 
         return userMapper.toCurrentUserResponse(user);
@@ -73,7 +74,7 @@ public class UserService {
         String username = SecurityUtils.getCurrentUsername();
 
         User user = userRepository
-                .findWithDetailsByUsername(username)
+                .findByUsername(username)
                 .orElseThrow(() -> new AppException(ResponseCode.USER_NOT_FOUND));
 
         userMapper.updateUserFromRequest(user, request);
@@ -158,16 +159,16 @@ public class UserService {
     }
 
     // Lấy tất cả user
-    public PaginatedResponse<UserResponse> getAllUsers(
+    public PaginatedResponse<UserSummaryResponse> getAllUsers(
             int page, int size,
             @NonNull String sortBy
     ) {
 
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, sortBy));
 
-        Page<UserResponse> dtoPage = userRepository
-                .findAll(pageable)
-                .map(userMapper::toUserResponse);
+        // Chỉ cần trả về ds với response tối thiểu
+        Page<UserSummaryResponse> dtoPage = userRepository
+                .findAll(pageable).map(userMapper::toUserSummaryResponse);
 
         return PaginatedResponse.of(dtoPage);
 
@@ -188,7 +189,7 @@ public class UserService {
     public UserResponse updateUserById(@NonNull String id, @NonNull UserUpdateRequest request) {
         
         User user = userRepository
-                .findById(id)
+                .findWithDetailsById(id) // phải lấy info chi tiết (roles, permissions, transgroup_id)
                 .orElseThrow(() -> new AppException(ResponseCode.USER_NOT_FOUND));
 
         // Nếu user mà admin đang cập nhật cũng là admin thì ko cho phép
